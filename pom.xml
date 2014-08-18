@@ -11,7 +11,7 @@
     Properties to be configured:
     -   YOUTRACK_USERNAME - YouTrack username
     -   YOUTRACK_PASSWORD - YouTrack password
-    -   SLACK_API_KEY - token for authentication to Slack REST services
+    -   SLACK_AUTH_TOKEN - token for authentication to Slack REST services
     -->
     <dependencies>
         <dependency>

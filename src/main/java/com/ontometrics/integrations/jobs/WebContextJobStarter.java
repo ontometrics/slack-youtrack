@@ -38,6 +38,9 @@ public class WebContextJobStarter implements ServletContextListener {
         scheduleTasks();
     }
 
+    /**
+     * Schedules periodic tasks to fetch the events
+     */
     private void scheduleTasks() {
         try {
             Configuration configuration = ConfigurationFactory.get();
@@ -97,6 +100,7 @@ public class WebContextJobStarter implements ServletContextListener {
 
     @Override
     public void contextDestroyed(ServletContextEvent servletContextEvent) {
+        //cancelling all previously launched tasks and timer
         for (TimerTask timerTask : timerTasks) {
             timerTask.cancel();
         }

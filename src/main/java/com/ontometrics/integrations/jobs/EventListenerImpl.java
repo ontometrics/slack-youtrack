@@ -59,7 +59,7 @@ public class EventListenerImpl implements EventListener {
         Client client = ClientBuilder.newClient();
 
         WebTarget slackApi = client.target(SLACK_URL).path(CHANNEL_POST_PATH)
-                .queryParam(TOKEN_KEY, ConfigurationFactory.get().getString("SLACK_API_KEY"))
+                .queryParam(TOKEN_KEY, ConfigurationFactory.get().getString("SLACK_AUTH_TOKEN"))
                 .queryParam(TEXT_KEY, getText(event))
                 .queryParam(CHANNEL_KEY, "#" + channel);
 

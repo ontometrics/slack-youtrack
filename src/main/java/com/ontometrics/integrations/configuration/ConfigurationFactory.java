@@ -5,7 +5,7 @@ import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
 
 /**
- * Factory for obtaining a config
+ * Factory for obtaining a global config
  */
 public class ConfigurationFactory {
     private static Configuration CONFIGURATION;
