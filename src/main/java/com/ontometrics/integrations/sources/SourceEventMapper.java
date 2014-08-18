@@ -1,6 +1,8 @@
 
 package com.ontometrics.integrations.sources;
 
+import org.apache.http.client.fluent.Executor;
+import org.apache.http.client.fluent.Request;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,13 +34,19 @@ public class SourceEventMapper {
 
     private Logger log = LoggerFactory.getLogger(SourceEventMapper.class);
     private URL url;
+    private Executor executor;
     private URL editsUrl;
     private XMLEventReader eventReader;
 
     private ProcessEvent lastEvent;
 
+    /**
+     * TODO Pass login/password
+     * @param url url to process
+     */
     public SourceEventMapper(URL url) {
         this.url = url;
+        executor = Executor.newInstance().auth("username", "password");
     }
 
     /**
@@ -47,9 +55,10 @@ public class SourceEventMapper {
      * @return the last event that was returned to the user of this class
      */
     public List<ProcessEvent> getLatestEvents(){
+
         List<ProcessEvent> events = new ArrayList<>();
         try {
-            InputStream inputStream = url.openStream();
+            InputStream inputStream = executor.execute(Request.Get(url.toExternalForm())).returnContent().asStream();
             XMLInputFactory inputFactory = XMLInputFactory.newInstance();
             eventReader = inputFactory.createXMLEventReader(inputStream);
 

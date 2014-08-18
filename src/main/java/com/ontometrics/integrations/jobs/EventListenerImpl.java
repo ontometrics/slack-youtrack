@@ -17,6 +17,7 @@ import java.util.List;
 
 /**
  * Created on 8/18/14.
+ *
  */
 public class EventListenerImpl implements EventListener {
     private static final Logger log = LoggerFactory.getLogger(EventListenerImpl.class);
@@ -30,6 +31,11 @@ public class EventListenerImpl implements EventListener {
     public static final String SLACK_URL = "https://slack.com/api/";
     public static final String CHANNEL_POST_PATH = "chat.postMessage";
 
+    /**
+     * TODO rework, so it can authenticate into sourceUrl (we got http-error #401)
+     * @param sourceURL url to read list of events from
+     * @param channelMapper channelMapper
+     */
     public EventListenerImpl(URL sourceURL, ChannelMapper channelMapper) {
         this.sourceURL = sourceURL;
         this.channelMapper = channelMapper;

@@ -1,6 +1,8 @@
 package com.ontometrics.integrations.jobs;
 
 import com.ontometrics.integrations.sources.ChannelMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
@@ -16,6 +18,8 @@ import java.util.TimerTask;
  * WebContextJobStarter.java
  */
 public class WebContextJobStarter implements ServletContextListener {
+    private static Logger logger = LoggerFactory.getLogger(WebContextJobStarter.class);
+
     private static final long EXECUTION_DELAY = 2 * 1000;
     private static final long REPEAT_INTERVAL = 60 * 1000;
 
@@ -24,6 +28,7 @@ public class WebContextJobStarter implements ServletContextListener {
 
     @Override
     public void contextInitialized(ServletContextEvent servletContextEvent) {
+        logger.info("Started up");
         timerTasks = new ArrayList<>(3);
         timer = new Timer();
         try {
@@ -49,7 +54,13 @@ public class WebContextJobStarter implements ServletContextListener {
 
         @Override
         public void run() {
-            this.eventListener.checkForNewEvents();
+            logger.info("Event processing started");
+            try {
+                this.eventListener.checkForNewEvents();
+            } catch (Throwable ex) {
+                logger.error("Failed to process", ex);
+            }
+            logger.info("Event processing finished");
         }
     }
 
