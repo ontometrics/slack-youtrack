@@ -1,4 +1,4 @@
-package com.ontometrics.integrations.jobs;
+package com.ontometrics.integrations.sources;
 
 import org.apache.http.client.fluent.Executor;
 

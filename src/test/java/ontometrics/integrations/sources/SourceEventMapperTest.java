@@ -5,6 +5,7 @@ import com.ontometrics.integrations.sources.ProcessEventChange;
 import com.ontometrics.integrations.sources.SourceEventMapper;
 import com.ontometrics.util.DateBuilder;
 import ontometrics.test.util.TestUtil;
+import ontometrics.test.util.UrlResourceProvider;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -96,7 +97,7 @@ public class SourceEventMapperTest {
     @Test
     public void testThatWeCanExtractYouTrackEvent() throws IOException, XMLStreamException {
         
-        SourceEventMapper sourceEventMapper = new SourceEventMapper(sourceUrl, authenticator);
+        SourceEventMapper sourceEventMapper = new SourceEventMapper(UrlResourceProvider.instance(sourceUrl));
         List<ProcessEvent> events = sourceEventMapper.getLatestEvents();
         
         ProcessEvent firstEvent = events.get(0);
@@ -111,7 +112,7 @@ public class SourceEventMapperTest {
 
     @Test
     public void testThatLastSeenEventTracked(){
-        SourceEventMapper sourceEventMapper = new SourceEventMapper(sourceUrl, authenticator);
+        SourceEventMapper sourceEventMapper = new SourceEventMapper(UrlResourceProvider.instance(sourceUrl));
         List<ProcessEvent> events = sourceEventMapper.getLatestEvents();
 
         assertThat(sourceEventMapper.getLastEvent(), is(events.get(events.size()-1)));
@@ -120,7 +121,7 @@ public class SourceEventMapperTest {
     @Test
     public void testThatEventsStreamProcessed(){
 
-        SourceEventMapper sourceEventMapper = new SourceEventMapper(sourceUrl, authenticator);
+        SourceEventMapper sourceEventMapper = new SourceEventMapper(UrlResourceProvider.instance(sourceUrl));
         List<ProcessEvent> events = sourceEventMapper.getLatestEvents();
 
         ChannelMapper channelMapper = new ChannelMapper.Builder()
@@ -170,7 +171,7 @@ public class SourceEventMapperTest {
 
     @Test
     public void testThatWeCanGetMostRecentChanges(){
-        SourceEventMapper sourceEventMapper = new SourceEventMapper(sourceUrl, authenticator);
+        SourceEventMapper sourceEventMapper = new SourceEventMapper(UrlResourceProvider.instance(sourceUrl));
         sourceEventMapper.setEditsUrl(editsUrl);
         List<ProcessEventChange> recentChanges = sourceEventMapper.getLatestChanges();
 

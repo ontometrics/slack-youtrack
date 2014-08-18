@@ -1,8 +1,6 @@
 package com.ontometrics.integrations.jobs;
 
-import com.ontometrics.integrations.sources.ChannelMapper;
-import com.ontometrics.integrations.sources.ProcessEvent;
-import com.ontometrics.integrations.sources.SourceEventMapper;
+import com.ontometrics.integrations.sources.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,8 +24,9 @@ public class EventListenerImpl implements EventListener {
     public static final String TOKEN_KEY = "token";
     public static final String TEXT_KEY = "text";
     public static final String CHANNEL_KEY = "channel";
-    private final URL sourceURL;
+
     private final ChannelMapper channelMapper;
+    private SourceEventMapper sourceEventMapper;
     public static final String SLACK_URL = "https://slack.com/api/";
     public static final String CHANNEL_POST_PATH = "chat.postMessage";
 
@@ -37,9 +36,13 @@ public class EventListenerImpl implements EventListener {
      * @param channelMapper channelMapper
      */
     public EventListenerImpl(URL sourceURL, ChannelMapper channelMapper) {
-        this.sourceURL = sourceURL;
+
         this.channelMapper = channelMapper;
         if(sourceURL == null || channelMapper == null) throw new IllegalArgumentException("You must provide sourceURL and channelMapper.");
+
+        ExternalResourceInputStreamProvider provider = new ExternalResourceInputStreamProvider(sourceURL.toExternalForm())
+                .authenticator(authenticator);
+        sourceEventMapper = new SourceEventMapper(provider);
     }
 
     public Authenticator authenticator;
@@ -52,7 +55,6 @@ public class EventListenerImpl implements EventListener {
     @Override
     public int checkForNewEvents() {
         //get events
-        SourceEventMapper sourceEventMapper = new SourceEventMapper(sourceURL, authenticator);
         List<ProcessEvent> events = sourceEventMapper.getLatestEvents();
 
         events.stream().forEach(e -> postEventToChannel(e, channelMapper.getChannel(e)));

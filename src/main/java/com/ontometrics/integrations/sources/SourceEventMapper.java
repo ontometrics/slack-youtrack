@@ -1,9 +1,7 @@
 
 package com.ontometrics.integrations.sources;
 
-import com.ontometrics.integrations.jobs.Authenticator;
-import org.apache.http.client.fluent.Executor;
-import org.apache.http.client.fluent.Request;
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,22 +33,16 @@ public class SourceEventMapper {
 
     private Logger log = LoggerFactory.getLogger(SourceEventMapper.class);
     private URL url;
-    private Executor executor;
     private URL editsUrl;
     private XMLEventReader eventReader;
-    private Authenticator authenticator;
+
+    private InputStreamProvider inputStreamProvider;
 
     private ProcessEvent lastEvent;
 
-    /**
-     * @param url url to process
-     * @param authenticator authenticator
-     */
-    public SourceEventMapper(URL url, Authenticator authenticator) {
-        this.url = url;
-        this.authenticator = authenticator;
-        executor = Executor.newInstance();
-        authenticator.authenticate(executor);
+
+    public SourceEventMapper(InputStreamProvider inputStreamProvider) {
+        this.inputStreamProvider = inputStreamProvider;
     }
 
     /**
@@ -61,8 +53,9 @@ public class SourceEventMapper {
     public List<ProcessEvent> getLatestEvents(){
 
         List<ProcessEvent> events = new ArrayList<>();
+        InputStream inputStream = null;
         try {
-            InputStream inputStream = executor.execute(Request.Get(url.toExternalForm())).returnContent().asStream();
+            inputStream = inputStreamProvider.openStream();
             XMLInputFactory inputFactory = XMLInputFactory.newInstance();
             eventReader = inputFactory.createXMLEventReader(inputStream);
 
@@ -79,6 +72,8 @@ public class SourceEventMapper {
             }
         } catch (XMLStreamException | IOException e) {
             e.printStackTrace();
+        } finally {
+            IOUtils.closeQuietly(inputStream);
         }
         lastEvent = events.get(events.size()-1);
         return events;
