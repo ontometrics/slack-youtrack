@@ -1,6 +1,9 @@
 package com.ontometrics.integrations.jobs;
 
-import com.ontometrics.integrations.sources.*;
+import com.ontometrics.integrations.sources.ChannelMapper;
+import com.ontometrics.integrations.sources.InputStreamProvider;
+import com.ontometrics.integrations.sources.ProcessEvent;
+import com.ontometrics.integrations.sources.SourceEventMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -10,7 +13,6 @@ import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.net.URL;
 import java.util.List;
 
 /**
@@ -32,24 +34,15 @@ public class EventListenerImpl implements EventListener {
 
     /**
      * TODO rework, so it can authenticate into sourceUrl (we got http-error #401)
-     * @param sourceURL url to read list of events from
+     * @param inputStreamProvider url to read list of events from
      * @param channelMapper channelMapper
      */
-    public EventListenerImpl(URL sourceURL, ChannelMapper channelMapper) {
+    public EventListenerImpl(InputStreamProvider inputStreamProvider, ChannelMapper channelMapper) {
 
         this.channelMapper = channelMapper;
-        if(sourceURL == null || channelMapper == null) throw new IllegalArgumentException("You must provide sourceURL and channelMapper.");
+        if(inputStreamProvider == null || channelMapper == null) throw new IllegalArgumentException("You must provide sourceURL and channelMapper.");
 
-        ExternalResourceInputStreamProvider provider = new ExternalResourceInputStreamProvider(sourceURL.toExternalForm())
-                .authenticator(authenticator);
-        sourceEventMapper = new SourceEventMapper(provider);
-    }
-
-    public Authenticator authenticator;
-
-    public EventListenerImpl authenticator(Authenticator authenticator) {
-        this.authenticator = authenticator;
-        return this;
+        sourceEventMapper = new SourceEventMapper(inputStreamProvider);
     }
 
     @Override

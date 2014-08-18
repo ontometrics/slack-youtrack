@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
 public class SourceEventMapper {
 
     private Logger log = LoggerFactory.getLogger(SourceEventMapper.class);
-    private URL url;
+
     private URL editsUrl;
     private XMLEventReader eventReader;
 
@@ -71,11 +71,13 @@ public class SourceEventMapper {
                 }
             }
         } catch (XMLStreamException | IOException e) {
-            e.printStackTrace();
+            log.error("Failed to process XML", e);
         } finally {
             IOUtils.closeQuietly(inputStream);
         }
-        lastEvent = events.get(events.size()-1);
+        if (!events.isEmpty()) {
+            lastEvent = events.get(events.size() - 1);
+        }
         return events;
     }
 
