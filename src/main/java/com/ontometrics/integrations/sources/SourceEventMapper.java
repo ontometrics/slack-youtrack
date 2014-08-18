@@ -1,6 +1,7 @@
 
 package com.ontometrics.integrations.sources;
 
+import com.ontometrics.integrations.jobs.Authenticator;
 import org.apache.http.client.fluent.Executor;
 import org.apache.http.client.fluent.Request;
 import org.slf4j.Logger;
@@ -37,16 +38,19 @@ public class SourceEventMapper {
     private Executor executor;
     private URL editsUrl;
     private XMLEventReader eventReader;
+    private Authenticator authenticator;
 
     private ProcessEvent lastEvent;
 
     /**
-     * TODO Pass login/password
      * @param url url to process
+     * @param authenticator authenticator
      */
-    public SourceEventMapper(URL url) {
+    public SourceEventMapper(URL url, Authenticator authenticator) {
         this.url = url;
-        executor = Executor.newInstance().auth("username", "password");
+        this.authenticator = authenticator;
+        executor = Executor.newInstance();
+        authenticator.authenticate(executor);
     }
 
     /**

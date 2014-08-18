@@ -1,6 +1,7 @@
 package com.ontometrics.integrations.jobs;
 
 import com.ontometrics.integrations.sources.ChannelMapper;
+import org.apache.http.client.fluent.Executor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,6 +19,9 @@ import java.util.TimerTask;
  * WebContextJobStarter.java
  */
 public class WebContextJobStarter implements ServletContextListener {
+    public static final String YT_USERNAME = "slackbot";
+    public static final String YT_PASSWORD = "X9y-86A-bZN-93h";
+    public static final String YT_FEED_URL = "http://ontometrics.com:8085/_rss/issues";
     private static Logger logger = LoggerFactory.getLogger(WebContextJobStarter.class);
 
     private static final long EXECUTION_DELAY = 2 * 1000;
@@ -32,13 +36,18 @@ public class WebContextJobStarter implements ServletContextListener {
         timerTasks = new ArrayList<>(3);
         timer = new Timer();
         try {
-            scheduleTask(timer, new EventListenerImpl(new URL("http://ontometrics.com:8085/_rss/issues"), createChannelMapper()));
+            scheduleTask(timer, new EventListenerImpl(new URL(YT_FEED_URL),
+                    createChannelMapper()).authenticator(httpExecutor -> httpExecutor.auth(YT_USERNAME, YT_PASSWORD)));
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);
         }
-        //TODO start timer here
     }
 
+    /**
+     * Schedules a periodic task {@link EventListener#checkForNewEvents()}
+     * @param timer timer
+     * @param eventListener event listener
+     */
     private void scheduleTask(Timer timer, EventListener eventListener) {
         TimerTask timerTask = new EventTask(eventListener);
         timerTasks.add(timerTask);

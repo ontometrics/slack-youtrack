@@ -42,10 +42,17 @@ public class EventListenerImpl implements EventListener {
         if(sourceURL == null || channelMapper == null) throw new IllegalArgumentException("You must provide sourceURL and channelMapper.");
     }
 
+    public Authenticator authenticator;
+
+    public EventListenerImpl authenticator(Authenticator authenticator) {
+        this.authenticator = authenticator;
+        return this;
+    }
+
     @Override
     public int checkForNewEvents() {
         //get events
-        SourceEventMapper sourceEventMapper = new SourceEventMapper(sourceURL);
+        SourceEventMapper sourceEventMapper = new SourceEventMapper(sourceURL, authenticator);
         List<ProcessEvent> events = sourceEventMapper.getLatestEvents();
 
         events.stream().forEach(e -> postEventToChannel(e, channelMapper.getChannel(e)));

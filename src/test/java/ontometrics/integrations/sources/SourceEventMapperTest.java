@@ -96,7 +96,7 @@ public class SourceEventMapperTest {
     @Test
     public void testThatWeCanExtractYouTrackEvent() throws IOException, XMLStreamException {
         
-        SourceEventMapper sourceEventMapper = new SourceEventMapper(sourceUrl);
+        SourceEventMapper sourceEventMapper = new SourceEventMapper(sourceUrl, authenticator);
         List<ProcessEvent> events = sourceEventMapper.getLatestEvents();
         
         ProcessEvent firstEvent = events.get(0);
@@ -111,7 +111,7 @@ public class SourceEventMapperTest {
 
     @Test
     public void testThatLastSeenEventTracked(){
-        SourceEventMapper sourceEventMapper = new SourceEventMapper(sourceUrl);
+        SourceEventMapper sourceEventMapper = new SourceEventMapper(sourceUrl, authenticator);
         List<ProcessEvent> events = sourceEventMapper.getLatestEvents();
 
         assertThat(sourceEventMapper.getLastEvent(), is(events.get(events.size()-1)));
@@ -120,7 +120,7 @@ public class SourceEventMapperTest {
     @Test
     public void testThatEventsStreamProcessed(){
 
-        SourceEventMapper sourceEventMapper = new SourceEventMapper(sourceUrl);
+        SourceEventMapper sourceEventMapper = new SourceEventMapper(sourceUrl, authenticator);
         List<ProcessEvent> events = sourceEventMapper.getLatestEvents();
 
         ChannelMapper channelMapper = new ChannelMapper.Builder()
@@ -170,7 +170,7 @@ public class SourceEventMapperTest {
 
     @Test
     public void testThatWeCanGetMostRecentChanges(){
-        SourceEventMapper sourceEventMapper = new SourceEventMapper(sourceUrl);
+        SourceEventMapper sourceEventMapper = new SourceEventMapper(sourceUrl, authenticator);
         sourceEventMapper.setEditsUrl(editsUrl);
         List<ProcessEventChange> recentChanges = sourceEventMapper.getLatestChanges();
 
