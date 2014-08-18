@@ -35,7 +35,7 @@ public class WebContextJobStarter implements ServletContextListener {
     public void contextInitialized(ServletContextEvent servletContextEvent) {
         logger.info("Started up");
         initialize();
-        scheduleTasks();
+//        scheduleTasks();
     }
 
     /**
