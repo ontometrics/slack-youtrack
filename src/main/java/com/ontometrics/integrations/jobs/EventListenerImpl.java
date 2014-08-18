@@ -1,11 +1,10 @@
 package com.ontometrics.integrations.jobs;
 
+import com.ontometrics.integrations.configuration.ConfigurationFactory;
 import com.ontometrics.integrations.sources.ChannelMapper;
 import com.ontometrics.integrations.sources.InputStreamProvider;
 import com.ontometrics.integrations.sources.ProcessEvent;
 import com.ontometrics.integrations.sources.SourceEventMapper;
-import com.ontometrics.integrations.configuration.ConfigurationFactory;
-import com.ontometrics.integrations.sources.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
