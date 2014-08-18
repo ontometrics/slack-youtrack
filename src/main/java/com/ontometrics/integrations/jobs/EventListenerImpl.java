@@ -4,6 +4,8 @@ import com.ontometrics.integrations.sources.ChannelMapper;
 import com.ontometrics.integrations.sources.InputStreamProvider;
 import com.ontometrics.integrations.sources.ProcessEvent;
 import com.ontometrics.integrations.sources.SourceEventMapper;
+import com.ontometrics.integrations.configuration.ConfigurationFactory;
+import com.ontometrics.integrations.sources.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,7 +24,6 @@ import java.util.List;
 public class EventListenerImpl implements EventListener {
     private static final Logger log = LoggerFactory.getLogger(EventListenerImpl.class);
 
-    public static final String TOKEN = "xoxp-2427064028-2427064030-2467602952-3d5dc6";
     public static final String TOKEN_KEY = "token";
     public static final String TEXT_KEY = "text";
     public static final String CHANNEL_KEY = "channel";
@@ -59,7 +60,7 @@ public class EventListenerImpl implements EventListener {
         Client client = ClientBuilder.newClient();
 
         WebTarget slackApi = client.target(SLACK_URL).path(CHANNEL_POST_PATH)
-                .queryParam(TOKEN_KEY, TOKEN)
+                .queryParam(TOKEN_KEY, ConfigurationFactory.get().getString("SLACK_API_KEY"))
                 .queryParam(TEXT_KEY, getText(event))
                 .queryParam(CHANNEL_KEY, "#" + channel);
 

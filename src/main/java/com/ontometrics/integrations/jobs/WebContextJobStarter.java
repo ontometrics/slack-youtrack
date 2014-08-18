@@ -1,9 +1,11 @@
 package com.ontometrics.integrations.jobs;
 
+import com.ontometrics.integrations.configuration.ConfigurationFactory;
 import com.ontometrics.integrations.sources.ChannelMapper;
 import com.ontometrics.integrations.sources.ExternalResourceInputStreamProvider;
 import com.ontometrics.integrations.sources.InputStreamProvider;
 import org.apache.http.client.fluent.Executor;
+import org.apache.commons.configuration.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,8 +23,6 @@ import java.util.TimerTask;
  * WebContextJobStarter.java
  */
 public class WebContextJobStarter implements ServletContextListener {
-    public static final String YT_USERNAME = "slackbot";
-    public static final String YT_PASSWORD = "X9y-86A-bZN-93h";
     public static final String YT_FEED_URL = "http://ontometrics.com:8085/_rss/issues";
     private static Logger logger = LoggerFactory.getLogger(WebContextJobStarter.class);
 
@@ -35,16 +35,28 @@ public class WebContextJobStarter implements ServletContextListener {
     @Override
     public void contextInitialized(ServletContextEvent servletContextEvent) {
         logger.info("Started up");
-        timerTasks = new ArrayList<>(3);
-        timer = new Timer();
+        initialize();
+        scheduleTasks();
+    }
+
+    private void scheduleTasks() {
         try {
             InputStreamProvider inputStreamProvider = new ExternalResourceInputStreamProvider(
                     new URL(YT_FEED_URL).toExternalForm())
                 .authenticator(httpExecutor -> httpExecutor.auth(YT_USERNAME, YT_PASSWORD));
             scheduleTask(timer, new EventListenerImpl(inputStreamProvider, createChannelMapper()));
+            Configuration configuration = ConfigurationFactory.get();
+            scheduleTask(timer, new EventListenerImpl(new URL(YT_FEED_URL),
+                    createChannelMapper()).authenticator(httpExecutor -> httpExecutor.auth(configuration
+                    .getString("YOUTRACK_USERNAME"), configuration.getString("YOUTRACK_PASSWORD"))));
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private void initialize() {
+        timerTasks = new ArrayList<>(3);
+        timer = new Timer();
     }
 
     /**
