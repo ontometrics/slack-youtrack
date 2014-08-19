@@ -32,20 +32,12 @@ public class EventProcessorConfigurationTest {
     public void testThatLastEventChangeDateIsStored() throws ConfigurationException {
         assertThat(configuration.loadLastProcessedEvent(), nullValue());
 
-        Calendar eventCalendar = Calendar.getInstance();
-        eventCalendar.set(Calendar.HOUR_OF_DAY, 17);
-        eventCalendar.set(Calendar.YEAR, 2011);
-        eventCalendar.set(Calendar.MONTH, 1);
-        eventCalendar.set(Calendar.DAY_OF_MONTH, 2);
 
         Calendar lastEventChangeTime = Calendar.getInstance();
-        lastEventChangeTime.set(Calendar.HOUR_OF_DAY, 10);
-        lastEventChangeTime.set(Calendar.YEAR, 2012);
-        lastEventChangeTime.set(Calendar.MONTH, 7);
-        lastEventChangeTime.set(Calendar.DAY_OF_MONTH, 21);
+        lastEventChangeTime.add(Calendar.MINUTE, -2);
 
         ProcessEvent event1 = new ProcessEvent.Builder().link("http://ontometrics.com:8085/issue/ASOC-148")
-                .published(eventCalendar.getTime()).title("ASOC-148: New Embedding requirement").build();
+                .published(new Date()).title("ASOC-148: New Embedding requirement").build();
 
         configuration.saveEventChangeDate(event1, lastEventChangeTime.getTime());
 
@@ -57,7 +49,7 @@ public class EventProcessorConfigurationTest {
         assertThat(storedChangeDate, is(lastEventChangeTime.getTime()));
 
         ProcessEvent event2 = new ProcessEvent.Builder().link("http://ontometrics.com:8085/issue/ASOC-149")
-                .published(eventCalendar.getTime()).title("ASOC-149: New Embedding requirement").build();
+                .published(new Date()).title("ASOC-149: New Embedding requirement").build();
         assertThat(configuration.getEventChangeDate(event2), nullValue());
 
     }
