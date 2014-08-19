@@ -1,4 +1,4 @@
-package com.ontometrics.integrations.sources;
+package com.ontometrics.integrations.events;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;

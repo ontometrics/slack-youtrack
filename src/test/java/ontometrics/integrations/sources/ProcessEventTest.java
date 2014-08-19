@@ -1,12 +1,11 @@
 package ontometrics.integrations.sources;
 
-import com.ontometrics.integrations.sources.ProcessEvent;
+import com.ontometrics.integrations.events.ProcessEvent;
 import org.junit.Test;
 
 import java.util.Date;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.*;
 import static org.junit.Assert.assertThat;
 
 public class ProcessEventTest {

@@ -1,7 +1,7 @@
 package ontometrics.integrations.sources;
 
-import com.ontometrics.integrations.sources.ProcessEvent;
-import com.ontometrics.integrations.sources.ProcessEventChange;
+import com.ontometrics.integrations.events.ProcessEvent;
+import com.ontometrics.integrations.events.ProcessEventChange;
 import com.ontometrics.integrations.sources.SourceEventMapper;
 import com.ontometrics.util.DateBuilder;
 import ontometrics.test.util.TestUtil;
@@ -117,7 +117,7 @@ public class SourceEventMapperTest {
         SourceEventMapper sourceEventMapper = new SourceEventMapper(UrlResourceProvider.instance(sourceUrl));
         List<ProcessEvent> events = sourceEventMapper.getLatestEvents();
 
-        assertThat(sourceEventMapper.getLastEvent(), is(events.get(events.size()-1)));
+        assertThat(sourceEventMapper.getLastEvent(), is(events.get(events.size() - 1)));
     }
 
     @Test

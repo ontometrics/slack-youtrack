@@ -18,29 +18,26 @@ import java.net.URL;
 public class ExtractorUtilTests {
     private Logger log = LoggerFactory.getLogger(ExtractorUtilTests.class);
     private URL changesUrl;
+    private XMLEventReader reader;
 
     @Before
-    public void setup(){
+    public void setup() throws IOException, XMLStreamException {
         changesUrl = TestUtil.getFileAsURL("/feeds/issue-changes.xml");
+        InputStream inputStream = changesUrl.openStream();
+        XMLInputFactory inputFactory = XMLInputFactory.newInstance();
+        reader = inputFactory.createXMLEventReader(inputStream);
     }
 
     @Test
     public void canExtractChangesAsNestedOperations() throws IOException, XMLStreamException {
-        InputStream inputStream = changesUrl.openStream();
-        XMLInputFactory inputFactory = XMLInputFactory.newInstance();
-        XMLEventReader reader = inputFactory.createXMLEventReader(inputStream);
-
         int elementCounter = 0;
         String currentElementName = "";
         while (reader.hasNext()) {
-            log.info("processing element: {}", elementCounter++);
             XMLEvent event = reader.nextEvent();
             if (event.getEventType()== XMLStreamConstants.START_ELEMENT){
                 currentElementName = event.asStartElement().getName().getLocalPart();
-                if (currentElementName.equals("change")){
-                    extractChange(event);
-                } else {
-                    log.info("no handling for element type: {}", currentElementName);
+                if (currentElementName.equals("changes")){
+                    extractChanges(event);
                 }
             }
 
@@ -48,8 +45,19 @@ public class ExtractorUtilTests {
 
     }
 
-    private void extractChange(XMLEvent event) {
-        log.info("change extraction on: {}", event);
+    private void extractChanges(XMLEvent event) {
+        log.info("changes extraction on: {}", event);
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(buildIssueLink());
+        stringBuilder.append(extractIndividualChanges());
+    }
+
+    private String extractIndividualChanges() {
+        return "";
+    }
+
+    private String buildIssueLink() {
+        return "";
     }
 
     @Test

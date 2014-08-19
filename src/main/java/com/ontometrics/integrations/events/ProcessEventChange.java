@@ -1,4 +1,4 @@
-package com.ontometrics.integrations.sources;
+package com.ontometrics.integrations.events;
 
 import java.util.Date;
 

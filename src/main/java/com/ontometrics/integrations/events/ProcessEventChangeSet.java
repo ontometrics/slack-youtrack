@@ -1,4 +1,4 @@
-package com.ontometrics.integrations.sources;
+package com.ontometrics.integrations.events;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -8,16 +8,18 @@ import java.util.List;
  * Created by Rob on 7/23/14.
  * Copyright (c) ontometrics, 2014 All Rights Reserved
  */
-public class EditSet {
+public class ProcessEventChangeSet {
 
     private final Date changedOn;
     private final String editor;
+    private final Issue issue;
     private final List<ProcessEventChange> changes;
 
-    public EditSet(Builder builder) {
+    public ProcessEventChangeSet(Builder builder) {
         changedOn = builder.changedOn;
         editor = builder.editor;
         changes = builder.changes;
+        issue = builder.issue;
     }
 
     public static class Builder {
@@ -25,6 +27,12 @@ public class EditSet {
         private String editor;
         private Date changedOn;
         private List<ProcessEventChange> changes;
+        private Issue issue;
+
+        public Builder issue(Issue issue){
+            this.issue = issue;
+            return this;
+            }
 
         public Builder editor(String editor){
             this.editor = editor;
@@ -47,10 +55,14 @@ public class EditSet {
             return this;
         }
 
-        public EditSet build(){
-            return new EditSet(this);
+        public ProcessEventChangeSet build(){
+            return new ProcessEventChangeSet(this);
         }
 
+    }
+
+    public Issue getIssue() {
+        return issue;
     }
 
     public Date getChangedOn() {
@@ -67,8 +79,9 @@ public class EditSet {
 
     @Override
     public String toString() {
-        return "EditSet{" +
-                "changedOn=" + changedOn +
+        return "ProcessEventChangeSet{" +
+                "issue=" + issue +
+                ", changedOn=" + changedOn +
                 ", editor='" + editor + '\'' +
                 ", changes=" + changes +
                 '}';

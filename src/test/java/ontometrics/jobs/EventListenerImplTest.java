@@ -4,7 +4,7 @@ import com.ontometrics.integrations.configuration.EventProcessorConfiguration;
 import com.ontometrics.integrations.jobs.EventListenerImpl;
 import com.ontometrics.integrations.sources.ChannelMapper;
 import com.ontometrics.integrations.sources.InputStreamProvider;
-import com.ontometrics.integrations.sources.ProcessEvent;
+import com.ontometrics.integrations.events.ProcessEvent;
 import org.apache.commons.configuration.ConfigurationException;
 import org.junit.Test;
 

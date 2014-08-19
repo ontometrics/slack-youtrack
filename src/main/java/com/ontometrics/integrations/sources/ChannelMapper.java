@@ -1,5 +1,6 @@
 package com.ontometrics.integrations.sources;
 
+import com.ontometrics.integrations.events.ProcessEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

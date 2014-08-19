@@ -1,6 +1,6 @@
 package com.ontometrics.integrations.configuration;
 
-import com.ontometrics.integrations.sources.ProcessEvent;
+import com.ontometrics.integrations.events.ProcessEvent;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
 
