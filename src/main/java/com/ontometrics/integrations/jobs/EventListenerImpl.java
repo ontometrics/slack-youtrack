@@ -38,7 +38,6 @@ public class EventListenerImpl implements EventListener {
     public static final String CHANNEL_POST_PATH = "chat.postMessage";
 
     /**
-     * TODO rework, so it can authenticate into sourceUrl (we got http-error #401)
      * @param inputStreamProvider url to read list of events from
      * @param channelMapper channelMapper
      */
@@ -73,10 +72,10 @@ public class EventListenerImpl implements EventListener {
 
     private void postEventChangesToStream(ProcessEvent event, List<ProcessEventChange> changes, String channel) {
         if (changes.isEmpty()) {
-            postMessageToChannel(event, channel, getNewIssueCreatedMessage(event));
+            postMessageToChannel(event, channel, getIssueLink(event));
         } else {
             groupChangesByUpdater(changes).forEach((updater, processEventChanges) -> {
-                postMessageToChannel(event, channel, buildChangesMessage(updater, processEventChanges));
+                postMessageToChannel(event, channel, buildChangesMessage(updater, event, processEventChanges));
             });
             EventProcessorConfiguration.instance()
                     .saveEventChangeDate(event, changes.get(changes.size() - 1).getUpdated());
@@ -94,15 +93,26 @@ public class EventListenerImpl implements EventListener {
      * @param processEventChanges list of {@link com.ontometrics.integrations.sources.ProcessEventChange}
      * @return message about list of changes from updater
      */
-    private String buildChangesMessage(String updater, List<ProcessEventChange> processEventChanges) {
-        String message = "*" + updater + "* : ";
-        //todo: update for case when change field is not available
-        for (ProcessEventChange change : processEventChanges) {
-            message += (change.getField() + ": ");
-            if (StringUtils.isNotBlank(change.getPriorValue()) && StringUtils.isNotBlank(change.getCurrentValue())) {
-                message += change.getPriorValue() + "->" + change.getCurrentValue();
-            } else if (StringUtils.isNotBlank(change.getCurrentValue())) {
-                message += change.getCurrentValue();
+    private String buildChangesMessage(String updater, ProcessEvent event, List<ProcessEventChange> processEventChanges) {
+        String message = "*" + updater + "* updated "+getIssueLink(event)+"\n";
+
+        for (int i = 0; i < processEventChanges.size(); i++) {
+            ProcessEventChange change = processEventChanges.get(i);
+            if (StringUtils.isNotBlank(change.getField())) {
+                message += (change.getField() + ": ");
+                if (StringUtils.isNotBlank(change.getPriorValue()) && StringUtils.isNotBlank(change.getCurrentValue())) {
+                    message += change.getPriorValue() + " -> " + change.getCurrentValue();
+                } else if (StringUtils.isNotBlank(change.getCurrentValue())) {
+                    message += change.getCurrentValue();
+                }
+
+                if (processEventChanges.size() - 1 < i) {
+                    message +="\n";
+                }
+            } else {
+                //TODO: review possible use cases and make sure we output message relevant to change event
+                //it could be the case with "LinkChangeField"
+//                message += " ?";
             }
         }
         return message;
@@ -132,7 +142,7 @@ public class EventListenerImpl implements EventListener {
 
     }
 
-    private String getNewIssueCreatedMessage(ProcessEvent event){
+    private String getIssueLink(ProcessEvent event){
         StringBuilder builder = new StringBuilder();
         String title = event.getTitle();
         title = title.replace(event.getID(), "");
