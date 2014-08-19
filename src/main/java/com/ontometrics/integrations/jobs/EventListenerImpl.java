@@ -55,7 +55,8 @@ public class EventListenerImpl implements EventListener {
 
     /**
      * Load the list of latest-events (list of updated issues since last time the {@link #checkForNewEvents()} was called.
-     * Note: items in this list guarantee that there is no items with same ISSUE-ID exists
+     * Note: items in this list guarantee that there is no items with same ISSUE-ID exists, they are ordered from most oldest one (first item) to most recent one (last item)
+     *
      * For each issue (@link ProcessEvent}) in this list the list of issue change events {@link ProcessEventChange}
      * is loaded. This list will only include the list of updates which were created after {@link #getLastEventChangeDate(com.ontometrics.integrations.events.ProcessEvent)}
      * The list of updates for each issue will be grouped by {@link com.ontometrics.integrations.events.ProcessEventChange#getUpdater()}
@@ -87,9 +88,10 @@ public class EventListenerImpl implements EventListener {
     }
 
     /**
-     * Group the lit of events by {@link com.ontometrics.integrations.events.ProcessEventChange#getUpdater()}
-     * For each group app will generate and post message to external system (slack).
-     * Message for each group (group of updates to the issue by particular YouTrack user) is generated with {@link #buildChangesMessage(String, com.ontometrics.integrations.events.ProcessEvent, java.util.List)}
+     * Group the list of events by {@link com.ontometrics.integrations.events.ProcessEventChange#getUpdater()}
+     * For each group app will generate and post message to external system (Slack).
+     * Message for each group (group of updates to the issue by particular YouTrack user) is generated with
+     * {@link #buildChangesMessage(String, com.ontometrics.integrations.events.ProcessEvent, java.util.List)}
      *
      * @param event updated issue
      * @param changes list of change events for particular issue
