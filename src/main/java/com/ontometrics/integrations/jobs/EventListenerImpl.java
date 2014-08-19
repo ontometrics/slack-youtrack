@@ -4,6 +4,7 @@ import com.ontometrics.integrations.configuration.ConfigurationFactory;
 import com.ontometrics.integrations.configuration.EventProcessorConfiguration;
 import com.ontometrics.integrations.sources.*;
 import org.apache.commons.configuration.ConfigurationException;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -89,13 +90,22 @@ public class EventListenerImpl implements EventListener {
     }
 
     /**
-     * @param updater
+     * @param updater originator of the change
      * @param processEventChanges list of {@link com.ontometrics.integrations.sources.ProcessEventChange}
      * @return message about list of changes from updater
      */
     private String buildChangesMessage(String updater, List<ProcessEventChange> processEventChanges) {
-
-        return null;
+        String message = "*" + updater + "* : ";
+        //todo: update for case when change field is not available
+        for (ProcessEventChange change : processEventChanges) {
+            message += (change.getField() + ": ");
+            if (StringUtils.isNotBlank(change.getPriorValue()) && StringUtils.isNotBlank(change.getCurrentValue())) {
+                message += change.getPriorValue() + "->" + change.getCurrentValue();
+            } else if (StringUtils.isNotBlank(change.getCurrentValue())) {
+                message += change.getCurrentValue();
+            }
+        }
+        return message;
     }
 
     private Map<String, List<ProcessEventChange>> groupChangesByUpdater(List<ProcessEventChange> changes) {
