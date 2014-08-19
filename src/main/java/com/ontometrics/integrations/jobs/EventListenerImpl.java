@@ -53,6 +53,18 @@ public class EventListenerImpl implements EventListener {
         sourceEventMapper.setLastEvent(EventProcessorConfiguration.instance().loadLastProcessedEvent());
     }
 
+    /**
+     * Load the list of latest-events (list of updated issues since last time the {@link #checkForNewEvents()} was called.
+     * Note: items in this list guarantee that there is no items with same ISSUE-ID exists
+     * For each issue (@link ProcessEvent}) in this list the list of issue change events {@link ProcessEventChange}
+     * is loaded. This list will only include the list of updates which were created after {@link #getLastEventChangeDate(com.ontometrics.integrations.events.ProcessEvent)}
+     * The list of updates for each issue will be grouped by {@link com.ontometrics.integrations.events.ProcessEventChange#getUpdater()}
+     * and for each group (group of updates by user) app will generate and post message to external system (slack).
+     * Message for each group (group of updates to the issue by particular YouTrack user) is generated with {@link #buildChangesMessage(String, com.ontometrics.integrations.events.ProcessEvent, java.util.List)}
+     *
+     * @return number of processed events.
+     * @throws IOException
+     */
     @Override
     public int checkForNewEvents() throws IOException {
         //get events
@@ -62,7 +74,9 @@ public class EventListenerImpl implements EventListener {
         try {
             events.stream().forEach(e -> {
                 processedEventsCount.incrementAndGet();
+                //load list of updates (using REST service of YouTrack)
                 List<ProcessEventChange> changes = sourceEventMapper.getChanges(e, getLastEventChangeDate(e));
+
                 postEventChangesToStream(e, changes, channelMapper.getChannel(e));
             });
         } catch (Exception ex) {
@@ -72,6 +86,15 @@ public class EventListenerImpl implements EventListener {
         return processedEventsCount.get();
     }
 
+    /**
+     * Group the lit of events by {@link com.ontometrics.integrations.events.ProcessEventChange#getUpdater()}
+     * For each group app will generate and post message to external system (slack).
+     * Message for each group (group of updates to the issue by particular YouTrack user) is generated with {@link #buildChangesMessage(String, com.ontometrics.integrations.events.ProcessEvent, java.util.List)}
+     *
+     * @param event updated issue
+     * @param changes list of change events for particular issue
+     * @param channel slack channel
+     */
     private void postEventChangesToStream(ProcessEvent event, List<ProcessEventChange> changes, String channel) {
         if (changes.isEmpty()) {
             postMessageToChannel(event, channel, getIssueLink(event));
@@ -128,6 +151,12 @@ public class EventListenerImpl implements EventListener {
         return EventProcessorConfiguration.instance().getEventChangeDate(event);
     }
 
+    /**
+     * Post a "message" to a Slack channel identified by "channel"
+     * @param event event
+     * @param channel name of slack channel
+     * @param message text of message to post
+     */
     private void postMessageToChannel(ProcessEvent event, String channel, String message){
         log.info("posting event {} message {} .", event.toString(), message);
         Client client = ClientBuilder.newClient();
