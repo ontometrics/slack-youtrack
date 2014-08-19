@@ -52,6 +52,11 @@ public class EventProcessorConfiguration {
         //todo implement
     }
 
+    public Date getEventChangeDate(ProcessEvent event) {
+        //todo implement
+        return null;
+    }
+
     public void saveLastProcessEvent(ProcessEvent processEvent) throws ConfigurationException {
         lastEventConfiguration.setProperty(LAST_EVENT_LINK, processEvent.getLink());
         lastEventConfiguration.setProperty(LAST_EVENT_PUBLISHED, processEvent.getPublishDate().getTime());

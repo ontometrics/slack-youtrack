@@ -2,10 +2,7 @@ package com.ontometrics.integrations.jobs;
 
 import com.ontometrics.integrations.configuration.ConfigurationFactory;
 import com.ontometrics.integrations.configuration.EventProcessorConfiguration;
-import com.ontometrics.integrations.sources.ChannelMapper;
-import com.ontometrics.integrations.sources.InputStreamProvider;
-import com.ontometrics.integrations.sources.ProcessEvent;
-import com.ontometrics.integrations.sources.SourceEventMapper;
+import com.ontometrics.integrations.sources.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,6 +12,7 @@ import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -53,8 +51,21 @@ public class EventListenerImpl implements EventListener {
         //get events
         List<ProcessEvent> events = sourceEventMapper.getLatestEvents();
 
-        events.stream().forEach(e -> postEventToChannel(e, channelMapper.getChannel(e)));
+        events.stream().forEach(e -> {
+            List<ProcessEventChange> changes = sourceEventMapper.getChanges(e, getLastEventChangeDate(e));
+            postEventChangesToStream(e, changes, channelMapper.getChannel(e));
+        });
+
         return events.size();
+    }
+
+    private void postEventChangesToStream(ProcessEvent e, List<ProcessEventChange> changes, String channel) {
+        //TODO implement posting of event-changes to stream and update last-event changes date
+    }
+
+    private Date getLastEventChangeDate(ProcessEvent e) {
+        //TODO implement
+        return null;
     }
 
     private void postEventToChannel(ProcessEvent event, String channel){

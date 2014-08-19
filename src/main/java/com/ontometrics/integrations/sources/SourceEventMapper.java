@@ -50,7 +50,7 @@ public class SourceEventMapper {
      */
     public List<ProcessEvent> getLatestEvents(){
 
-        List<ProcessEvent> events = new ArrayList<>();
+        LinkedList<ProcessEvent> events = new LinkedList<>();
         InputStream inputStream = null;
         try {
             inputStream = inputStreamProvider.openStream();
@@ -70,7 +70,7 @@ public class SourceEventMapper {
                                 //we already processed this event before, stopping iteration
                                 return events;
                             }
-                            events.add(event);
+                            events.addFirst(event);
                         }
                 }
             }
@@ -82,6 +82,7 @@ public class SourceEventMapper {
         if (!events.isEmpty()) {
             lastEvent = events.get(events.size() - 1);
         }
+
         return events;
     }
 
@@ -97,7 +98,11 @@ public class SourceEventMapper {
                 .collect(Collectors.toList());
     }
 
-    private List<ProcessEventChange> getChanges(ProcessEvent e) {
+    public List<ProcessEventChange> getChanges(ProcessEvent e) {
+        return getChanges(e, null);
+    }
+
+    public List<ProcessEventChange> getChanges(ProcessEvent e, Date upToDate) {
         List<ProcessEventChange> changes = new ArrayList<>();
         try {
             URL changesUrl = buildEventChangesUrl(e.getID());
@@ -154,7 +159,12 @@ public class SourceEventMapper {
                                     .currentValue(newValue)
                                     .build();
                             log.info("change: {}", change);
-                            changes.add(change);
+                            if (upToDate == null || change.getUpdated().after(upToDate)) {
+                                changes.add(change);
+                            } else {
+                                //we do not need to iterate through other changes, they are older than upToDate
+                                return changes;
+                            }
                             processingChange = false;
                         }
                         break;
