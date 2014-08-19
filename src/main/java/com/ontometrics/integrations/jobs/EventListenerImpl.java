@@ -72,10 +72,11 @@ public class EventListenerImpl implements EventListener {
 
     private void postEventChangesToStream(ProcessEvent event, List<ProcessEventChange> changes, String channel) {
         if (changes.isEmpty()) {
-            postEventToChannel(event, channel);
+            postMessageToChannel(event, channel, getNewIssueCreatedMessage(event));
         } else {
-            Map<String, List<ProcessEventChange>> changesGroupedByUpdater = groupChangesByUpdater(changes);
-            //todo: make a post based on the collection of changes
+            groupChangesByUpdater(changes).forEach((updater, processEventChanges) -> {
+                postMessageToChannel(event, channel, buildChangesMessage(updater, processEventChanges));
+            });
             EventProcessorConfiguration.instance()
                     .saveEventChangeDate(event, changes.get(changes.size() - 1).getUpdated());
         }
@@ -87,6 +88,16 @@ public class EventListenerImpl implements EventListener {
         }
     }
 
+    /**
+     * @param updater
+     * @param processEventChanges list of {@link com.ontometrics.integrations.sources.ProcessEventChange}
+     * @return message about list of changes from updater
+     */
+    private String buildChangesMessage(String updater, List<ProcessEventChange> processEventChanges) {
+
+        return null;
+    }
+
     private Map<String, List<ProcessEventChange>> groupChangesByUpdater(List<ProcessEventChange> changes) {
         return changes.stream().collect(Collectors.groupingBy(ProcessEventChange::getUpdater));
     }
@@ -95,13 +106,13 @@ public class EventListenerImpl implements EventListener {
         return EventProcessorConfiguration.instance().getEventChangeDate(event);
     }
 
-    private void postEventToChannel(ProcessEvent event, String channel){
-        log.info("posting event {}.", event.toString());
+    private void postMessageToChannel(ProcessEvent event, String channel, String message){
+        log.info("posting event {} message {} .", event.toString(), message);
         Client client = ClientBuilder.newClient();
 
         WebTarget slackApi = client.target(SLACK_URL).path(CHANNEL_POST_PATH)
                 .queryParam(TOKEN_KEY, ConfigurationFactory.get().getString("SLACK_AUTH_TOKEN"))
-                .queryParam(TEXT_KEY, getText(event))
+                .queryParam(TEXT_KEY, message)
                 .queryParam(CHANNEL_KEY, "#" + channel);
 
         Invocation.Builder invocationBuilder = slackApi.request(MediaType.APPLICATION_JSON);
@@ -111,7 +122,7 @@ public class EventListenerImpl implements EventListener {
 
     }
 
-    private String getText(ProcessEvent event){
+    private String getNewIssueCreatedMessage(ProcessEvent event){
         StringBuilder builder = new StringBuilder();
         String title = event.getTitle();
         title = title.replace(event.getID(), "");
