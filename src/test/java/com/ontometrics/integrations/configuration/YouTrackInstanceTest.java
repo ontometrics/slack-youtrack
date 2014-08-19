@@ -4,6 +4,9 @@ import com.ontometrics.integrations.events.Issue;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.*;
 
@@ -18,24 +21,25 @@ public class YouTrackInstanceTest {
 
     @Test
     public void testGetBaseUrl() throws Exception {
-        assertThat(youTrackInstance.getBaseUrl(), is("http://ontometrics.com:8085"));
+        assertThat(youTrackInstance.getBaseUrl(), is(new URL("http://ontometrics.com:8085")));
     }
 
     @Test
     public void testGetFeedUrl() throws Exception {
-        assertThat(youTrackInstance.getFeedUrl(), is("http://ontometrics.com:8085/_rss/issues"));
+        assertThat(youTrackInstance.getFeedUrl(), is(new URL("http://ontometrics.com:8085/_rss/issues")));
     }
 
     @Test
     public void testGetChangesUrl() throws Exception {
-        assertThat(youTrackInstance.getChangesUrl(new Issue.Builder().projectPrefix("ASOC").id(505).build()), is("http://ontometrics.com:8085/rest/issue/ASOC-505/changes"));
+        assertThat(youTrackInstance.getChangesUrl(new Issue.Builder().projectPrefix("ASOC").id(505).build()),
+                is(new URL("http://ontometrics.com:8085/rest/issue/ASOC-505/changes")));
     }
 
     @Test
-    public void testThatNoPortWorks() {
+    public void testThatNoPortWorks() throws MalformedURLException {
         youTrackInstance = new YouTrackInstance.Builder().baseUrl("http://ontometrics.com").build();
 
-        assertThat(youTrackInstance.getBaseUrl(), is("http://ontometrics.com"));
+        assertThat(youTrackInstance.getBaseUrl(), is(new URL("http://ontometrics.com")));
     }
 
 }

@@ -17,6 +17,7 @@ public class ProcessEvent {
 
     private static final String KEY_FIELD_SEPARATOR = "::";
 
+    private final Issue issue;
     private final String title;
     private final String description;
     private final Date publishDate;
@@ -24,7 +25,7 @@ public class ProcessEvent {
     private String issueID;
 
     public ProcessEvent(Builder builder) {
-        issueID = builder.title.substring(0, builder.title.indexOf(":"));
+        issue = builder.issue;
         title = builder.title;
         description = builder.description;
         publishDate = builder.publishDate;
@@ -37,6 +38,12 @@ public class ProcessEvent {
         private String description;
         private Date publishDate;
         private String link;
+        private Issue issue;
+
+        public Builder issue(Issue issue){
+            this.issue = issue;
+            return this;
+            }
 
         public Builder title(String title){
             this.title = title;
@@ -63,8 +70,8 @@ public class ProcessEvent {
         }
     }
 
-    public String getID() {
-        return issueID;
+    public Issue getIssue() {
+        return issue;
     }
 
     public String getTitle() {

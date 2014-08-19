@@ -1,11 +1,12 @@
 package ontometrics.integrations.sources;
 
+import com.ontometrics.integrations.configuration.IssueTracker;
+import com.ontometrics.integrations.events.Issue;
 import com.ontometrics.integrations.events.ProcessEvent;
 import com.ontometrics.integrations.events.ProcessEventChange;
 import com.ontometrics.integrations.sources.SourceEventMapper;
 import com.ontometrics.util.DateBuilder;
 import ontometrics.test.util.TestUtil;
-import ontometrics.test.util.UrlResourceProvider;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -27,10 +28,7 @@ import java.net.URL;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.TimeZone;
+import java.util.*;
 
 import static java.util.Calendar.JULY;
 import static org.hamcrest.CoreMatchers.*;
@@ -40,25 +38,38 @@ public class SourceEventMapperTest {
 
     private static final Logger log = LoggerFactory.getLogger(SourceEventMapperTest.class);
 
-    private URL sourceUrl;
-    private URL editsUrl;
+    private IssueTracker mockYouTrackInstance;
 
     @Before
     public void setup(){
-        sourceUrl = TestUtil.getFileAsURL("/feeds/issues-feed-rss.xml");
-        editsUrl = TestUtil.getFileAsURL("/feeds/issue-changes.xml");
+        mockYouTrackInstance = new IssueTracker(){
+            @Override
+            public URL getBaseUrl() {
+                return null;
+            }
+
+            @Override
+            public URL getFeedUrl() {
+                return TestUtil.getFileAsURL("/feeds/issues-feed-rss.xml");
+            }
+
+            @Override
+            public URL getChangesUrl(Issue issue) {
+                return TestUtil.getFileAsURL("/feeds/issue-changes.xml");
+            }
+        };
     }
 
     @Test
     public void testGettingLocalFileAsUrlWorks(){
-        assertThat(sourceUrl, notNullValue());
+        assertThat(mockYouTrackInstance.getFeedUrl(), notNullValue());
     }
 
     @Test
     public void testThatWeCanReadFromFile() throws IOException, XMLStreamException {
         int startElementCount = 0;
         int endElementCount = 0;
-        InputStream inputStream = sourceUrl.openStream();
+        InputStream inputStream = mockYouTrackInstance.getFeedUrl().openStream();
         XMLInputFactory inputFactory = XMLInputFactory.newInstance();
         XMLStreamReader reader = inputFactory.createXMLStreamReader(inputStream);
 
@@ -79,7 +90,7 @@ public class SourceEventMapperTest {
 
     @Test
     public void testThatWeCanReadAsEventStream() throws IOException, XMLStreamException {
-        InputStream inputStream = sourceUrl.openStream();
+        InputStream inputStream = mockYouTrackInstance.getFeedUrl().openStream();
         XMLInputFactory inputFactory = XMLInputFactory.newInstance();
         XMLEventReader eventReader = inputFactory.createXMLEventReader(inputStream);
 
@@ -99,9 +110,11 @@ public class SourceEventMapperTest {
     @Test
     public void testThatWeCanExtractYouTrackEvent() throws IOException, XMLStreamException {
         
-        SourceEventMapper sourceEventMapper = new SourceEventMapper(UrlResourceProvider.instance(sourceUrl));
+        SourceEventMapper sourceEventMapper = new SourceEventMapper(mockYouTrackInstance);
         List<ProcessEvent> events = sourceEventMapper.getLatestEvents();
-        
+
+        assertThat(events.size(), is(50));
+
         ProcessEvent firstEvent = events.get(events.size()-1);
 
         assertThat(firstEvent.getTitle(), is("ASOC-28: User searches for Users by name"));
@@ -113,9 +126,20 @@ public class SourceEventMapperTest {
     }
 
     @Test
+    public void testThatLastSeenEventTracked() throws IOException {
+        SourceEventMapper sourceEventMapper = new SourceEventMapper(mockYouTrackInstance);
+        List<ProcessEvent> events = sourceEventMapper.getLatestEvents();
+        ProcessEvent lastEventFromFetch = events.get(events.size()-1);
+
+        log.info("last event from fetch: {}", lastEventFromFetch);
+
+        assertThat(sourceEventMapper.getLastEvent(), is(lastEventFromFetch));
+    }
+
+    @Test
     public void testThatEventsStreamProcessed() throws IOException {
 
-        SourceEventMapper sourceEventMapper = new SourceEventMapper(UrlResourceProvider.instance(sourceUrl));
+        SourceEventMapper sourceEventMapper = new SourceEventMapper(mockYouTrackInstance);
         List<ProcessEvent> events = sourceEventMapper.getLatestEvents();
 
         ChannelMapper channelMapper = new ChannelMapper.Builder()
@@ -165,8 +189,7 @@ public class SourceEventMapperTest {
 
     @Test
     public void testThatWeCanGetMostRecentChanges() throws IOException {
-        SourceEventMapper sourceEventMapper = new SourceEventMapper(UrlResourceProvider.instance(sourceUrl));
-        sourceEventMapper.setEditsUrl(editsUrl);
+        SourceEventMapper sourceEventMapper = new SourceEventMapper(mockYouTrackInstance);
         List<ProcessEventChange> recentChanges = sourceEventMapper.getLatestChanges();
 
         log.info("recent changes: {}", recentChanges);
@@ -188,8 +211,7 @@ public class SourceEventMapperTest {
      * field returns correct list of latest events (does not return already processed events)
      */
     public void testThatLastEventIsCorrectlyUsedToRetrieveLatestEvents() throws ParseException, IOException {
-        SourceEventMapper sourceEventMapper = new SourceEventMapper(UrlResourceProvider.instance(sourceUrl));
-        sourceEventMapper.setEditsUrl(editsUrl);
+        SourceEventMapper sourceEventMapper = new SourceEventMapper(mockYouTrackInstance);
         SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, dd MMM yyy HH:mm:ss", Locale.ENGLISH);
         dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
         sourceEventMapper.setLastEvent(new ProcessEvent.Builder().link("http://ontometrics.com:8085/issue/ASOC-148")

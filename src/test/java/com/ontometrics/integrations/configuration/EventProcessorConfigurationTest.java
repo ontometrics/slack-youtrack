@@ -1,5 +1,6 @@
 package com.ontometrics.integrations.configuration;
 
+import com.ontometrics.integrations.events.Issue;
 import com.ontometrics.integrations.events.ProcessEvent;
 import org.apache.commons.configuration.ConfigurationException;
 import org.junit.Before;
@@ -36,7 +37,9 @@ public class EventProcessorConfigurationTest {
         Calendar lastEventChangeTime = Calendar.getInstance();
         lastEventChangeTime.add(Calendar.MINUTE, -2);
 
-        ProcessEvent event1 = new ProcessEvent.Builder().link("http://ontometrics.com:8085/issue/ASOC-148")
+        ProcessEvent event1 = new ProcessEvent.Builder()
+                .issue(new Issue.Builder().projectPrefix("ASOC").id(148).build())
+                .link("http://ontometrics.com:8085/issue/ASOC-148")
                 .published(new Date()).title("ASOC-148: New Embedding requirement").build();
 
         configuration.saveEventChangeDate(event1, lastEventChangeTime.getTime());
@@ -48,8 +51,12 @@ public class EventProcessorConfigurationTest {
         assertThat(storedChangeDate, notNullValue());
         assertThat(storedChangeDate, is(lastEventChangeTime.getTime()));
 
-        ProcessEvent event2 = new ProcessEvent.Builder().link("http://ontometrics.com:8085/issue/ASOC-149")
-                .published(new Date()).title("ASOC-149: New Embedding requirement").build();
+        ProcessEvent event2 = new ProcessEvent.Builder()
+                .issue(new Issue.Builder().projectPrefix("ASOC").id(149).build())
+                .link("http://ontometrics.com:8085/issue/ASOC-149")
+                .published(new Date())
+                .title("ASOC-149: New Embedding requirement")
+                .build();
         assertThat(configuration.getEventChangeDate(event2), nullValue());
 
     }

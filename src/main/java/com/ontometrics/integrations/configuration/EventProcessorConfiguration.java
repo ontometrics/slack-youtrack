@@ -57,7 +57,7 @@ public class EventProcessorConfiguration {
     }
 
     public void saveEventChangeDate(ProcessEvent event, Date date) {
-        eventChangeDatesCollection.put(event.getID(), date.getTime());
+        eventChangeDatesCollection.put(event.getIssue().toString(), date.getTime());
         db.commit();
 
     }
@@ -67,7 +67,7 @@ public class EventProcessorConfiguration {
     }
 
     public Date getEventChangeDate(ProcessEvent event) {
-        Long date = eventChangeDatesCollection.get(event.getID());
+        Long date = eventChangeDatesCollection.get(event.getIssue().toString());
         return date == null ? null : new Date(date);
     }
 

@@ -1,7 +1,7 @@
 package com.ontometrics.integrations.jobs;
 
-import com.ontometrics.integrations.configuration.ConfigurationFactory;
-import com.ontometrics.integrations.configuration.EventProcessorConfiguration;
+import com.ontometrics.integrations.configuration.*;
+import com.ontometrics.integrations.configuration.YouTrackInstance;
 import com.ontometrics.integrations.events.ProcessEvent;
 import com.ontometrics.integrations.events.ProcessEventChange;
 import com.ontometrics.integrations.sources.*;
@@ -49,12 +49,12 @@ public class EventListenerImpl implements EventListener {
         if(inputStreamProvider == null || channelMapper == null) throw new IllegalArgumentException("You must provide sourceURL and channelMapper.");
 
 
-        sourceEventMapper = new SourceEventMapper(inputStreamProvider);
+        sourceEventMapper = new SourceEventMapper(new YouTrackInstance.Builder().baseUrl("http://ontometrics.com").port(8085).build());
         sourceEventMapper.setLastEvent(EventProcessorConfiguration.instance().loadLastProcessedEvent());
     }
 
     /**
-     * Load the list of latest-events (list of updated issues since last time the {@link #checkForNewEvents()} was called.
+     * Load the list of latest-events (list of updated issues since last time this was called.
      * Note: items in this list guarantee that there is no items with same ISSUE-ID exists, they are ordered from most oldest one (first item) to most recent one (last item)
      *
      * For each issue (@link ProcessEvent}) in this list the list of issue change events {@link ProcessEventChange}
@@ -178,8 +178,8 @@ public class EventListenerImpl implements EventListener {
     private String getIssueLink(ProcessEvent event){
         StringBuilder builder = new StringBuilder();
         String title = event.getTitle();
-        title = title.replace(event.getID(), "");
-        builder.append("<").append(event.getLink()).append("|").append(event.getID()).append(">").append(title);
+        title = title.replace(String.valueOf(event.getIssue().getId()), "");
+        builder.append("<").append(event.getLink()).append("|").append(event.getIssue().toString()).append(">").append(title);
         return builder.toString();
     }
 

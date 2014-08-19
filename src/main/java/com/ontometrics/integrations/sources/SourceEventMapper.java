@@ -1,6 +1,7 @@
 
 package com.ontometrics.integrations.sources;
 
+import com.ontometrics.integrations.configuration.IssueTracker;
 import com.ontometrics.integrations.events.ProcessEvent;
 import com.ontometrics.integrations.events.ProcessEventChange;
 import org.slf4j.Logger;
@@ -16,8 +17,6 @@ import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -30,18 +29,14 @@ import java.util.stream.Collectors;
  */
 public class SourceEventMapper {
 
+    private final IssueTracker issueTracker;
     private Logger log = LoggerFactory.getLogger(SourceEventMapper.class);
-
-    private URL editsUrl;
     private XMLEventReader eventReader;
-
-    private InputStreamProvider inputStreamProvider;
-
     private ProcessEvent lastEvent;
 
 
-    public SourceEventMapper(InputStreamProvider inputStreamProvider) {
-        this.inputStreamProvider = inputStreamProvider;
+    public SourceEventMapper(IssueTracker issueTracker) {
+        this.issueTracker = issueTracker;
     }
 
     /**
@@ -50,35 +45,33 @@ public class SourceEventMapper {
      * @return the last event that was returned to the user of this class
      */
     public List<ProcessEvent> getLatestEvents() throws IOException {
+        LinkedList<ProcessEvent> events = new LinkedList<>();
+        try {
+            InputStream is = issueTracker.getFeedUrl().openStream();
+            XMLInputFactory inputFactory = XMLInputFactory.newInstance();
+            eventReader = inputFactory.createXMLEventReader(is);
+            DateFormat dateFormat = createEventDateFormat();
+            while (eventReader.hasNext()) {
+                XMLEvent nextEvent = eventReader.nextEvent();
+                switch (nextEvent.getEventType()) {
+                    case XMLStreamConstants.START_ELEMENT:
+                        StartElement startElement = nextEvent.asStartElement();
+                        String elementName = startElement.getName().getLocalPart();
+                        if (elementName.equals("item")) {
+                            ProcessEvent event = extractEventFromStream(dateFormat);
 
-        return inputStreamProvider.openStream(is -> {
-            LinkedList<ProcessEvent> events = new LinkedList<>();
-            try {
-                XMLInputFactory inputFactory = XMLInputFactory.newInstance();
-                eventReader = inputFactory.createXMLEventReader(is);
-                DateFormat dateFormat = createEventDateFormat();
-                while (eventReader.hasNext()) {
-                    XMLEvent nextEvent = eventReader.nextEvent();
-                    switch (nextEvent.getEventType()) {
-                        case XMLStreamConstants.START_ELEMENT:
-                            StartElement startElement = nextEvent.asStartElement();
-                            String elementName = startElement.getName().getLocalPart();
-                            if (elementName.equals("item")) {
-                                ProcessEvent event = extractEventFromStream(dateFormat);
-
-                                if (lastEvent != null && lastEvent.getKey().equals(event.getKey())) {
-                                    //we already processed this event before, stopping iteration
-                                    return events;
-                                }
-                                events.addFirst(event);
+                            if (lastEvent != null && lastEvent.getKey().equals(event.getKey())) {
+                                //we already processed this event before, stopping iteration
+                                return events;
                             }
-                    }
+                            events.addFirst(event);
+                        }
                 }
-            } catch (XMLStreamException e) {
-                throw new IOException("Failed to process XML", e);
             }
-            return events;
-        });
+        } catch (XMLStreamException e) {
+            throw new IOException("Failed to process XML", e);
+        }
+        return events;
     }
 
     /**
@@ -100,8 +93,7 @@ public class SourceEventMapper {
     public List<ProcessEventChange> getChanges(ProcessEvent e, Date upToDate) {
         List<ProcessEventChange> changes = new ArrayList<>();
         try {
-            URL changesUrl = buildEventChangesUrl(e.getID());
-            InputStream inputStream = changesUrl.openStream();
+            InputStream inputStream = issueTracker.getChangesUrl(e.getIssue()).openStream();
             XMLInputFactory inputFactory = XMLInputFactory.newInstance();
             XMLEventReader reader = inputFactory.createXMLEventReader(inputStream);
             boolean processingChange = false;
@@ -175,14 +167,6 @@ public class SourceEventMapper {
         return dateFormat;
     }
 
-    private URL buildEventChangesUrl(String issueID) throws MalformedURLException {
-        URL changesUrl = editsUrl;
-        if (editsUrl.toString().contains("{issue}")){
-            changesUrl = new URL(editsUrl.toString().replace("{issue}", issueID));
-        }
-        return changesUrl;
-    }
-
     /**
      * Given that the stream should automatically do this, this might not be needed.
      *
@@ -221,7 +205,7 @@ public class SourceEventMapper {
                 .link(currentLink)
                 .published(currentPublishDate)
                 .build();
-        log.info("{}", event);
+        log.debug("process event extracted and built: {}", event);
         return event;
     }
 
@@ -233,7 +217,4 @@ public class SourceEventMapper {
         return date;
     }
 
-    public void setEditsUrl(URL editsUrl) {
-        this.editsUrl = editsUrl;
-    }
 }
