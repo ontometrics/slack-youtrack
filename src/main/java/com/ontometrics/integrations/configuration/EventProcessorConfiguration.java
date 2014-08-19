@@ -30,7 +30,7 @@ public class EventProcessorConfiguration {
 
     private EventProcessorConfiguration() {
         try {
-            File dataDir = new File(ConfigurationFactory.get().getString("APP_DATA_DIR"));
+            File dataDir = new File(ConfigurationFactory.get().getString("APP_DATA_DIR", "."));
             lastEventConfiguration = new PropertiesConfiguration(new File(dataDir, "lastEvent.properties"));
             db = DBMaker.newFileDB(new File(dataDir, "app_db")).closeOnJvmShutdown().make();
             eventChangeDatesCollection = getEventChangeDatesCollection();
