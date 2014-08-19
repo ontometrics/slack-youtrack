@@ -116,7 +116,6 @@ public class SourceEventMapper {
                         StartElement startElement = nextEvent.asStartElement();
                         String elementName = startElement.getName().getLocalPart();
                         if (elementName.equals("change")){
-                            // setup edit set....
                             processingChange = true;
                         }
                         if (elementName.equals("field") && processingChange){
