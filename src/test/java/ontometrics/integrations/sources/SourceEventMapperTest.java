@@ -67,7 +67,6 @@ public class SourceEventMapperTest {
             switch (eventType) {
                 case XMLStreamReader.START_ELEMENT:
                     log.info("start element");
-
                     startElementCount++;
                 case XMLStreamReader.ATTRIBUTE:
                     log.info("end element");
