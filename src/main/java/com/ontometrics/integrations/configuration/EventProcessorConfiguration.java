@@ -26,12 +26,14 @@ public class EventProcessorConfiguration {
 
     private PropertiesConfiguration lastEventConfiguration;
     private DB db;
+    private BTreeMap<String, Long> eventChangeDatesCollection;
 
     private EventProcessorConfiguration() {
         try {
             File dataDir = new File(ConfigurationFactory.get().getString("APP_DATA_DIR"));
             lastEventConfiguration = new PropertiesConfiguration(new File(dataDir, "lastEvent.properties"));
             db = DBMaker.newFileDB(new File(dataDir, "app_db")).closeOnJvmShutdown().make();
+            eventChangeDatesCollection = getEventChangeDatesCollection();
         } catch (ConfigurationException e) {
             throw new IllegalStateException("Failed to access properties");
         }
@@ -52,8 +54,7 @@ public class EventProcessorConfiguration {
     }
 
     public void saveEventChangeDate(ProcessEvent event, Date date) {
-        ConcurrentNavigableMap<String, Long> map = getEventChangeDatesCollection();
-        map.put(event.getID(), date.getTime());
+        eventChangeDatesCollection.put(event.getID(), date.getTime());
         db.commit();
 
     }
@@ -63,7 +64,7 @@ public class EventProcessorConfiguration {
     }
 
     public Date getEventChangeDate(ProcessEvent event) {
-        Long date = getEventChangeDatesCollection().get(event.getID());
+        Long date = eventChangeDatesCollection.get(event.getID());
         return date == null ? null : new Date(date);
     }
 

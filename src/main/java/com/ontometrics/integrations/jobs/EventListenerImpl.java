@@ -3,6 +3,7 @@ package com.ontometrics.integrations.jobs;
 import com.ontometrics.integrations.configuration.ConfigurationFactory;
 import com.ontometrics.integrations.configuration.EventProcessorConfiguration;
 import com.ontometrics.integrations.sources.*;
+import org.apache.commons.configuration.ConfigurationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,6 +16,7 @@ import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Created on 8/18/14.
@@ -52,19 +54,33 @@ public class EventListenerImpl implements EventListener {
         //get events
         List<ProcessEvent> events = sourceEventMapper.getLatestEvents();
 
-        events.stream().forEach(e -> {
-            List<ProcessEventChange> changes = sourceEventMapper.getChanges(e, getLastEventChangeDate(e));
-            postEventChangesToStream(e, changes, channelMapper.getChannel(e));
-        });
+        final AtomicInteger processedEventsCount = new AtomicInteger(0);
+        try {
+            events.stream().forEach(e -> {
+                processedEventsCount.incrementAndGet();
+                List<ProcessEventChange> changes = sourceEventMapper.getChanges(e, getLastEventChangeDate(e));
+                postEventChangesToStream(e, changes, channelMapper.getChannel(e));
+            });
+        } catch (Exception ex) {
+            log.error("Got error while processing event changes feed", ex);
+        }
 
-        return events.size();
+        return processedEventsCount.get();
     }
 
-    private void postEventChangesToStream(ProcessEvent e, List<ProcessEventChange> changes, String channel) {
+    private void postEventChangesToStream(ProcessEvent event, List<ProcessEventChange> changes, String channel) {
         if (changes.isEmpty()) {
             //todo: post creation of the issue
         } else {
             //todo: make a post based on the collection of changes
+            EventProcessorConfiguration.instance()
+                    .saveEventChangeDate(event, changes.get(changes.size() - 1).getUpdated());
+        }
+        sourceEventMapper.setLastEvent(event);
+        try {
+            EventProcessorConfiguration.instance().saveLastProcessEvent(event);
+        } catch (ConfigurationException e) {
+            throw new RuntimeException("Failed to update last processed event", e);
         }
     }
 
