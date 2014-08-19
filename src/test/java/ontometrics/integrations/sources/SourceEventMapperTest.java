@@ -25,9 +25,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+import java.util.TimeZone;
 
 import static java.util.Calendar.JULY;
 import static org.hamcrest.CoreMatchers.*;
@@ -186,6 +189,23 @@ public class SourceEventMapperTest {
         
 
 
+    }
+
+    @Test
+    /**
+     * Tests that {@link com.ontometrics.integrations.sources.SourceEventMapper} initialized with specified lastEvent
+     * field returns correct list of latest events (does not return already processed events)
+     */
+    public void testThatLastEventIsCorrectlyUsedToRetrieveLatestEvents() throws ParseException {
+        SourceEventMapper sourceEventMapper = new SourceEventMapper(UrlResourceProvider.instance(sourceUrl));
+        sourceEventMapper.setEditsUrl(editsUrl);
+        SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, dd MMM yyy HH:mm:ss", Locale.ENGLISH);
+        dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+        sourceEventMapper.setLastEvent(new ProcessEvent.Builder().link("http://ontometrics.com:8085/issue/ASOC-148")
+                .published(dateFormat.parse("Mon, 14 Jul 2014 16:09:07")).title("ASOC-148: New Embedding requirement")
+                .build());
+        List<ProcessEvent> latestEvents = sourceEventMapper.getLatestEvents();
+        assertThat(latestEvents.size(), is(9));
     }
 
 

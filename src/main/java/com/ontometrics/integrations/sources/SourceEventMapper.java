@@ -20,9 +20,7 @@ import java.net.URL;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -58,6 +56,7 @@ public class SourceEventMapper {
             inputStream = inputStreamProvider.openStream();
             XMLInputFactory inputFactory = XMLInputFactory.newInstance();
             eventReader = inputFactory.createXMLEventReader(inputStream);
+            DateFormat dateFormat = createEventDateFormat();
             while (eventReader.hasNext()) {
                 XMLEvent nextEvent = eventReader.nextEvent();
                 switch (nextEvent.getEventType()){
@@ -65,13 +64,13 @@ public class SourceEventMapper {
                         StartElement startElement = nextEvent.asStartElement();
                         String elementName = startElement.getName().getLocalPart();
                         if (elementName.equals("item")) {
-                            ProcessEvent event = extractEventFromStream();
+                            ProcessEvent event = extractEventFromStream(dateFormat);
 
                             if (lastEvent != null && lastEvent.getKey().equals(event.getKey())) {
                                 //we already processed this event before, stopping iteration
                                 return events;
                             }
-                            events.add(extractEventFromStream());
+                            events.add(event);
                         }
                 }
             }
@@ -169,6 +168,12 @@ public class SourceEventMapper {
         return changes;
     }
 
+    private DateFormat createEventDateFormat() {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss", Locale.ENGLISH);
+        dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+        return dateFormat;
+    }
+
     private URL buildEventChangesUrl(String issueID) throws MalformedURLException {
         URL changesUrl = editsUrl;
         if (editsUrl.toString().contains("{issue}")){
@@ -186,11 +191,13 @@ public class SourceEventMapper {
         return lastEvent;
     }
 
-    private ProcessEvent extractEventFromStream() {
+    public void setLastEvent(ProcessEvent lastEvent) {
+        this.lastEvent = lastEvent;
+    }
+
+    private ProcessEvent extractEventFromStream(DateFormat dateFormat) {
         String currentTitle = "", currentLink = "", currentDescription = "";
         Date currentPublishDate = null;
-        DateFormat df = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss");
-
         try {
             eventReader.nextEvent();
             StartElement titleTag = eventReader.nextEvent().asStartElement(); // start title tag
@@ -202,7 +209,7 @@ public class SourceEventMapper {
                 eventReader.nextEvent(); eventReader.nextEvent();
                 currentDescription = eventReader.getElementText().replace("\n", "").trim();
                 eventReader.nextEvent(); eventReader.nextEvent();
-                currentPublishDate = df.parse(eventReader.getElementText());
+                currentPublishDate = dateFormat.parse(getEventDate(eventReader.getElementText()));
             }
         } catch (XMLStreamException | ParseException e) {
             e.printStackTrace();
@@ -215,6 +222,14 @@ public class SourceEventMapper {
                 .build();
         log.info("{}", event);
         return event;
+    }
+
+    private String getEventDate(String date) {
+        String UTC = "UT";
+        if (date.contains("UT")) {
+            return date.substring(0, date.indexOf(UTC));
+        }
+        return date;
     }
 
     public void setEditsUrl(URL editsUrl) {

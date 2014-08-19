@@ -60,7 +60,7 @@ public class ProcessEvent {
 
         public ProcessEvent build(){
             return new ProcessEvent(this);
-            }
+        }
     }
 
     public String getID() {
