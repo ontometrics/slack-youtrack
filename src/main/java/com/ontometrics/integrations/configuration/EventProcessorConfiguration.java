@@ -3,11 +3,13 @@ package com.ontometrics.integrations.configuration;
 import com.ontometrics.integrations.sources.ProcessEvent;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
+import org.mapdb.BTreeMap;
 import org.mapdb.DB;
 import org.mapdb.DBMaker;
 
 import java.io.File;
 import java.util.Date;
+import java.util.concurrent.ConcurrentNavigableMap;
 
 /**
  * EventProcessorConfiguration.java
@@ -20,6 +22,7 @@ public class EventProcessorConfiguration {
     private static final String LAST_EVENT_LINK = "last.event.link";
     private static final String LAST_EVENT_PUBLISHED = "last.event.published";
     private static final String LAST_EVENT_TITLE = "last.event.title";
+    public static final String EVENT_CHANGE_DATES = "eventChangeDates";
 
     private PropertiesConfiguration lastEventConfiguration;
     private DB db;
@@ -49,12 +52,19 @@ public class EventProcessorConfiguration {
     }
 
     public void saveEventChangeDate(ProcessEvent event, Date date) {
-        //todo implement
+        ConcurrentNavigableMap<String, Long> map = getEventChangeDatesCollection();
+        map.put(event.getID(), date.getTime());
+        db.commit();
+
+    }
+
+    private BTreeMap<String, Long> getEventChangeDatesCollection() {
+        return db.getTreeMap(EVENT_CHANGE_DATES);
     }
 
     public Date getEventChangeDate(ProcessEvent event) {
-        //todo implement
-        return null;
+        Long date = getEventChangeDatesCollection().get(event.getID());
+        return date == null ? null : new Date(date);
     }
 
     public void saveLastProcessEvent(ProcessEvent processEvent) throws ConfigurationException {
@@ -71,4 +81,7 @@ public class EventProcessorConfiguration {
         lastEventConfiguration.save();
     }
 
+    public void dispose() {
+        db.close();
+    }
 }

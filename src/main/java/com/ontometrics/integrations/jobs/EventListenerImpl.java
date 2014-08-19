@@ -61,12 +61,15 @@ public class EventListenerImpl implements EventListener {
     }
 
     private void postEventChangesToStream(ProcessEvent e, List<ProcessEventChange> changes, String channel) {
-        //TODO implement posting of event-changes to stream and update last-event changes date
+        if (changes.isEmpty()) {
+            //todo: post creation of the issue
+        } else {
+            //todo: make a post based on the collection of changes
+        }
     }
 
-    private Date getLastEventChangeDate(ProcessEvent e) {
-        //TODO implement
-        return null;
+    private Date getLastEventChangeDate(ProcessEvent event) {
+        return EventProcessorConfiguration.instance().getEventChangeDate(event);
     }
 
     private void postEventToChannel(ProcessEvent event, String channel){
