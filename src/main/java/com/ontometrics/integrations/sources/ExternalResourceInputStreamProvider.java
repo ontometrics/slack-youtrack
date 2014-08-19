@@ -4,7 +4,6 @@ import org.apache.http.client.fluent.Executor;
 import org.apache.http.client.fluent.Request;
 
 import java.io.IOException;
-import java.io.InputStream;
 
 /**
  * ExternalResourceInputStreamProvider.java
@@ -25,12 +24,11 @@ public class ExternalResourceInputStreamProvider implements InputStreamProvider 
     }
 
     /**
-     * TODO rework API/calls so the stream-processor is passed into this method, to avoid copying stream to byte-array
-     * @return input stream
      * @throws IOException
      */
     @Override
-    public InputStream openStream() throws IOException {
-        return httpExecutor.execute(Request.Get(url)).returnContent().asStream();
+    public <RES> RES openStream(final InputStreamHandler<RES> inputStreamHandler) throws IOException {
+        return httpExecutor.execute(Request.Get(url))
+                .handleResponse(httpResponse -> inputStreamHandler.handleStream(httpResponse.getEntity().getContent()));
     }
 }

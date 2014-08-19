@@ -3,13 +3,13 @@ package ontometrics.jobs;
 import com.ontometrics.integrations.configuration.EventProcessorConfiguration;
 import com.ontometrics.integrations.jobs.EventListenerImpl;
 import com.ontometrics.integrations.sources.ChannelMapper;
+import com.ontometrics.integrations.sources.InputStreamHandler;
 import com.ontometrics.integrations.sources.InputStreamProvider;
 import com.ontometrics.integrations.sources.ProcessEvent;
 import org.apache.commons.configuration.ConfigurationException;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Date;
 
 import static org.hamcrest.CoreMatchers.*;
@@ -27,7 +27,7 @@ public class EventListenerImplTest {
     public void testThatSourceEventMapperCorrectlyInitializedOnFirstStart() throws ConfigurationException {
         EventProcessorConfiguration configuration = EventProcessorConfiguration.instance();
         configuration.clearLastProcessEvent();
-        EventListenerImpl eventListener = createEvenListener();
+        EventListenerImpl eventListener = createEventListener();
         assertThat(eventListener.getSourceEventMapper(), notNullValue());
         assertThat(eventListener.getSourceEventMapper().getLastEvent(), nullValue());
     }
@@ -42,7 +42,7 @@ public class EventListenerImplTest {
                 .published(new Date()).build();
         configuration.saveLastProcessEvent(processEvent);
 
-        EventListenerImpl eventListener = createEvenListener();
+        EventListenerImpl eventListener = createEventListener();
         assertThat(eventListener.getSourceEventMapper(), notNullValue());
         assertThat(eventListener.getSourceEventMapper().getLastEvent(), notNullValue());
         assertThat(eventListener.getSourceEventMapper().getLastEvent().getLink(), is(processEvent.getLink()));
@@ -50,10 +50,10 @@ public class EventListenerImplTest {
 
     }
 
-    private EventListenerImpl createEvenListener() {
+    private EventListenerImpl createEventListener() {
         return new EventListenerImpl(new InputStreamProvider() {
             @Override
-            public InputStream openStream() throws IOException {
+            public <RES> RES openStream(InputStreamHandler<RES> inputStreamHandler) throws IOException {
                 return null;
             }
         }, new ChannelMapper.Builder().build());

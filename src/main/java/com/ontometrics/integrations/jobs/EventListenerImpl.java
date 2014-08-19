@@ -12,6 +12,7 @@ import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
@@ -47,7 +48,7 @@ public class EventListenerImpl implements EventListener {
     }
 
     @Override
-    public int checkForNewEvents() {
+    public int checkForNewEvents() throws IOException {
         //get events
         List<ProcessEvent> events = sourceEventMapper.getLatestEvents();
 
