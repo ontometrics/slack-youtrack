@@ -3,6 +3,8 @@ package com.ontometrics.integrations.configuration;
 import com.ontometrics.integrations.sources.ProcessEvent;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
+import org.mapdb.DB;
+import org.mapdb.DBMaker;
 
 import java.io.File;
 import java.util.Date;
@@ -13,22 +15,28 @@ import java.util.Date;
  *
  */
 public class EventProcessorConfiguration {
+    private static final EventProcessorConfiguration instance = new EventProcessorConfiguration();
 
     private static final String LAST_EVENT_LINK = "last.event.link";
     private static final String LAST_EVENT_PUBLISHED = "last.event.published";
     private static final String LAST_EVENT_TITLE = "last.event.title";
 
     private PropertiesConfiguration lastEventConfiguration;
+    private DB db;
 
-    public EventProcessorConfiguration() {
+    private EventProcessorConfiguration() {
         try {
-            lastEventConfiguration = new PropertiesConfiguration(new File(ConfigurationFactory.get().getString("APP_DATA_DIR"),
-                    "lastEvent.properties"));
+            File dataDir = new File(ConfigurationFactory.get().getString("APP_DATA_DIR"));
+            lastEventConfiguration = new PropertiesConfiguration(new File(dataDir, "lastEvent.properties"));
+            db = DBMaker.newFileDB(new File(dataDir, "app_db")).closeOnJvmShutdown().make();
         } catch (ConfigurationException e) {
             throw new IllegalStateException("Failed to access properties");
         }
     }
 
+    public static EventProcessorConfiguration instance() {
+        return instance;
+    }
 
     public ProcessEvent loadLastProcessedEvent() {
         String lastEventLink = lastEventConfiguration.getString(LAST_EVENT_LINK, null);
@@ -38,6 +46,10 @@ public class EventProcessorConfiguration {
             return new ProcessEvent.Builder().title(lastEventTitle).link(lastEventLink).published(new Date(published)).build();
         }
         return null;
+    }
+
+    public void saveEventChangeDate(ProcessEvent event, Date date) {
+        //todo implement
     }
 
     public void saveLastProcessEvent(ProcessEvent processEvent) throws ConfigurationException {

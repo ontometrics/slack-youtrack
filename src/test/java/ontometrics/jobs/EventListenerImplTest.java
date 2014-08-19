@@ -25,7 +25,7 @@ public class EventListenerImplTest {
 
     @Test
     public void testThatSourceEventMapperCorrectlyInitializedOnFirstStart() throws ConfigurationException {
-        EventProcessorConfiguration configuration = new EventProcessorConfiguration();
+        EventProcessorConfiguration configuration = EventProcessorConfiguration.instance();
         configuration.clearLastProcessEvent();
         EventListenerImpl eventListener = createEvenListener();
         assertThat(eventListener.getSourceEventMapper(), notNullValue());
@@ -35,7 +35,7 @@ public class EventListenerImplTest {
     @Test
     public void testThatSourceEventMapperCorrectlyInitializedWithExistingConfiguration() throws ConfigurationException {
 
-        EventProcessorConfiguration configuration = new EventProcessorConfiguration();
+        EventProcessorConfiguration configuration = EventProcessorConfiguration.instance();
         ProcessEvent processEvent = new ProcessEvent.Builder()
                 .title("ASOC-28: title")
                 .link("http://ontometrics.com:8085/issue/ASOC-28")
