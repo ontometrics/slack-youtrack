@@ -9,7 +9,6 @@ import org.mapdb.DBMaker;
 
 import java.io.File;
 import java.util.Date;
-import java.util.concurrent.ConcurrentNavigableMap;
 
 /**
  * EventProcessorConfiguration.java
@@ -29,6 +28,10 @@ public class EventProcessorConfiguration {
     private BTreeMap<String, Long> eventChangeDatesCollection;
 
     private EventProcessorConfiguration() {
+        initialize();
+    }
+
+    private void initialize() {
         try {
             File dataDir = new File(ConfigurationFactory.get().getString("APP_DATA_DIR", "."));
             lastEventConfiguration = new PropertiesConfiguration(new File(dataDir, "lastEvent.properties"));
@@ -84,5 +87,13 @@ public class EventProcessorConfiguration {
 
     public void dispose() {
         db.close();
+    }
+
+    /**
+     * Disposes itself closing the {@link #db} and re-initializes
+     */
+    public void reload() {
+        dispose();
+        initialize();
     }
 }
