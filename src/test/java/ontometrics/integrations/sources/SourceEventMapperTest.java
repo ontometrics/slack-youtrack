@@ -102,7 +102,7 @@ public class SourceEventMapperTest {
         SourceEventMapper sourceEventMapper = new SourceEventMapper(UrlResourceProvider.instance(sourceUrl));
         List<ProcessEvent> events = sourceEventMapper.getLatestEvents();
         
-        ProcessEvent firstEvent = events.get(0);
+        ProcessEvent firstEvent = events.get(events.size()-1);
 
         assertThat(firstEvent.getTitle(), is("ASOC-28: User searches for Users by name"));
         assertThat(firstEvent.getLink(), is("http://ontometrics.com:8085/issue/ASOC-28"));
