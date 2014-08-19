@@ -113,14 +113,6 @@ public class SourceEventMapperTest {
     }
 
     @Test
-    public void testThatLastSeenEventTracked() throws IOException {
-        SourceEventMapper sourceEventMapper = new SourceEventMapper(UrlResourceProvider.instance(sourceUrl));
-        List<ProcessEvent> events = sourceEventMapper.getLatestEvents();
-
-        assertThat(sourceEventMapper.getLastEvent(), is(events.get(events.size() - 1)));
-    }
-
-    @Test
     public void testThatEventsStreamProcessed() throws IOException {
 
         SourceEventMapper sourceEventMapper = new SourceEventMapper(UrlResourceProvider.instance(sourceUrl));
