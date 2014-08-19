@@ -2,6 +2,8 @@ package com.ontometrics.integrations.jobs;
 
 import com.ontometrics.integrations.configuration.ConfigurationFactory;
 import com.ontometrics.integrations.configuration.EventProcessorConfiguration;
+import com.ontometrics.integrations.events.ProcessEvent;
+import com.ontometrics.integrations.events.ProcessEventChange;
 import com.ontometrics.integrations.sources.*;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.lang.StringUtils;
@@ -90,7 +92,7 @@ public class EventListenerImpl implements EventListener {
 
     /**
      * @param updater originator of the change
-     * @param processEventChanges list of {@link com.ontometrics.integrations.sources.ProcessEventChange}
+     * @param processEventChanges list of {@link com.ontometrics.integrations.events.ProcessEventChange}
      * @return message about list of changes from updater
      */
     private String buildChangesMessage(String updater, ProcessEvent event, List<ProcessEventChange> processEventChanges) {

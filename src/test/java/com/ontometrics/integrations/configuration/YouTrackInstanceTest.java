@@ -30,4 +30,12 @@ public class YouTrackInstanceTest {
     public void testGetChangesUrl() throws Exception {
         assertThat(youTrackInstance.getChangesUrl(new Issue.Builder().projectPrefix("ASOC").id(505).build()), is("http://ontometrics.com:8085/rest/issue/ASOC-505/changes"));
     }
+
+    @Test
+    public void testThatNoPortWorks() {
+        youTrackInstance = new YouTrackInstance.Builder().baseUrl("http://ontometrics.com").build();
+
+        assertThat(youTrackInstance.getBaseUrl(), is("http://ontometrics.com"));
+    }
+
 }
