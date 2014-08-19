@@ -58,14 +58,19 @@ public class SourceEventMapper {
             inputStream = inputStreamProvider.openStream();
             XMLInputFactory inputFactory = XMLInputFactory.newInstance();
             eventReader = inputFactory.createXMLEventReader(inputStream);
-
             while (eventReader.hasNext()) {
                 XMLEvent nextEvent = eventReader.nextEvent();
                 switch (nextEvent.getEventType()){
                     case XMLStreamConstants.START_ELEMENT:
                         StartElement startElement = nextEvent.asStartElement();
                         String elementName = startElement.getName().getLocalPart();
-                        if (elementName.equals("item")){
+                        if (elementName.equals("item")) {
+                            ProcessEvent event = extractEventFromStream();
+
+                            if (lastEvent != null && lastEvent.getKey().equals(event.getKey())) {
+                                //we already processed this event before, stopping iteration
+                                return events;
+                            }
                             events.add(extractEventFromStream());
                         }
                 }

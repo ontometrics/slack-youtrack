@@ -1,6 +1,10 @@
 package com.ontometrics.integrations.sources;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
+import java.util.TimeZone;
 
 /**
  * User: robwilliams
@@ -10,6 +14,8 @@ import java.util.Date;
  * (c) ontometrics 2014, All Rights Reserved
  */
 public class ProcessEvent {
+
+    private static final String KEY_FIELD_SEPARATOR = "::";
 
     private final String title;
     private final String description;
@@ -75,6 +81,19 @@ public class ProcessEvent {
 
     public String getLink() {
         return link;
+    }
+
+    /**
+     * @return Unique key of the event: combination of issueID and publish Date
+     */
+    public String getKey() {
+        return issueID + KEY_FIELD_SEPARATOR + createDateFormat().format(publishDate);
+    }
+
+    private DateFormat createDateFormat() {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH);
+        dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+        return dateFormat;
     }
 
     @Override
