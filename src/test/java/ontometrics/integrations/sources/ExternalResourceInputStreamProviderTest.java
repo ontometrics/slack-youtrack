@@ -1,12 +1,10 @@
 package ontometrics.integrations.sources;
 
 import com.ontometrics.integrations.sources.ExternalResourceInputStreamProvider;
-import com.ontometrics.integrations.sources.InputStreamHandler;
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.io.InputStream;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;

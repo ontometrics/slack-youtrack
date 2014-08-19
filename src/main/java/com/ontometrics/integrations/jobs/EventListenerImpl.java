@@ -16,7 +16,9 @@ import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 /**
  * Created on 8/18/14.
@@ -70,8 +72,9 @@ public class EventListenerImpl implements EventListener {
 
     private void postEventChangesToStream(ProcessEvent event, List<ProcessEventChange> changes, String channel) {
         if (changes.isEmpty()) {
-            //todo: post creation of the issue
+            postEventToChannel(event, channel);
         } else {
+            Map<String, List<ProcessEventChange>> changesGroupedByUpdater = groupChangesByUpdater(changes);
             //todo: make a post based on the collection of changes
             EventProcessorConfiguration.instance()
                     .saveEventChangeDate(event, changes.get(changes.size() - 1).getUpdated());
@@ -82,6 +85,10 @@ public class EventListenerImpl implements EventListener {
         } catch (ConfigurationException e) {
             throw new RuntimeException("Failed to update last processed event", e);
         }
+    }
+
+    private Map<String, List<ProcessEventChange>> groupChangesByUpdater(List<ProcessEventChange> changes) {
+        return changes.stream().collect(Collectors.groupingBy(ProcessEventChange::getUpdater));
     }
 
     private Date getLastEventChangeDate(ProcessEvent event) {

@@ -154,9 +154,6 @@ public class SourceEventMapper {
                             log.info("change: {}", change);
                             if (upToDate == null || change.getUpdated().after(upToDate)) {
                                 changes.add(change);
-                            } else {
-                                //we do not need to iterate through other changes, they are older than upToDate
-                                return changes;
                             }
                             processingChange = false;
                         }
