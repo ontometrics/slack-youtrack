@@ -1,6 +1,7 @@
 package com.ontometrics.integrations.jobs;
 
 import com.ontometrics.integrations.configuration.ConfigurationFactory;
+import com.ontometrics.integrations.configuration.EventProcessorConfiguration;
 import com.ontometrics.integrations.sources.ChannelMapper;
 import com.ontometrics.integrations.sources.ExternalResourceInputStreamProvider;
 import com.ontometrics.integrations.sources.InputStreamProvider;
@@ -105,5 +106,6 @@ public class WebContextJobStarter implements ServletContextListener {
             timerTask.cancel();
         }
         timer.cancel();
+        EventProcessorConfiguration.instance().dispose();
     }
 }

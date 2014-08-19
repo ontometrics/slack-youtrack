@@ -1,9 +1,6 @@
 
 package com.ontometrics.integrations.sources;
 
-import com.ontometrics.integrations.events.ProcessEvent;
-import com.ontometrics.integrations.events.ProcessEventChange;
-import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,41 +47,36 @@ public class SourceEventMapper {
      *
      * @return the last event that was returned to the user of this class
      */
-    public List<ProcessEvent> getLatestEvents(){
+    public List<ProcessEvent> getLatestEvents() throws IOException {
 
-        List<ProcessEvent> events = new ArrayList<>();
-        InputStream inputStream = null;
-        try {
-            inputStream = inputStreamProvider.openStream();
-            XMLInputFactory inputFactory = XMLInputFactory.newInstance();
-            eventReader = inputFactory.createXMLEventReader(inputStream);
-            DateFormat dateFormat = createEventDateFormat();
-            while (eventReader.hasNext()) {
-                XMLEvent nextEvent = eventReader.nextEvent();
-                switch (nextEvent.getEventType()){
-                    case XMLStreamConstants.START_ELEMENT:
-                        StartElement startElement = nextEvent.asStartElement();
-                        String elementName = startElement.getName().getLocalPart();
-                        if (elementName.equals("item")) {
-                            ProcessEvent event = extractEventFromStream(dateFormat);
+        return inputStreamProvider.openStream(is -> {
+            LinkedList<ProcessEvent> events = new LinkedList<>();
+            try {
+                XMLInputFactory inputFactory = XMLInputFactory.newInstance();
+                eventReader = inputFactory.createXMLEventReader(is);
+                DateFormat dateFormat = createEventDateFormat();
+                while (eventReader.hasNext()) {
+                    XMLEvent nextEvent = eventReader.nextEvent();
+                    switch (nextEvent.getEventType()) {
+                        case XMLStreamConstants.START_ELEMENT:
+                            StartElement startElement = nextEvent.asStartElement();
+                            String elementName = startElement.getName().getLocalPart();
+                            if (elementName.equals("item")) {
+                                ProcessEvent event = extractEventFromStream(dateFormat);
 
-                            if (lastEvent != null && lastEvent.getKey().equals(event.getKey())) {
-                                //we already processed this event before, stopping iteration
-                                return events;
+                                if (lastEvent != null && lastEvent.getKey().equals(event.getKey())) {
+                                    //we already processed this event before, stopping iteration
+                                    return events;
+                                }
+                                events.addFirst(event);
                             }
-                            events.add(event);
-                        }
+                    }
                 }
+            } catch (XMLStreamException e) {
+                throw new IOException("Failed to process XML", e);
             }
-        } catch (XMLStreamException | IOException e) {
-            log.error("Failed to process XML", e);
-        } finally {
-            IOUtils.closeQuietly(inputStream);
-        }
-        if (!events.isEmpty()) {
-            lastEvent = events.get(events.size() - 1);
-        }
-        return events;
+            return events;
+        });
     }
 
     /**
@@ -93,13 +85,17 @@ public class SourceEventMapper {
      *
      * @return changes made since we last checked
      */
-    public List<ProcessEventChange> getLatestChanges(){
+    public List<ProcessEventChange> getLatestChanges() throws IOException {
         return getLatestEvents().stream()
                 .flatMap(e -> getChanges(e).stream())
                 .collect(Collectors.toList());
     }
 
-    private List<ProcessEventChange> getChanges(ProcessEvent e) {
+    public List<ProcessEventChange> getChanges(ProcessEvent e) {
+        return getChanges(e, null);
+    }
+
+    public List<ProcessEventChange> getChanges(ProcessEvent e, Date upToDate) {
         List<ProcessEventChange> changes = new ArrayList<>();
         try {
             URL changesUrl = buildEventChangesUrl(e.getID());
@@ -156,7 +152,9 @@ public class SourceEventMapper {
                                     .currentValue(newValue)
                                     .build();
                             log.info("change: {}", change);
-                            changes.add(change);
+                            if (upToDate == null || change.getUpdated().after(upToDate)) {
+                                changes.add(change);
+                            }
                             processingChange = false;
                         }
                         break;

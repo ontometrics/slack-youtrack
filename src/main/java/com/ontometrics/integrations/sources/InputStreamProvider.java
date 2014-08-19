@@ -8,5 +8,5 @@ import java.io.InputStream;
  *
  */
 public interface InputStreamProvider {
-    InputStream openStream() throws IOException;
+    <RES> RES openStream(final InputStreamHandler<RES> inputStreamHandler) throws IOException;
 }

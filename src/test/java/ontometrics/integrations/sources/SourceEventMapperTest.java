@@ -113,7 +113,7 @@ public class SourceEventMapperTest {
     }
 
     @Test
-    public void testThatLastSeenEventTracked(){
+    public void testThatLastSeenEventTracked() throws IOException {
         SourceEventMapper sourceEventMapper = new SourceEventMapper(UrlResourceProvider.instance(sourceUrl));
         List<ProcessEvent> events = sourceEventMapper.getLatestEvents();
 
@@ -121,7 +121,7 @@ public class SourceEventMapperTest {
     }
 
     @Test
-    public void testThatEventsStreamProcessed(){
+    public void testThatEventsStreamProcessed() throws IOException {
 
         SourceEventMapper sourceEventMapper = new SourceEventMapper(UrlResourceProvider.instance(sourceUrl));
         List<ProcessEvent> events = sourceEventMapper.getLatestEvents();
@@ -172,7 +172,7 @@ public class SourceEventMapperTest {
     }
 
     @Test
-    public void testThatWeCanGetMostRecentChanges(){
+    public void testThatWeCanGetMostRecentChanges() throws IOException {
         SourceEventMapper sourceEventMapper = new SourceEventMapper(UrlResourceProvider.instance(sourceUrl));
         sourceEventMapper.setEditsUrl(editsUrl);
         List<ProcessEventChange> recentChanges = sourceEventMapper.getLatestChanges();
@@ -195,7 +195,7 @@ public class SourceEventMapperTest {
      * Tests that {@link com.ontometrics.integrations.sources.SourceEventMapper} initialized with specified lastEvent
      * field returns correct list of latest events (does not return already processed events)
      */
-    public void testThatLastEventIsCorrectlyUsedToRetrieveLatestEvents() throws ParseException {
+    public void testThatLastEventIsCorrectlyUsedToRetrieveLatestEvents() throws ParseException, IOException {
         SourceEventMapper sourceEventMapper = new SourceEventMapper(UrlResourceProvider.instance(sourceUrl));
         sourceEventMapper.setEditsUrl(editsUrl);
         SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, dd MMM yyy HH:mm:ss", Locale.ENGLISH);

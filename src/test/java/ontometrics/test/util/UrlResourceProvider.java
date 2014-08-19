@@ -1,6 +1,8 @@
 package ontometrics.test.util;
 
+import com.ontometrics.integrations.sources.InputStreamHandler;
 import com.ontometrics.integrations.sources.InputStreamProvider;
+import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -21,7 +23,12 @@ public class UrlResourceProvider implements InputStreamProvider {
     }
 
     @Override
-    public InputStream openStream() throws IOException {
-        return url.openStream();
+    public <RES> RES openStream(InputStreamHandler<RES> inputStreamHandler) throws IOException {
+        InputStream is = null;
+        try {
+            return inputStreamHandler.handleStream(is = url.openStream());
+        } finally {
+            IOUtils.closeQuietly(is);
+        }
     }
 }
