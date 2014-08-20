@@ -147,8 +147,11 @@ public class SourceEventMapper {
                                     newValue = reader.getElementText();
                                 }
                             } else {
-                                reader.nextEvent(); // eat value tag
-                                reader.nextEvent();
+                                XMLEvent event = reader.nextEvent(); // eat value tag
+                                while (event.getEventType() != XMLStreamConstants.START_ELEMENT) {
+                                    event = reader.nextEvent();
+                                }
+
                                 String fieldValue = reader.getElementText();
                                 if (fieldName.equals("updaterName")){
                                     updater = fieldValue;
