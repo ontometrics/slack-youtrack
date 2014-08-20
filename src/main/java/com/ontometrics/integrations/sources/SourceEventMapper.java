@@ -18,7 +18,6 @@ import javax.xml.stream.events.EndElement;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
 import java.io.IOException;
-import java.io.InputStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -115,10 +114,9 @@ public class SourceEventMapper {
     }
 
     public List<ProcessEventChange> getChanges(ProcessEvent e, Date upToDate) throws Exception {
-        return streamProvider.openResourceStream(issueTracker.getChangesUrl(e.getIssue()), is -> {
+        return streamProvider.openResourceStream(issueTracker.getChangesUrl(e.getIssue()), inputStream -> {
             List<ProcessEventChange> changes = new ArrayList<>();
 
-            InputStream inputStream = issueTracker.getChangesUrl(e.getIssue()).openStream();
             XMLInputFactory inputFactory = XMLInputFactory.newInstance();
             XMLEventReader reader = inputFactory.createXMLEventReader(inputStream);
             boolean processingChange = false;

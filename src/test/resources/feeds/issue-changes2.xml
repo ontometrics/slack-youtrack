@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<changes>
+    <issue id="HA-665">
+        <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="SingleField" name="projectShortName">
+            <value>HA</value>
+        </field>
+        <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="SingleField" name="numberInProject">
+            <value>665</value>
+        </field>
+        <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="SingleField" name="summary">
+            <value>Scraper does not fetch Glassdoor urls</value>
+        </field>
+        <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="SingleField" name="description">
+            <value>When scraper tries to fetch contents of Glassdoor job listing url, it gets HTTP status 403 response
+
+                {code}java.io.IOException: Server returned HTTP response code: 403 for URL:
+                http://www.glassdoor.com/Job/california-java-developer-jobs-SRCH_IL.0,10_IS2280_KO11,25_IP6.htm
+                {code}
+            </value>
+        </field>
+        <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="SingleField" name="created">
+            <value>1408106353707</value>
+        </field>
+        <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="SingleField" name="updated">
+            <value>1408568585767</value>
+        </field>
+        <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="SingleField" name="updaterName">
+            <value>nikolay.chorniy@gmail.com</value>
+        </field>
+        <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="SingleField" name="updaterFullName">
+            <value>Nikolay Chorniy</value>
+        </field>
+        <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="SingleField" name="reporterName">
+            <value>nikolay.chorniy@gmail.com</value>
+        </field>
+        <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="SingleField" name="reporterFullName">
+            <value>Nikolay Chorniy</value>
+        </field>
+        <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="SingleField" name="commentsCount">
+            <value>1</value>
+        </field>
+        <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="SingleField" name="votes">
+            <value>0</value>
+        </field>
+        <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="CustomFieldValue" name="Priority">
+            <value>Major</value>
+        </field>
+        <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="CustomFieldValue" name="Type">
+            <value>Bug</value>
+        </field>
+        <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="CustomFieldValue" name="State">
+            <value>Open</value>
+        </field>
+        <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="CustomFieldValue" name="Subsystem">
+            <value>No subsystem</value>
+        </field>
+        <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="CustomFieldValue" name="Fix versions">
+            <value>2.1</value>
+        </field>
+        <comment id="76-1765" author="rob" authorFullName="Rob Williams" issueId="HA-665" deleted="false"
+            text="I have said this before: we have to have some kind of summary report that gets produced after a day of scraping and if a source has not produced a single lead in a few days, it should go into an alarm state.&#xA;&#xA;Guys, like the stupid geo quota, we are writing code that just keeps repeating the same stupid things ad nauseum when we could write a tiny bit more code to KNOW that doing so is completely POINTLESS."
+            shownForIssueAuthor="false" created="1408107012606">
+            <replies />
+        </comment>
+    </issue>
+    <change>
+        <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="SingleField" name="updaterName">
+            <value>nikolay.chorniy@gmail.com</value>
+        </field>
+        <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="SingleField" name="updated">
+            <value>1408106436989</value>
+        </field>
+        <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="ChangeField" name="description">
+            <oldValue>When scraper tries to fetch contents of Glassdoor job listing url, it gets 403 response
+
+                {code}
+                java.io.IOException: Server returned HTTP response code: 403 for URL:
+                http://www.glassdoor.com/Job/california-java-developer-jobs-SRCH_IL.0,10_IS2280_KO11,25_IP6.htm
+                {code}
+            </oldValue>
+            <newValue>When scraper tries to fetch contents of Glassdoor job listing url, it gets HTTP status 403
+                response
+
+                {code}
+                java.io.IOException: Server returned HTTP response code: 403 for URL:
+                http://www.glassdoor.com/Job/california-java-developer-jobs-SRCH_IL.0,10_IS2280_KO11,25_IP6.htm
+                {code}
+            </newValue>
+        </field>
+    </change>
+    <change>
+        <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="SingleField" name="updaterName">
+            <value>nikolay.chorniy@gmail.com</value>
+        </field>
+        <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="SingleField" name="updated">
+            <value>1408568585769</value>
+        </field>
+        <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="ChangeField" name="description">
+            <oldValue>When scraper tries to fetch contents of Glassdoor job listing url, it gets HTTP status 403
+                response
+
+                {code}
+                java.io.IOException: Server returned HTTP response code: 403 for URL:
+                http://www.glassdoor.com/Job/california-java-developer-jobs-SRCH_IL.0,10_IS2280_KO11,25_IP6.htm
+                {code}
+            </oldValue>
+            <newValue>When scraper tries to fetch contents of Glassdoor job listing url, it gets HTTP status 403
+                response
+
+                {code}java.io.IOException: Server returned HTTP response code: 403 for URL:
+                http://www.glassdoor.com/Job/california-java-developer-jobs-SRCH_IL.0,10_IS2280_KO11,25_IP6.htm
+                {code}
+            </newValue>
+        </field>
+    </change>
+</changes>
