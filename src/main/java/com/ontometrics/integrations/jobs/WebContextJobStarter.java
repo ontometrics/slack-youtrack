@@ -1,103 +1,30 @@
 package com.ontometrics.integrations.jobs;
 
-import com.ontometrics.integrations.configuration.ConfigurationFactory;
-import com.ontometrics.integrations.configuration.EventProcessorConfiguration;
-import com.ontometrics.integrations.sources.AuthenticatedHttpStreamProvider;
-import com.ontometrics.integrations.sources.ChannelMapper;
-import com.ontometrics.integrations.sources.StreamProvider;
-import org.apache.commons.configuration.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 
 /**
- * Launch list of {@link com.ontometrics.integrations.jobs.EventListener} in a timer job on web-app startup
+ * Create and schedule tasks on web-application startup with call to {@link JobStarter#scheduleTasks()}
  * WebContextJobStarter.java
  */
 public class WebContextJobStarter implements ServletContextListener {
     private static Logger logger = LoggerFactory.getLogger(WebContextJobStarter.class);
 
-    private static final long EXECUTION_DELAY = 2 * 1000;
-    private static final long REPEAT_INTERVAL = 60 * 1000;
-
-    private List<TimerTask> timerTasks;
-    private Timer timer;
+    private JobStarter jobStarter;
 
     @Override
     public void contextInitialized(ServletContextEvent servletContextEvent) {
         logger.info("Started up");
-        initialize();
-        scheduleTasks();
+        this.jobStarter = new JobStarter();
+        jobStarter.scheduleTasks();
     }
 
-    /**
-     * Schedules periodic tasks to fetch the events
-     */
-    private void scheduleTasks() {
-        Configuration configuration = ConfigurationFactory.get();
-        StreamProvider streamProvider = new AuthenticatedHttpStreamProvider(
-                httpExecutor -> httpExecutor.auth(configuration.getString("YOUTRACK_USERNAME"),
-                        configuration.getString("YOUTRACK_PASSWORD")));
-        scheduleTask(timer, new EventListenerImpl(streamProvider, createChannelMapper()));
-    }
-
-    private void initialize() {
-        timerTasks = new ArrayList<>(3);
-        timer = new Timer();
-    }
-
-    /**
-     * Schedules a periodic task {@link EventListener#checkForNewEvents()}
-     * @param timer timer
-     * @param eventListener event listener
-     */
-    private void scheduleTask(Timer timer, EventListener eventListener) {
-        TimerTask timerTask = new EventTask(eventListener);
-        timerTasks.add(timerTask);
-        timer.schedule(timerTask, EXECUTION_DELAY, REPEAT_INTERVAL);
-    }
-
-    private static class EventTask extends TimerTask {
-        private EventListener eventListener;
-
-        private EventTask(EventListener eventListener) {
-            this.eventListener = eventListener;
-        }
-
-        @Override
-        public void run() {
-            logger.info("Event processing started");
-            try {
-                this.eventListener.checkForNewEvents();
-            } catch (Throwable ex) {
-                logger.error("Failed to process", ex);
-            }
-            logger.info("Event processing finished");
-        }
-    }
-
-    private ChannelMapper createChannelMapper() {
-        return new ChannelMapper.Builder()
-                .defaultChannel("process")
-                .addMapping("ASOC", "vixlet")
-                .addMapping("HA", "jobspider")
-                .addMapping("DMAN", "dminder")
-                .build();
-    }
 
     @Override
     public void contextDestroyed(ServletContextEvent servletContextEvent) {
-        //cancelling all previously launched tasks and timer
-        for (TimerTask timerTask : timerTasks) {
-            timerTask.cancel();
-        }
-        timer.cancel();
-        EventProcessorConfiguration.instance().dispose();
+        jobStarter.dispose();
     }
 }
