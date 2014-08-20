@@ -26,9 +26,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+import java.util.TimeZone;
 
 import static java.util.Calendar.JULY;
 import static org.hamcrest.CoreMatchers.*;
@@ -108,7 +110,7 @@ public class SourceEventMapperTest {
     }
 
     @Test
-    public void testThatWeCanExtractYouTrackEvent() throws IOException, XMLStreamException {
+    public void testThatWeCanExtractYouTrackEvent() throws Exception, XMLStreamException {
         
         SourceEventMapper sourceEventMapper = new SourceEventMapper(mockYouTrackInstance);
         List<ProcessEvent> events = sourceEventMapper.getLatestEvents();
@@ -130,7 +132,7 @@ public class SourceEventMapperTest {
     }
 
     @Test
-    public void testThatLastSeenEventTracked() throws IOException {
+    public void testThatLastSeenEventTracked() throws Exception {
         SourceEventMapper sourceEventMapper = new SourceEventMapper(mockYouTrackInstance);
         List<ProcessEvent> events = sourceEventMapper.getLatestEvents();
         ProcessEvent lastEventFromFetch = events.get(events.size()-1);
@@ -141,7 +143,7 @@ public class SourceEventMapperTest {
     }
 
     @Test
-    public void testThatEventsStreamProcessed() throws IOException {
+    public void testThatEventsStreamProcessed() throws Exception {
 
         SourceEventMapper sourceEventMapper = new SourceEventMapper(mockYouTrackInstance);
         List<ProcessEvent> events = sourceEventMapper.getLatestEvents();
@@ -192,9 +194,10 @@ public class SourceEventMapperTest {
     }
 
     @Test
-    public void testThatWeCanGetMostRecentChanges() throws IOException {
+    public void testThatWeCanGetMostRecentChanges() throws Exception {
         SourceEventMapper sourceEventMapper = new SourceEventMapper(mockYouTrackInstance);
-        List<ProcessEventChange> recentChanges = sourceEventMapper.getLatestChanges();
+        List<ProcessEventChange> recentChanges = null;
+        recentChanges = sourceEventMapper.getLatestChanges();
 
         log.info("recent changes: {}", recentChanges);
 
@@ -214,7 +217,7 @@ public class SourceEventMapperTest {
      * Tests that {@link com.ontometrics.integrations.sources.SourceEventMapper} initialized with specified lastEvent
      * field returns correct list of latest events (does not return already processed events)
      */
-    public void testThatLastEventIsCorrectlyUsedToRetrieveLatestEvents() throws ParseException, IOException {
+    public void testThatLastEventIsCorrectlyUsedToRetrieveLatestEvents() throws Exception {
         SourceEventMapper sourceEventMapper = new SourceEventMapper(mockYouTrackInstance);
         SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, dd MMM yyy HH:mm:ss", Locale.ENGLISH);
         dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));

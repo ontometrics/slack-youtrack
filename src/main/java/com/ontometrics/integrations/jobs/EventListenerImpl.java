@@ -67,7 +67,7 @@ public class EventListenerImpl implements EventListener {
      * @throws IOException
      */
     @Override
-    public int checkForNewEvents() throws IOException {
+    public int checkForNewEvents() throws Exception {
         //get events
         List<ProcessEvent> events = sourceEventMapper.getLatestEvents();
 
@@ -76,8 +76,13 @@ public class EventListenerImpl implements EventListener {
             events.stream().forEach(e -> {
                 processedEventsCount.incrementAndGet();
                 //load list of updates (using REST service of YouTrack)
-                List<ProcessEventChange> changes = sourceEventMapper.getChanges(e, getLastEventChangeDate(e));
-
+                List<ProcessEventChange> changes = null;
+                try {
+                    changes = sourceEventMapper.getChanges(e, getLastEventChangeDate(e));
+                } catch (Exception ex) {
+                    log.error("Failed to process event " + e, ex);
+                    return;
+                }
                 postEventChangesToStream(e, changes, channelMapper.getChannel(e));
             });
         } catch (Exception ex) {
@@ -101,9 +106,8 @@ public class EventListenerImpl implements EventListener {
         if (changes.isEmpty()) {
             postMessageToChannel(event, channel, getIssueLink(event));
         } else {
-            groupChangesByUpdater(changes).forEach((updater, processEventChanges) -> {
-                postMessageToChannel(event, channel, buildChangesMessage(updater, event, processEventChanges));
-            });
+            groupChangesByUpdater(changes).forEach((updater, processEventChanges) ->
+                    postMessageToChannel(event, channel, buildChangesMessage(updater, event, processEventChanges)));
             EventProcessorConfiguration.instance()
                     .saveEventChangeDate(event, changes.get(changes.size() - 1).getUpdated());
         }
