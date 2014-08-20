@@ -14,21 +14,18 @@ import java.net.URL;
  * UrlResourceProvider.java
  */
 public class UrlStreamProvider implements StreamProvider {
-    private URL url;
 
-    private UrlStreamProvider(URL url) {
-        this.url = url;
-    }
+    private UrlStreamProvider() {}
 
-    public static UrlStreamProvider instance (URL url){
-        return new UrlStreamProvider(url);
+    public static UrlStreamProvider instance (){
+        return new UrlStreamProvider();
     }
 
     @Override
-    public <RES> RES openResourceStream(InputStreamHandler<RES> inputStreamHandler) throws IOException {
+    public <RES> RES openResourceStream(URL resourceUrl, InputStreamHandler<RES> inputStreamHandler) throws Exception {
         InputStream is = null;
         try {
-            return inputStreamHandler.handleStream(is = url.openStream());
+            return inputStreamHandler.handleStream(is = resourceUrl.openStream());
         } finally {
             IOUtils.closeQuietly(is);
         }

@@ -8,5 +8,5 @@ import java.io.InputStream;
  *
  */
 public interface InputStreamHandler<RES> {
-    RES handleStream(InputStream is) throws IOException;
+    RES handleStream(InputStream is) throws Exception;
 }

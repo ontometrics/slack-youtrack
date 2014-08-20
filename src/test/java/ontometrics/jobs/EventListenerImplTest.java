@@ -1,15 +1,16 @@
 package ontometrics.jobs;
 
 import com.ontometrics.integrations.configuration.EventProcessorConfiguration;
+import com.ontometrics.integrations.events.ProcessEvent;
 import com.ontometrics.integrations.jobs.EventListenerImpl;
 import com.ontometrics.integrations.sources.ChannelMapper;
 import com.ontometrics.integrations.sources.InputStreamHandler;
 import com.ontometrics.integrations.sources.StreamProvider;
-import com.ontometrics.integrations.events.ProcessEvent;
 import org.apache.commons.configuration.ConfigurationException;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.net.URL;
 import java.util.Date;
 
 import static org.hamcrest.CoreMatchers.*;
@@ -53,7 +54,7 @@ public class EventListenerImplTest {
     private EventListenerImpl createEventListener() {
         return new EventListenerImpl(new StreamProvider() {
             @Override
-            public <RES> RES openResourceStream(InputStreamHandler<RES> inputStreamHandler) throws IOException {
+            public <RES> RES openResourceStream(URL resourceUrl, InputStreamHandler<RES> inputStreamHandler) throws IOException {
                 return null;
             }
         }, new ChannelMapper.Builder().build());
