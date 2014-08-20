@@ -46,6 +46,9 @@ public class EventProcessorConfiguration {
         return instance;
     }
 
+    /**
+     * @return last event processed (issue) or null if not available
+     */
     public ProcessEvent loadLastProcessedEvent() {
         String lastEventLink = lastEventConfiguration.getString(LAST_EVENT_LINK, null);
         String lastEventTitle = lastEventConfiguration.getString(LAST_EVENT_TITLE, null);
@@ -56,6 +59,11 @@ public class EventProcessorConfiguration {
         return null;
     }
 
+    /**
+     * Saves last processed event change date to database
+     * @param event event
+     * @param date processed event change date
+     */
     public void saveEventChangeDate(ProcessEvent event, Date date) {
         eventChangeDatesCollection.put(event.getIssue().toString(), date.getTime());
         db.commit();
@@ -85,6 +93,9 @@ public class EventProcessorConfiguration {
         lastEventConfiguration.save();
     }
 
+    /**
+     * Releases resource: closes database
+     */
     public void dispose() {
         db.close();
     }

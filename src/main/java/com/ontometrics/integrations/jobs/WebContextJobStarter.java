@@ -3,8 +3,8 @@ package com.ontometrics.integrations.jobs;
 import com.ontometrics.integrations.configuration.ConfigurationFactory;
 import com.ontometrics.integrations.configuration.EventProcessorConfiguration;
 import com.ontometrics.integrations.sources.ChannelMapper;
-import com.ontometrics.integrations.sources.ExternalResourceInputStreamProvider;
-import com.ontometrics.integrations.sources.InputStreamProvider;
+import com.ontometrics.integrations.sources.ExternalStreamProvider;
+import com.ontometrics.integrations.sources.StreamProvider;
 import org.apache.commons.configuration.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,11 +45,11 @@ public class WebContextJobStarter implements ServletContextListener {
     private void scheduleTasks() {
         try {
             Configuration configuration = ConfigurationFactory.get();
-            InputStreamProvider inputStreamProvider = new ExternalResourceInputStreamProvider(
+            StreamProvider streamProvider = new ExternalStreamProvider(
                     new URL(YT_FEED_URL).toExternalForm())
                 .authenticator(httpExecutor -> httpExecutor.auth(configuration
                                     .getString("YOUTRACK_USERNAME"), configuration.getString("YOUTRACK_PASSWORD")));
-            scheduleTask(timer, new EventListenerImpl(inputStreamProvider, createChannelMapper()));
+            scheduleTask(timer, new EventListenerImpl(streamProvider, createChannelMapper()));
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);
         }

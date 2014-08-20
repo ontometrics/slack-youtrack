@@ -5,11 +5,14 @@ import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
 
 /**
- * Factory for obtaining a global config
+ * Factory for obtaining a global application config
  */
 public class ConfigurationFactory {
     private static Configuration CONFIGURATION;
 
+    /**
+     * @return application configuration
+     */
     public static Configuration get() {
         if (CONFIGURATION == null) {
             try {

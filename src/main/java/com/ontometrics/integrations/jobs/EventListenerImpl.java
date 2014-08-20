@@ -40,13 +40,13 @@ public class EventListenerImpl implements EventListener {
     public static final String CHANNEL_POST_PATH = "chat.postMessage";
 
     /**
-     * @param inputStreamProvider url to read list of events from
+     * @param feedStreamProvider feed resource provider
      * @param channelMapper channelMapper
      */
-    public EventListenerImpl(InputStreamProvider inputStreamProvider, ChannelMapper channelMapper) {
+    public EventListenerImpl(StreamProvider feedStreamProvider, ChannelMapper channelMapper) {
 
         this.channelMapper = channelMapper;
-        if(inputStreamProvider == null || channelMapper == null) throw new IllegalArgumentException("You must provide sourceURL and channelMapper.");
+        if(feedStreamProvider == null || channelMapper == null) throw new IllegalArgumentException("You must provide sourceURL and channelMapper.");
 
 
         sourceEventMapper = new SourceEventMapper(new YouTrackInstance.Builder().baseUrl("http://ontometrics.com").port(8085).build());
