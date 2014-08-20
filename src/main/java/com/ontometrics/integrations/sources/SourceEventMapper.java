@@ -1,6 +1,7 @@
 
 package com.ontometrics.integrations.sources;
 
+import com.ontometrics.integrations.configuration.EventProcessorConfiguration;
 import com.ontometrics.integrations.configuration.IssueTracker;
 import com.ontometrics.integrations.events.Issue;
 import com.ontometrics.integrations.events.ProcessEvent;
@@ -19,7 +20,6 @@ import javax.xml.stream.events.XMLEvent;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -51,6 +51,7 @@ public class SourceEventMapper {
     public List<ProcessEvent> getLatestEvents() throws Exception {
         LinkedList<ProcessEvent> events = new LinkedList<>();
         try {
+            Date deploymentDate = EventProcessorConfiguration.instance().getDeploymentTime();
             InputStream is = issueTracker.getFeedUrl().openStream();
             XMLInputFactory inputFactory = XMLInputFactory.newInstance();
             eventReader = inputFactory.createXMLEventReader(is);
@@ -70,7 +71,10 @@ public class SourceEventMapper {
                                 //we already processed this event before, stopping iteration
                                 return events;
                             }
-                            events.addFirst(event);
+                            if (event.getPublishDate().after(deploymentDate)) {
+                                //we are adding only events with date after deployment date
+                                events.addFirst(event);
+                            }
                         }
                 }
             }
@@ -105,7 +109,7 @@ public class SourceEventMapper {
      * @return the changes that were made, at least one, telling what was changed
      */
     public List<ProcessEventChange> getChanges(ProcessEvent e) throws Exception {
-        return getChanges(e, null);
+        return getChanges(e, EventProcessorConfiguration.instance().getDeploymentTime());
     }
 
     public List<ProcessEventChange> getChanges(ProcessEvent e, Date upToDate) throws Exception {
@@ -164,7 +168,7 @@ public class SourceEventMapper {
                                 .currentValue(newValue)
                                 .build();
                         log.info("change: {}", change);
-                        if (upToDate == null || change.getUpdated().after(upToDate)) {
+                        if (change.getUpdated().after(upToDate)) {
                             changes.add(change);
                         }
                         processingChange = false;

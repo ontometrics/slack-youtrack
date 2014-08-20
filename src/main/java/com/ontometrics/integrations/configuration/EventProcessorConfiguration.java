@@ -22,6 +22,7 @@ public class EventProcessorConfiguration {
     private static final String LAST_EVENT_PUBLISHED = "last.event.published";
     private static final String LAST_EVENT_TITLE = "last.event.title";
     public static final String EVENT_CHANGE_DATES = "eventChangeDates";
+    private static final String DEPLOYMENT_TIME = "deploymentDate";
 
     private PropertiesConfiguration lastEventConfiguration;
     private DB db;
@@ -35,6 +36,10 @@ public class EventProcessorConfiguration {
         try {
             File dataDir = new File(ConfigurationFactory.get().getString("APP_DATA_DIR", "."));
             lastEventConfiguration = new PropertiesConfiguration(new File(dataDir, "lastEvent.properties"));
+            if (!lastEventConfiguration.containsKey(DEPLOYMENT_TIME)) {
+                lastEventConfiguration.setProperty(DEPLOYMENT_TIME, System.currentTimeMillis());
+                lastEventConfiguration.save();
+            }
             db = DBMaker.newFileDB(new File(dataDir, "app_db")).closeOnJvmShutdown().make();
             eventChangeDatesCollection = getEventChangeDatesCollection();
         } catch (ConfigurationException e) {
@@ -90,6 +95,21 @@ public class EventProcessorConfiguration {
         lastEventConfiguration.clearProperty(LAST_EVENT_LINK);
         lastEventConfiguration.clearProperty(LAST_EVENT_PUBLISHED);
         lastEventConfiguration.clearProperty(LAST_EVENT_TITLE);
+        lastEventConfiguration.save();
+    }
+
+    /**
+     * Date when application when first deployed. Only events with date more than deployment date will be reported to
+     * Slack
+     * @return deployment date
+     */
+    public Date getDeploymentTime() {
+        Long deploymentDate = lastEventConfiguration.getLong(DEPLOYMENT_TIME, null);
+        return deploymentDate == null ? new Date() : new Date(deploymentDate);
+    }
+
+    public void setDeploymentTime(Date deploymentDate) throws ConfigurationException {
+        lastEventConfiguration.setProperty(DEPLOYMENT_TIME, deploymentDate.getTime());
         lastEventConfiguration.save();
     }
 

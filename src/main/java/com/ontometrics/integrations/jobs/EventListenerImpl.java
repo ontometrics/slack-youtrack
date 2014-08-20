@@ -58,7 +58,10 @@ public class EventListenerImpl implements EventListener {
      * Note: items in this list guarantee that there is no items with same ISSUE-ID exists, they are ordered from most oldest one (first item) to most recent one (last item)
      *
      * For each issue (@link ProcessEvent}) in this list the list of issue change events {@link ProcessEventChange}
-     * is loaded. This list will only include the list of updates which were created after {@link #getLastEventChangeDate(com.ontometrics.integrations.events.ProcessEvent)}
+     * is loaded. This list will only include the list of updates which were created after {@link #getLastEventChangeDate(com.ontometrics.integrations.events.ProcessEvent)} or after
+     * {@link com.ontometrics.integrations.configuration.EventProcessorConfiguration#getDeploymentTime()} in case if there is
+     * no last change date for this event.
+     *
      * The list of updates for each issue will be grouped by {@link com.ontometrics.integrations.events.ProcessEventChange#getUpdater()}
      * and for each group (group of updates by user) app will generate and post message to external system (slack).
      * Message for each group (group of updates to the issue by particular YouTrack user) is generated with {@link #buildChangesMessage(String, com.ontometrics.integrations.events.ProcessEvent, java.util.List)}
@@ -72,22 +75,24 @@ public class EventListenerImpl implements EventListener {
         List<ProcessEvent> events = sourceEventMapper.getLatestEvents();
 
         final AtomicInteger processedEventsCount = new AtomicInteger(0);
-        try {
-            events.stream().forEach(e -> {
-                processedEventsCount.incrementAndGet();
-                //load list of updates (using REST service of YouTrack)
-                List<ProcessEventChange> changes = null;
-                try {
-                    changes = sourceEventMapper.getChanges(e, getLastEventChangeDate(e));
-                } catch (Exception ex) {
-                    log.error("Failed to process event " + e, ex);
-                    return;
-                }
-                postEventChangesToStream(e, changes, channelMapper.getChannel(e));
-            });
-        } catch (Exception ex) {
-            log.error("Got error while processing event changes feed", ex);
-        }
+        events.stream().forEach(e -> {
+            processedEventsCount.incrementAndGet();
+            //load list of updates (using REST service of YouTrack)
+            List<ProcessEventChange> changes = null;
+            Date minChangeDate = getLastEventChangeDate(e);
+            if (minChangeDate == null) {
+                // if there is no last event change date, then minimum issue change date to be retrieved should be
+                // after deployment date
+                minChangeDate = EventProcessorConfiguration.instance().getDeploymentTime();
+            }
+            try {
+                changes = sourceEventMapper.getChanges(e, minChangeDate);
+            } catch (Exception ex) {
+                log.error("Failed to process event " + e, ex);
+                return;
+            }
+            postEventChangesToStream(e, changes, channelMapper.getChannel(e));
+        });
 
         return processedEventsCount.get();
     }

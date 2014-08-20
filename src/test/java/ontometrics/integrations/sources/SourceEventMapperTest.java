@@ -1,5 +1,6 @@
 package ontometrics.integrations.sources;
 
+import com.ontometrics.integrations.configuration.EventProcessorConfiguration;
 import com.ontometrics.integrations.configuration.IssueTracker;
 import com.ontometrics.integrations.events.Issue;
 import com.ontometrics.integrations.events.ProcessEvent;
@@ -27,10 +28,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.TimeZone;
+import java.util.*;
 
 import static java.util.Calendar.JULY;
 import static org.hamcrest.CoreMatchers.*;
@@ -43,7 +41,10 @@ public class SourceEventMapperTest {
     private IssueTracker mockYouTrackInstance;
 
     @Before
-    public void setup(){
+    public void setup() throws Exception {
+        Calendar deploymentTime = Calendar.getInstance();
+        deploymentTime.set(Calendar.YEAR, 2013);
+        EventProcessorConfiguration.instance().setDeploymentTime(deploymentTime.getTime());
         mockYouTrackInstance = new IssueTracker(){
             @Override
             public URL getBaseUrl() {
@@ -196,7 +197,7 @@ public class SourceEventMapperTest {
     @Test
     public void testThatWeCanGetMostRecentChanges() throws Exception {
         SourceEventMapper sourceEventMapper = new SourceEventMapper(mockYouTrackInstance);
-        List<ProcessEventChange> recentChanges = null;
+        List<ProcessEventChange> recentChanges;
         recentChanges = sourceEventMapper.getLatestChanges();
 
         log.info("recent changes: {}", recentChanges);
