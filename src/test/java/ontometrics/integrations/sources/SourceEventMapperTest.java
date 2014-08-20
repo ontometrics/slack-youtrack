@@ -117,8 +117,9 @@ public class SourceEventMapperTest {
 
         ProcessEvent firstEvent = events.get(events.size()-1);
 
+        // check that we got the issue information parsed properly
         assertThat(firstEvent.getIssue().getId(), is(28));
-
+        assertThat(firstEvent.getIssue().getPrefix(), is("ASOC"));
 
         assertThat(firstEvent.getTitle(), is("ASOC-28: User searches for Users by name"));
         assertThat(firstEvent.getLink(), is("http://ontometrics.com:8085/issue/ASOC-28"));

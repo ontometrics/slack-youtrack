@@ -25,7 +25,10 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * Created by rob on 7/11/14.
+ * Does the work of getting Events from the feed, then looks each one up to get
+ * the specific changes that were made to them.
+ *
+ * Created by Rob on 7/11/14.
  * Copyright (c) ontometrics 2014 All rights reserved
  */
 public class SourceEventMapper {
@@ -87,6 +90,12 @@ public class SourceEventMapper {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Fetches the changes made to the specified {@link com.ontometrics.integrations.events.Issue}
+     *
+     * @param e the event from the stream that is actually just the Issue that was touched and when
+     * @return the changes that were made, at least one, telling what was changed
+     */
     public List<ProcessEventChange> getChanges(ProcessEvent e) {
         return getChanges(e, null);
     }
