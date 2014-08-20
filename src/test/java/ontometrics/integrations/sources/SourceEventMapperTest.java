@@ -9,6 +9,7 @@ import com.ontometrics.integrations.sources.SourceEventMapper;
 import com.ontometrics.util.DateBuilder;
 import ontometrics.test.util.TestUtil;
 import ontometrics.test.util.UrlStreamProvider;
+import org.hamcrest.Matcher;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -29,12 +30,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static java.util.Calendar.JULY;
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
 
 public class SourceEventMapperTest {
 
@@ -47,22 +49,7 @@ public class SourceEventMapperTest {
         Calendar deploymentTime = Calendar.getInstance();
         deploymentTime.set(Calendar.YEAR, 2013);
         EventProcessorConfiguration.instance().setDeploymentTime(deploymentTime.getTime());
-        mockYouTrackInstance = new IssueTracker(){
-            @Override
-            public URL getBaseUrl() {
-                return null;
-            }
-
-            @Override
-            public URL getFeedUrl() {
-                return TestUtil.getFileAsURL("/feeds/issues-feed-rss.xml");
-            }
-
-            @Override
-            public URL getChangesUrl(Issue issue) {
-                return TestUtil.getFileAsURL("/feeds/issue-changes.xml");
-            }
-        };
+        mockYouTrackInstance = new MockIssueTracker("/feeds/issues-feed-rss.xml", "/feeds/issue-changes.xml");
     }
 
     @Test
@@ -229,18 +216,61 @@ public class SourceEventMapperTest {
      */
     public void testThatLastEventIsCorrectlyUsedToRetrieveLatestEvents() throws Exception {
         SourceEventMapper sourceEventMapper = new SourceEventMapper(mockYouTrackInstance, UrlStreamProvider.instance());
-        SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, dd MMM yyy HH:mm:ss", Locale.ENGLISH);
-        dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
-        sourceEventMapper.setLastEvent(new ProcessEvent.Builder().link("http://ontometrics.com:8085/issue/ASOC-148")
-                .published(dateFormat.parse("Mon, 14 Jul 2014 16:09:07")).title("ASOC-148: New Embedding requirement")
-                .build());
+        sourceEventMapper.setLastEvent(createProcessEvent());
         List<ProcessEvent> latestEvents = sourceEventMapper.getLatestEvents();
         assertThat(latestEvents.size(), is(9));
+    }
+
+    private ProcessEvent createProcessEvent() {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, dd MMM yyy HH:mm:ss", Locale.ENGLISH);
+        dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+        try {
+            return new ProcessEvent.Builder().link("http://ontometrics.com:8085/issue/ASOC-148")
+                    .published(dateFormat.parse("Mon, 14 Jul 2014 16:09:07")).title("ASOC-148: New Embedding requirement")
+                    .build();
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 
     private void postEventToChannel(ProcessEvent event, String channel) {
         log.info("posting: {} to channel: {}", event.getTitle(), channel);
     }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void testThatEventChangesAreParsed() throws Exception {
+        mockYouTrackInstance = new MockIssueTracker("/feeds/issues-feed-rss.xml", "/feeds/issue-changes2.xml");
+        SourceEventMapper sourceEventMapper = new SourceEventMapper(mockYouTrackInstance, UrlStreamProvider.instance());
+        List<ProcessEventChange> changes = sourceEventMapper.getChanges(createProcessEvent());
+        assertThat(changes, not((Matcher)empty()));
+    }
+
+    private static class MockIssueTracker implements IssueTracker {
+        private String feedUrl;
+        private String changesUrl;
+
+        private MockIssueTracker(String feedUrl, String changesUrl) {
+            this.feedUrl = feedUrl;
+            this.changesUrl = changesUrl;
+        }
+
+        @Override
+        public URL getBaseUrl() {
+            return null;
+        }
+
+        @Override
+        public URL getFeedUrl() {
+            return TestUtil.getFileAsURL(feedUrl);
+        }
+
+        @Override
+        public URL getChangesUrl(Issue issue) {
+            return TestUtil.getFileAsURL(changesUrl);
+        }
+    }
+
 
 }

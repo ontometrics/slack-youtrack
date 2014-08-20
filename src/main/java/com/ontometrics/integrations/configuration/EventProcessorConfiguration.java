@@ -34,7 +34,7 @@ public class EventProcessorConfiguration {
 
     private void initialize() {
         try {
-            File dataDir = new File(ConfigurationFactory.get().getString("APP_DATA_DIR", "."));
+            File dataDir = new File(ConfigurationFactory.get().getString("APP_DATA_DIRECTORY", "."));
             lastEventConfiguration = new PropertiesConfiguration(new File(dataDir, "lastEvent.properties"));
             if (!lastEventConfiguration.containsKey(DEPLOYMENT_TIME)) {
                 lastEventConfiguration.setProperty(DEPLOYMENT_TIME, System.currentTimeMillis());
