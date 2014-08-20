@@ -113,7 +113,7 @@ public class SourceEventMapperTest {
     }
 
     @Test
-    public void testThatWeCanExtractYouTrackEvent() throws Exception, XMLStreamException {
+    public void testThatWeCanExtractYouTrackEvent() throws Exception {
         
         SourceEventMapper sourceEventMapper = new SourceEventMapper(mockYouTrackInstance, UrlStreamProvider.instance());
         List<ProcessEvent> events = sourceEventMapper.getLatestEvents();
