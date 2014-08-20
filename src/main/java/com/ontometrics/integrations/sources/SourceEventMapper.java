@@ -2,6 +2,7 @@
 package com.ontometrics.integrations.sources;
 
 import com.ontometrics.integrations.configuration.IssueTracker;
+import com.ontometrics.integrations.events.Issue;
 import com.ontometrics.integrations.events.ProcessEvent;
 import com.ontometrics.integrations.events.ProcessEventChange;
 import org.slf4j.Logger;
@@ -181,6 +182,8 @@ public class SourceEventMapper {
     }
 
     private ProcessEvent extractEventFromStream(DateFormat dateFormat) {
+        String prefix;
+        int issueNumber;
         String currentTitle = "", currentLink = "", currentDescription = "";
         Date currentPublishDate = null;
         try {
@@ -199,7 +202,11 @@ public class SourceEventMapper {
         } catch (XMLStreamException | ParseException e) {
             e.printStackTrace();
         }
+        String t = currentTitle;
+        prefix = t.substring(0, t.indexOf("-"));
+        issueNumber = Integer.parseInt(t.substring(t.indexOf("-")+1, t.indexOf(":")));
         ProcessEvent event = new ProcessEvent.Builder()
+                .issue(new Issue.Builder().id(issueNumber).projectPrefix(prefix).build())
                 .title(currentTitle)
                 .description(currentDescription)
                 .link(currentLink)

@@ -117,6 +117,9 @@ public class SourceEventMapperTest {
 
         ProcessEvent firstEvent = events.get(events.size()-1);
 
+        assertThat(firstEvent.getIssue().getId(), is(28));
+
+
         assertThat(firstEvent.getTitle(), is("ASOC-28: User searches for Users by name"));
         assertThat(firstEvent.getLink(), is("http://ontometrics.com:8085/issue/ASOC-28"));
         assertThat(firstEvent.getDescription(), is("<table> <tr> <th>Reporter</th> <td> <img src=\"http://ontometrics.com:8085/_classpath/smartui/img/youPicture.gif\" width=\"56\" height=\"59\" alt=\"Tim Fulmer (timfulmer)\" title=\"Tim Fulmer (timfulmer)\"/> Tim Fulmer (timfulmer) </td> </tr> <tr> <th>Created</th> <td>Apr 15, 2014 9:05:53 AM</td> </tr> <tr> <th>Updated</th> <td>Jul 14, 2014 9:41:03 AM</td> </tr> <tr> <th>Priority</th> <td>Normal</td> </tr> <tr> <th>Type</th> <td>Feature</td> </tr> <tr> <th>State</th> <td>Open</td> </tr> <tr> <th>Assignee</th> <td>Noura Hassan (noura)</td> </tr> <tr> <th>Subsystem</th> <td>No subsystem</td> </tr> <tr> <th>Fix versions</th> <td>1.0.0</td> </tr> <tr> <th>Affected versions</th> <td>Unknown</td> </tr> <tr> <th>Fixed in build</th> <td>Next Build</td> </tr> </table> <div class=\"wiki text\">User can search for other Users by name, first screenshot. Users can follow in the search results. Tapping on a search result shows the selected User&#39;s profile page.<br/><br/>API service call:<br/><br/><a href=\"http://devvixletapi-env.elasticbeanstalk.com/#!/search/_get_0\">http://devvixletapi-env.elasticbeanstalk.com/#!/search/_get_0</a></div>"));
