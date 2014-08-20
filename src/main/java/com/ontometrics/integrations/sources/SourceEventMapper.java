@@ -37,10 +37,11 @@ public class SourceEventMapper {
     private Logger log = LoggerFactory.getLogger(SourceEventMapper.class);
     private XMLEventReader eventReader;
     private ProcessEvent lastEvent;
+    private StreamProvider streamProvider;
 
-
-    public SourceEventMapper(IssueTracker issueTracker) {
+    public SourceEventMapper(IssueTracker issueTracker, StreamProvider streamProvider) {
         this.issueTracker = issueTracker;
+        this.streamProvider = streamProvider;
     }
 
     /**
@@ -49,35 +50,36 @@ public class SourceEventMapper {
      * @return the last event that was returned to the user of this class
      */
     public List<ProcessEvent> getLatestEvents() throws Exception {
-        LinkedList<ProcessEvent> events = new LinkedList<>();
-        try {
-            InputStream is = issueTracker.getFeedUrl().openStream();
-            XMLInputFactory inputFactory = XMLInputFactory.newInstance();
-            eventReader = inputFactory.createXMLEventReader(is);
-            DateFormat dateFormat = createEventDateFormat();
-            while (eventReader.hasNext()) {
-                XMLEvent nextEvent = eventReader.nextEvent();
-                switch (nextEvent.getEventType()) {
-                    case XMLStreamConstants.START_ELEMENT:
-                        StartElement startElement = nextEvent.asStartElement();
-                        String elementName = startElement.getName().getLocalPart();
-                        if (elementName.equals("item")) {
-                            //todo: decide if we have to swallow exception thrown by attempt of single event extraction.
-                            //If we swallow it, we have at least report the problem
-                            ProcessEvent event = extractEventFromStream(dateFormat);
+        return streamProvider.openResourceStream(issueTracker.getFeedUrl(), is -> {
+            LinkedList<ProcessEvent> events = new LinkedList<>();
+            try {
+                XMLInputFactory inputFactory = XMLInputFactory.newInstance();
+                eventReader = inputFactory.createXMLEventReader(is);
+                DateFormat dateFormat = createEventDateFormat();
+                while (eventReader.hasNext()) {
+                    XMLEvent nextEvent = eventReader.nextEvent();
+                    switch (nextEvent.getEventType()) {
+                        case XMLStreamConstants.START_ELEMENT:
+                            StartElement startElement = nextEvent.asStartElement();
+                            String elementName = startElement.getName().getLocalPart();
+                            if (elementName.equals("item")) {
+                                //todo: decide if we have to swallow exception thrown by attempt of single event extraction.
+                                //If we swallow it, we have at least report the problem
+                                ProcessEvent event = extractEventFromStream(dateFormat);
 
-                            if (lastEvent != null && lastEvent.getKey().equals(event.getKey())) {
-                                //we already processed this event before, stopping iteration
-                                return events;
+                                if (lastEvent != null && lastEvent.getKey().equals(event.getKey())) {
+                                    //we already processed this event before, stopping iteration
+                                    return events;
+                                }
+                                events.addFirst(event);
                             }
-                            events.addFirst(event);
-                        }
+                    }
                 }
+            } catch (XMLStreamException e) {
+                throw new IOException("Failed to process XML", e);
             }
-        } catch (XMLStreamException e) {
-            throw new IOException("Failed to process XML", e);
-        }
-        return events;
+            return events;
+        });
     }
 
     /**
@@ -109,71 +111,73 @@ public class SourceEventMapper {
     }
 
     public List<ProcessEventChange> getChanges(ProcessEvent e, Date upToDate) throws Exception {
-        List<ProcessEventChange> changes = new ArrayList<>();
+        return streamProvider.openResourceStream(issueTracker.getChangesUrl(e.getIssue()), is -> {
+            List<ProcessEventChange> changes = new ArrayList<>();
 
-        InputStream inputStream = issueTracker.getChangesUrl(e.getIssue()).openStream();
-        XMLInputFactory inputFactory = XMLInputFactory.newInstance();
-        XMLEventReader reader = inputFactory.createXMLEventReader(inputStream);
-        boolean processingChange = false;
-        String fieldName = null;
-        String oldValue = null, newValue = null;
-        String updater = null;
-        Date updated = null;
-        while (reader.hasNext()){
-            XMLEvent nextEvent = reader.nextEvent();
-            switch (nextEvent.getEventType()){
-                case XMLStreamConstants.START_ELEMENT:
-                    StartElement startElement = nextEvent.asStartElement();
-                    String elementName = startElement.getName().getLocalPart();
-                    if (elementName.equals("change")){
-                        processingChange = true;
-                    }
-                    if (elementName.equals("field") && processingChange){
-                        fieldName = startElement.getAttributeByName(new QName("", "name")).getValue();
-                        boolean isChangeField = startElement.getAttributes().next().toString().contains("ChangeField");
-                        if (isChangeField){
-                            reader.nextEvent();
-                            StartElement firstValueTag = reader.nextEvent().asStartElement();
-                            if (firstValueTag.getName().getLocalPart().equals("oldValue")){
-                                oldValue = reader.getElementText();
-                                reader.nextEvent(); reader.nextEvent();
-                                newValue = reader.getElementText();
+            InputStream inputStream = issueTracker.getChangesUrl(e.getIssue()).openStream();
+            XMLInputFactory inputFactory = XMLInputFactory.newInstance();
+            XMLEventReader reader = inputFactory.createXMLEventReader(inputStream);
+            boolean processingChange = false;
+            String fieldName = null;
+            String oldValue = null, newValue = null;
+            String updater = null;
+            Date updated = null;
+            while (reader.hasNext()){
+                XMLEvent nextEvent = reader.nextEvent();
+                switch (nextEvent.getEventType()){
+                    case XMLStreamConstants.START_ELEMENT:
+                        StartElement startElement = nextEvent.asStartElement();
+                        String elementName = startElement.getName().getLocalPart();
+                        if (elementName.equals("change")){
+                            processingChange = true;
+                        }
+                        if (elementName.equals("field") && processingChange){
+                            fieldName = startElement.getAttributeByName(new QName("", "name")).getValue();
+                            boolean isChangeField = startElement.getAttributes().next().toString().contains("ChangeField");
+                            if (isChangeField){
+                                reader.nextEvent();
+                                StartElement firstValueTag = reader.nextEvent().asStartElement();
+                                if (firstValueTag.getName().getLocalPart().equals("oldValue")){
+                                    oldValue = reader.getElementText();
+                                    reader.nextEvent(); reader.nextEvent();
+                                    newValue = reader.getElementText();
+                                } else {
+                                    newValue = reader.getElementText();
+                                }
                             } else {
-                                newValue = reader.getElementText();
-                            }
-                        } else {
-                            reader.nextEvent(); // eat value tag
-                            reader.nextEvent();
-                            String fieldValue = reader.getElementText();
-                            if (fieldName.equals("updaterName")){
-                                updater = fieldValue;
-                            } else if (fieldName.equals("updated")){
-                                updated = new Date(Long.parseLong(fieldValue));
+                                reader.nextEvent(); // eat value tag
+                                reader.nextEvent();
+                                String fieldValue = reader.getElementText();
+                                if (fieldName.equals("updaterName")){
+                                    updater = fieldValue;
+                                } else if (fieldName.equals("updated")){
+                                    updated = new Date(Long.parseLong(fieldValue));
+                                }
                             }
                         }
-                    }
-                    break;
-                case XMLStreamConstants.END_ELEMENT:
-                    EndElement endElement = nextEvent.asEndElement();
-                    if (endElement.getName().getLocalPart().equals("change")){
-                        ProcessEventChange change = new ProcessEventChange.Builder()
-                                .updater(updater)
-                                .updated(updated)
-                                .field(fieldName)
-                                .priorValue(oldValue)
-                                .currentValue(newValue)
-                                .build();
-                        log.info("change: {}", change);
-                        if (upToDate == null || change.getUpdated().after(upToDate)) {
-                            changes.add(change);
+                        break;
+                    case XMLStreamConstants.END_ELEMENT:
+                        EndElement endElement = nextEvent.asEndElement();
+                        if (endElement.getName().getLocalPart().equals("change")){
+                            ProcessEventChange change = new ProcessEventChange.Builder()
+                                    .updater(updater)
+                                    .updated(updated)
+                                    .field(fieldName)
+                                    .priorValue(oldValue)
+                                    .currentValue(newValue)
+                                    .build();
+                            log.info("change: {}", change);
+                            if (upToDate == null || change.getUpdated().after(upToDate)) {
+                                changes.add(change);
+                            }
+                            processingChange = false;
                         }
-                        processingChange = false;
-                    }
-                    break;
+                        break;
 
+                }
             }
-        }
-        return changes;
+            return changes;
+        });
     }
 
     private DateFormat createEventDateFormat() {

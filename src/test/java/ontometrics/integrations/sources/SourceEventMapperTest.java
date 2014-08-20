@@ -7,7 +7,9 @@ import com.ontometrics.integrations.events.ProcessEventChange;
 import com.ontometrics.integrations.sources.SourceEventMapper;
 import com.ontometrics.util.DateBuilder;
 import ontometrics.test.util.TestUtil;
+import ontometrics.test.util.UrlStreamProvider;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -112,7 +114,7 @@ public class SourceEventMapperTest {
     @Test
     public void testThatWeCanExtractYouTrackEvent() throws Exception, XMLStreamException {
         
-        SourceEventMapper sourceEventMapper = new SourceEventMapper(mockYouTrackInstance);
+        SourceEventMapper sourceEventMapper = new SourceEventMapper(mockYouTrackInstance, UrlStreamProvider.instance());
         List<ProcessEvent> events = sourceEventMapper.getLatestEvents();
 
         assertThat(events.size(), is(50));
@@ -132,8 +134,15 @@ public class SourceEventMapperTest {
     }
 
     @Test
+    @Ignore
+    /**
+     * This test has been ignored, since SourceEventMapper is not responsible anymore for updating lastEvent inside
+     * {@link SourceEventMapper#getLatestEvents}, it is updated outside of SourceEventMapper by external code
+     * On the moment it is updated by {@link com.ontometrics.integrations.jobs.EventListenerImpl#postEventChangesToStream} )
+     * after <strong>successful</strong> completion of processing of each {@link com.ontometrics.integrations.events.ProcessEvent}
+     */
     public void testThatLastSeenEventTracked() throws Exception {
-        SourceEventMapper sourceEventMapper = new SourceEventMapper(mockYouTrackInstance);
+        SourceEventMapper sourceEventMapper = new SourceEventMapper(mockYouTrackInstance, UrlStreamProvider.instance());
         List<ProcessEvent> events = sourceEventMapper.getLatestEvents();
         ProcessEvent lastEventFromFetch = events.get(events.size()-1);
 
@@ -145,7 +154,7 @@ public class SourceEventMapperTest {
     @Test
     public void testThatEventsStreamProcessed() throws Exception {
 
-        SourceEventMapper sourceEventMapper = new SourceEventMapper(mockYouTrackInstance);
+        SourceEventMapper sourceEventMapper = new SourceEventMapper(mockYouTrackInstance, UrlStreamProvider.instance());
         List<ProcessEvent> events = sourceEventMapper.getLatestEvents();
 
         ChannelMapper channelMapper = new ChannelMapper.Builder()
@@ -195,7 +204,7 @@ public class SourceEventMapperTest {
 
     @Test
     public void testThatWeCanGetMostRecentChanges() throws Exception {
-        SourceEventMapper sourceEventMapper = new SourceEventMapper(mockYouTrackInstance);
+        SourceEventMapper sourceEventMapper = new SourceEventMapper(mockYouTrackInstance, UrlStreamProvider.instance());
         List<ProcessEventChange> recentChanges = null;
         recentChanges = sourceEventMapper.getLatestChanges();
 
@@ -218,7 +227,7 @@ public class SourceEventMapperTest {
      * field returns correct list of latest events (does not return already processed events)
      */
     public void testThatLastEventIsCorrectlyUsedToRetrieveLatestEvents() throws Exception {
-        SourceEventMapper sourceEventMapper = new SourceEventMapper(mockYouTrackInstance);
+        SourceEventMapper sourceEventMapper = new SourceEventMapper(mockYouTrackInstance, UrlStreamProvider.instance());
         SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, dd MMM yyy HH:mm:ss", Locale.ENGLISH);
         dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
         sourceEventMapper.setLastEvent(new ProcessEvent.Builder().link("http://ontometrics.com:8085/issue/ASOC-148")

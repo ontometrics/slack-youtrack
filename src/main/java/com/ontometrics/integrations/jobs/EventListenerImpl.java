@@ -30,6 +30,10 @@ import java.util.stream.Collectors;
 public class EventListenerImpl implements EventListener {
     private static final Logger log = LoggerFactory.getLogger(EventListenerImpl.class);
 
+    //TODO move into configuration
+    private static final String YT_FEED_URL = "http://ontometrics.com";
+    private static final int YT_PORT = 8085;
+
     public static final String TOKEN_KEY = "token";
     public static final String TEXT_KEY = "text";
     public static final String CHANNEL_KEY = "channel";
@@ -49,7 +53,9 @@ public class EventListenerImpl implements EventListener {
         if(feedStreamProvider == null || channelMapper == null) throw new IllegalArgumentException("You must provide sourceURL and channelMapper.");
 
 
-        sourceEventMapper = new SourceEventMapper(new YouTrackInstance.Builder().baseUrl("http://ontometrics.com").port(8085).build());
+        sourceEventMapper = new SourceEventMapper(
+                new YouTrackInstance.Builder().baseUrl(YT_FEED_URL).port(YT_PORT).build(),
+                feedStreamProvider);
         sourceEventMapper.setLastEvent(EventProcessorConfiguration.instance().loadLastProcessedEvent());
     }
 
@@ -129,6 +135,7 @@ public class EventListenerImpl implements EventListener {
 
         for (int i = 0; i < processEventChanges.size(); i++) {
             ProcessEventChange change = processEventChanges.get(i);
+            //noinspection StatementWithEmptyBody
             if (StringUtils.isNotBlank(change.getField())) {
                 message += (change.getField() + ": ");
                 if (StringUtils.isNotBlank(change.getPriorValue()) && StringUtils.isNotBlank(change.getCurrentValue())) {

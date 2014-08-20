@@ -2,8 +2,8 @@ package com.ontometrics.integrations.jobs;
 
 import com.ontometrics.integrations.configuration.ConfigurationFactory;
 import com.ontometrics.integrations.configuration.EventProcessorConfiguration;
+import com.ontometrics.integrations.sources.AuthenticatedHttpStreamProvider;
 import com.ontometrics.integrations.sources.ChannelMapper;
-import com.ontometrics.integrations.sources.ExternalStreamProvider;
 import com.ontometrics.integrations.sources.StreamProvider;
 import org.apache.commons.configuration.Configuration;
 import org.slf4j.Logger;
@@ -11,8 +11,6 @@ import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
@@ -23,7 +21,6 @@ import java.util.TimerTask;
  * WebContextJobStarter.java
  */
 public class WebContextJobStarter implements ServletContextListener {
-    public static final String YT_FEED_URL = "http://ontometrics.com:8085/_rss/issues";
     private static Logger logger = LoggerFactory.getLogger(WebContextJobStarter.class);
 
     private static final long EXECUTION_DELAY = 2 * 1000;
@@ -43,16 +40,11 @@ public class WebContextJobStarter implements ServletContextListener {
      * Schedules periodic tasks to fetch the events
      */
     private void scheduleTasks() {
-        try {
-            Configuration configuration = ConfigurationFactory.get();
-            StreamProvider streamProvider = new ExternalStreamProvider(
-                    new URL(YT_FEED_URL).toExternalForm())
-                .authenticator(httpExecutor -> httpExecutor.auth(configuration
-                                    .getString("YOUTRACK_USERNAME"), configuration.getString("YOUTRACK_PASSWORD")));
-            scheduleTask(timer, new EventListenerImpl(streamProvider, createChannelMapper()));
-        } catch (MalformedURLException e) {
-            throw new RuntimeException(e);
-        }
+        Configuration configuration = ConfigurationFactory.get();
+        StreamProvider streamProvider = new AuthenticatedHttpStreamProvider(
+                httpExecutor -> httpExecutor.auth(configuration.getString("YOUTRACK_USERNAME"),
+                        configuration.getString("YOUTRACK_PASSWORD")));
+        scheduleTask(timer, new EventListenerImpl(streamProvider, createChannelMapper()));
     }
 
     private void initialize() {
