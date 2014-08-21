@@ -1,5 +1,6 @@
 package ontometrics.integrations.sources;
 
+import javax.xml.namespace.QName;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamConstants;
@@ -10,6 +11,9 @@ import javax.xml.stream.events.XMLEvent;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Stack;
 
 import com.ontometrics.integrations.configuration.IssueTracker;
 import com.ontometrics.integrations.events.Issue;
@@ -39,8 +43,9 @@ public class StreamExtractorTest {
         InputStream inputStream = mockYouTrackInstance.getChangesUrl(issue).openStream();
         XMLInputFactory inputFactory = XMLInputFactory.newInstance();
         XMLEventReader eventReader = inputFactory.createXMLEventReader(inputStream);
-
         boolean extractingChange = false;
+        String currentTag = "", currentFieldName = "";
+        Stack<Map<String, String>> extractions = new Stack<>();
         while (eventReader.hasNext()) {
             XMLEvent nextEvent = eventReader.nextEvent();
             switch (nextEvent.getEventType()) {
@@ -50,11 +55,25 @@ public class StreamExtractorTest {
                     if (elementName.equals("change")) {
                         log.info("extracting change");
                         extractingChange = true;
+                        currentTag = elementName;
+                    } else if (elementName.equals("field")){
+                        currentFieldName = nextEvent.asStartElement().getAttributeByName(new QName("", "name")).getValue();
+                        log.info("found field named: {}", currentFieldName);
                     } else {
                         if (extractingChange){
-                            log.info("found tag: {}", elementName);
-                        }
+                            String elementText = "";
+                            try {
+                                elementText = eventReader.getElementText();
+                            } catch (Exception e){
+                                //no text..
+                            }
 
+                            if (elementText.length() > 0) {
+                                log.info("found tag: {} value: {}", elementName, elementText);
+                            } else {
+                                log.info("found tag: {}", elementName);
+                            }
+                        }
                     }
                     break;
 
