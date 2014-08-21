@@ -82,6 +82,11 @@ public class ProcessEventChange {
 
     @Override
     public String toString() {
-        return String.format("%s changed %s from %s to %s", updater, field, priorValue, currentValue);
+        StringBuilder stringBuilder = new StringBuilder(String.format("%s changed %s ", updater, field));
+        if (priorValue.length() > 0) {
+            stringBuilder.append("from " + priorValue + " ");
+        }
+        stringBuilder.append("to " +  currentValue);
+        return stringBuilder.toString();
     }
 }
