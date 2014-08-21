@@ -138,7 +138,9 @@ public class SourceEventMapper {
                             boolean isChangeField = startElement.getAttributes().next().toString().contains("ChangeField");
                             if (isChangeField){
                                 reader.nextEvent();
-                                StartElement firstValueTag = reader.nextEvent().asStartElement();
+                                XMLEvent insideChangeEvent = reader.nextEvent();
+                                log.info("first tag inside change field [type: {}]: {}", insideChangeEvent.getEventType(), insideChangeEvent);
+                                StartElement firstValueTag = insideChangeEvent.asStartElement();
                                 if (firstValueTag.getName().getLocalPart().equals("oldValue")){
                                     oldValue = reader.getElementText();
                                     reader.nextEvent(); reader.nextEvent();
