@@ -45,9 +45,10 @@ public class ChannelMapper {
 
 
     public String getChannel(ProcessEvent event){
-        Optional<String> channelKey = mappings.keySet().stream().filter(k -> event.getTitle().contains(k)).findFirst();
-        log.info("channelKey: {} isPresent: {}", channelKey, channelKey.isPresent());
-        return channelKey.isPresent() ? mappings.get(channelKey.get()) : defaultChannel;
+//        Optional<String> channelKey = mappings.keySet().stream().filter(k -> event.getTitle().contains(k)).findFirst();
+//        log.info("channelKey: {} isPresent: {}", channelKey, channelKey.isPresent());
+//        return channelKey.isPresent() ? mappings.get(channelKey.get()) : defaultChannel;
+        return "process";
     }
 
 

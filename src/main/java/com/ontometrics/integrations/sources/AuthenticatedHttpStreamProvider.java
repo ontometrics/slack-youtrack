@@ -30,14 +30,15 @@ public class AuthenticatedHttpStreamProvider implements StreamProvider {
      */
     @Override
     public <RES> RES openResourceStream(URL resourceUrl, final InputStreamHandler<RES> inputStreamHandler) throws Exception{
-        return httpExecutor.execute(Request.Get(resourceUrl.toExternalForm()))
-                .handleResponse(httpResponse -> {
-                    try {
-                        return inputStreamHandler.handleStream(httpResponse.getEntity().getContent());
-                    } catch (Exception e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-            );
+//        return httpExecutor.execute(Request.Get(resourceUrl.toExternalForm()))
+//                .handleResponse(httpResponse -> {
+//                    try {
+//                        return inputStreamHandler.handleStream(httpResponse.getEntity().getContent());
+//                    } catch (Exception e) {
+//                        throw new RuntimeException(e);
+//                    }
+//                }
+//            );
+        return null;
     }
 }

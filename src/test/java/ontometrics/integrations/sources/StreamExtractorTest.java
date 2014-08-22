@@ -79,10 +79,11 @@ public class StreamExtractorTest {
                             log.info("found field named: {}: change type: {}", currentFieldName, currentChangeType);
                             break;
                         default:
-                            if (extractingChange) {
+//                            if (extractingChange) {
                                 String elementText;
                                 try {
-                                    switch (elementText = eventReader.getElementText()) {
+                                    elementText = eventReader.getElementText();
+                                    switch (elementName) {
                                         case "newValue":
                                             newValue = elementText;
                                             break;
@@ -100,7 +101,7 @@ public class StreamExtractorTest {
                                     //no text..
                                 }
 
-                            }
+//                            }
                             break;
                     }
                     break;
