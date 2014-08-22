@@ -23,6 +23,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.slf4j.LoggerFactory.getLogger;
 
 /**
@@ -35,11 +38,18 @@ import static org.slf4j.LoggerFactory.getLogger;
 public class StreamExtractorTest {
 
     private Logger log = getLogger(StreamExtractorTest.class);
+    private MockIssueTracker mockYouTrackInstance;
 
     @Test
     public void testReadingExtraction() throws IOException, XMLStreamException {
-        MockIssueTracker mockYouTrackInstance = new MockIssueTracker("/feeds/issues-feed-rss.xml", "/feeds/issue-changes.xml");
+        mockYouTrackInstance = new MockIssueTracker("/feeds/issues-feed-rss.xml", "/feeds/issue-changes.xml");
+        List<ProcessEventChange> changes = extractFields();
+        assertThat(changes.size(), is(not(0)));
+        mockYouTrackInstance = new MockIssueTracker("/feeds/issues-feed-rss.xml", "/feeds/issue-changes2.xml");
+        extractFields();
+    }
 
+    private List<ProcessEventChange> extractFields() throws IOException, XMLStreamException {
         Issue issue = new Issue.Builder().projectPrefix("ASOC").id(48).build();
         InputStream inputStream = mockYouTrackInstance.getChangesUrl(issue).openStream();
         XMLInputFactory inputFactory = XMLInputFactory.newInstance();
@@ -50,48 +60,48 @@ public class StreamExtractorTest {
         String oldValue = "", newValue = "";
         String updaterName = "";
         Date updated = null;
+        List<ProcessEventChange> currentChanges = new ArrayList<>();
 
-        List<FieldChange> fieldChanges = new ArrayList<>();
         while (eventReader.hasNext()) {
             XMLEvent nextEvent = eventReader.nextEvent();
             switch (nextEvent.getEventType()) {
                 case XMLStreamConstants.START_ELEMENT:
                     StartElement startElement = nextEvent.asStartElement();
                     String elementName = startElement.getName().getLocalPart();
-                    if (elementName.equals("change")) {
-                        log.info("extracting change");
-                        extractingChange = true;
-                        currentTag = elementName;
-                    } else if (elementName.equals("field")){
-                        currentFieldName = nextEvent.asStartElement().getAttributeByName(new QName("", "name")).getValue();
-                        currentChangeType = nextEvent.asStartElement().getAttributes().next().toString();
-                        log.info("found field named: {}: change type: {}", currentFieldName, currentChangeType);
-                    } else {
-                        if (extractingChange){
-                            String elementText = "";
-                            try {
-                                elementText = eventReader.getElementText();
-                                if (elementName.equals("newValue")) {
-                                    newValue = elementText;
-                                } else if (elementName.equals("oldValue")){
-                                    oldValue = elementText;
-                                } else if (elementName.equals("value")){
-                                    if (currentFieldName.equals("updaterName")){
-                                        updaterName = elementText;
-                                    } else if (currentFieldName.equals("updated")) {
-                                        updated = new Date(Long.parseLong(elementText));
+                    switch (elementName) {
+                        case "change":
+                            extractingChange = true;
+                            currentTag = elementName;
+                            break;
+                        case "field":
+                            currentFieldName = nextEvent.asStartElement().getAttributeByName(new QName("", "name")).getValue();
+                            currentChangeType = nextEvent.asStartElement().getAttributes().next().toString();
+                            log.info("found field named: {}: change type: {}", currentFieldName, currentChangeType);
+                            break;
+                        default:
+                            if (extractingChange) {
+                                String elementText;
+                                try {
+                                    switch (elementText = eventReader.getElementText()) {
+                                        case "newValue":
+                                            newValue = elementText;
+                                            break;
+                                        case "oldValue":
+                                            oldValue = elementText;
+                                            break;
+                                        case "value":
+                                            if (currentFieldName.equals("updaterName")) {
+                                                updaterName = elementText;
+                                            } else if (currentFieldName.equals("updated")) {
+                                                updated = new Date(Long.parseLong(elementText));
+                                            }
                                     }
+                                } catch (Exception e) {
+                                    //no text..
                                 }
-                            } catch (Exception e){
-                                //no text..
-                            }
 
-                            if (elementText.length() > 0) {
-                                log.info("{}: {}", elementName, elementText);
-                            } else {
-                                log.info("found tag: {}", elementName);
                             }
-                        }
+                            break;
                     }
                     break;
 
@@ -99,9 +109,7 @@ public class StreamExtractorTest {
                     EndElement endElement = nextEvent.asEndElement();
                     String tagName = endElement.getName().getLocalPart();
                     if (tagName.equals("change")){
-                        log.info("got changes");
                         extractingChange = false;
-                        buildChangeSet();
                     } else if (tagName.equals("field")){
                         if (newValue.length() > 0) {
                             ProcessEventChange processEventChange = new ProcessEventChange.Builder()
@@ -111,6 +119,7 @@ public class StreamExtractorTest {
                                     .priorValue(oldValue)
                                     .currentValue(newValue)
                                     .build();
+                            currentChanges.add(processEventChange);
                             log.info("process event change: {}", processEventChange);
                         }
                         currentFieldName = ""; oldValue = ""; newValue = "";
@@ -119,12 +128,8 @@ public class StreamExtractorTest {
 
             }
         }
-
-    }
-
-    private void buildChangeSet() {
-        List<ProcessEventChange> changes = buildProcessEventChanges();
-
+        log.info("returning changes: {}", currentChanges);
+        return currentChanges;
     }
 
     private List<ProcessEventChange> buildProcessEventChanges() {
@@ -156,66 +161,4 @@ public class StreamExtractorTest {
         }
     }
 
-    private static class FieldChange {
-        private final String name;
-        private final String oldValue;
-        private final String newValue;
-
-        public FieldChange(Builder builder) {
-            name = builder.name;
-            oldValue = builder.oldValue;
-            newValue = builder.newValue;
-        }
-
-        public static class Builder {
-
-            private String name;
-            private String oldValue;
-            private String newValue;
-
-            public Builder name(String name) {
-                this.name = name;
-                return this;
-            }
-
-            public Builder oldValue(String value){
-                this.oldValue = value;
-                return this;
-                }
-
-            public Builder newValue(String newValue){
-                this.newValue = newValue;
-                return this;
-                }
-
-            public FieldChange build(){
-                return new FieldChange(this);
-                }
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public String getOldValue() {
-            return oldValue;
-        }
-
-        public String getNewValue() {
-            return newValue;
-        }
-
-        @Override
-        public String toString() {
-            return "FieldChange{" +
-                    "name='" + name + '\'' +
-                    ", oldValue='" + oldValue + '\'' +
-                    ", newValue='" + newValue + '\'' +
-                    '}';
-        }
-    }
-
-
 }
-
-
