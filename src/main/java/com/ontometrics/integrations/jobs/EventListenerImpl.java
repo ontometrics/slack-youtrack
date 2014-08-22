@@ -222,7 +222,7 @@ public class EventListenerImpl implements EventListener {
     private String getIssueLink(ProcessEvent event){
         StringBuilder builder = new StringBuilder();
         String title = event.getTitle();
-        title = title.replace(String.valueOf(event.getIssue().getId()), "");
+        title = title.replace(String.valueOf(event.getIssue().toString()), "");
         builder.append("<").append(event.getLink()).append("|").append(event.getIssue().toString()).append(">").append(title);
         return builder.toString();
     }
