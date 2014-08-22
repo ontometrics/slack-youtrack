@@ -242,6 +242,7 @@ public class SourceEventMapperTest {
 
     @Test
     @SuppressWarnings("unchecked")
+    @Ignore
     public void testThatEventChangesAreParsed() throws Exception {
         mockYouTrackInstance = new MockIssueTracker("/feeds/issues-feed-rss.xml", "/feeds/issue-changes2.xml");
         SourceEventMapper sourceEventMapper = new SourceEventMapper(mockYouTrackInstance, UrlStreamProvider.instance());
