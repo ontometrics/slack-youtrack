@@ -45,6 +45,7 @@ public class StreamExtractorTest {
         XMLInputFactory inputFactory = XMLInputFactory.newInstance();
         XMLEventReader eventReader = inputFactory.createXMLEventReader(inputStream);
         boolean extractingChange = false;
+        String currentChangeType = "";
         String currentTag = "", currentFieldName = "";
         String oldValue = "", newValue = "";
         String updaterName = "";
@@ -63,7 +64,8 @@ public class StreamExtractorTest {
                         currentTag = elementName;
                     } else if (elementName.equals("field")){
                         currentFieldName = nextEvent.asStartElement().getAttributeByName(new QName("", "name")).getValue();
-                        log.info("found field named: {}", currentFieldName);
+                        currentChangeType = nextEvent.asStartElement().getAttributes().next().toString();
+                        log.info("found field named: {}: change type: {}", currentFieldName, currentChangeType);
                     } else {
                         if (extractingChange){
                             String elementText = "";
