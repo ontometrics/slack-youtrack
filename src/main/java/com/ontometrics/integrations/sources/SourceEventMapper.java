@@ -116,12 +116,10 @@ public class SourceEventMapper {
         return streamProvider.openResourceStream(issueTracker.getChangesUrl(e.getIssue()), new InputStreamHandler<List<ProcessEventChange>>() {
             @Override
             public List<ProcessEventChange> handleStream(InputStream is) throws Exception {
-                Issue issue = new Issue.Builder().projectPrefix("ASOC").id(48).build();
                 XMLInputFactory inputFactory = XMLInputFactory.newInstance();
                 XMLEventReader eventReader = inputFactory.createXMLEventReader(is);
-                boolean extractingChange = false;
-                String currentChangeType = "";
-                String currentTag = "", currentFieldName = "";
+                String currentChangeType;
+                String currentFieldName = "";
                 String oldValue = "", newValue = "";
                 String updaterName = "";
                 Date updated = null;
@@ -135,8 +133,6 @@ public class SourceEventMapper {
                             String elementName = startElement.getName().getLocalPart();
                             switch (elementName) {
                                 case "change":
-                                    extractingChange = true;
-                                    currentTag = elementName;
                                     break;
                                 case "field":
                                     currentFieldName = nextEvent.asStartElement().getAttributeByName(new QName("", "name")).getValue();
@@ -171,9 +167,7 @@ public class SourceEventMapper {
                         case XMLStreamConstants.END_ELEMENT:
                             EndElement endElement = nextEvent.asEndElement();
                             String tagName = endElement.getName().getLocalPart();
-                            if (tagName.equals("change")){
-                                extractingChange = false;
-                            } else if (tagName.equals("field")){
+                            if (tagName.equals("field")){
                                 if (newValue.length() > 0) {
                                     ProcessEventChange processEventChange = new ProcessEventChange.Builder()
                                             .updater(updaterName)
