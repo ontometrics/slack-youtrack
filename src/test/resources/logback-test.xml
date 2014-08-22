@@ -4,7 +4,7 @@
         <file>${catalina.base}/logs/application.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <!-- rollover daily -->
-            <fileNamePattern>${catalina.base}/logs/application.log.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+            <fileNamePattern>target/logs/application.log.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
             <timeBasedFileNamingAndTriggeringPolicy
                     class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
                 <!-- or whenever the file size reaches 100MB -->
@@ -20,7 +20,7 @@
 
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-            <pattern>%coloredLevel %logger{15} - %message%n%xException{5}</pattern>
+            <pattern>%logger{15} - %message%n%xException{5}</pattern>
         </encoder>
     </appender>
 

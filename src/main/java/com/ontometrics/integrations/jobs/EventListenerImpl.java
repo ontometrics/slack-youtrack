@@ -1,10 +1,15 @@
 package com.ontometrics.integrations.jobs;
 
-import com.ontometrics.integrations.configuration.*;
+import com.google.common.base.Function;
+import com.google.common.collect.Multimaps;
+import com.ontometrics.integrations.configuration.ConfigurationFactory;
+import com.ontometrics.integrations.configuration.EventProcessorConfiguration;
 import com.ontometrics.integrations.configuration.YouTrackInstance;
 import com.ontometrics.integrations.events.ProcessEvent;
 import com.ontometrics.integrations.events.ProcessEventChange;
-import com.ontometrics.integrations.sources.*;
+import com.ontometrics.integrations.sources.ChannelMapper;
+import com.ontometrics.integrations.sources.SourceEventMapper;
+import com.ontometrics.integrations.sources.StreamProvider;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -17,11 +22,12 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
+
 
 /**
  * Created on 8/18/14.
@@ -70,7 +76,8 @@ public class EventListenerImpl implements EventListener {
      *
      * The list of updates for each issue will be grouped by {@link com.ontometrics.integrations.events.ProcessEventChange#getUpdater()}
      * and for each group (group of updates by user) app will generate and post message to external system (slack).
-     * Message for each group (group of updates to the issue by particular YouTrack user) is generated with {@link #buildChangesMessage(String, com.ontometrics.integrations.events.ProcessEvent, java.util.List)}
+     * Message for each group (group of updates to the issue by particular YouTrack user) is generated with
+     * {@link #buildChangesMessage(String, com.ontometrics.integrations.events.ProcessEvent, java.util.Collection)}
      *
      * @return number of processed events.
      * @throws IOException
@@ -81,24 +88,25 @@ public class EventListenerImpl implements EventListener {
         List<ProcessEvent> events = sourceEventMapper.getLatestEvents();
 
         final AtomicInteger processedEventsCount = new AtomicInteger(0);
-        events.stream().forEach(e -> {
+        for (ProcessEvent event : events) {
             processedEventsCount.incrementAndGet();
             //load list of updates (using REST service of YouTrack)
             List<ProcessEventChange> changes = null;
-            Date minChangeDate = getLastEventChangeDate(e);
+            Date minChangeDate = getLastEventChangeDate(event);
             if (minChangeDate == null) {
                 // if there is no last event change date, then minimum issue change date to be retrieved should be
                 // after deployment date
                 minChangeDate = EventProcessorConfiguration.instance().getDeploymentTime();
             }
             try {
-                changes = sourceEventMapper.getChanges(e, minChangeDate);
+                changes = sourceEventMapper.getChanges(event, minChangeDate);
             } catch (Exception ex) {
-                log.error("Failed to process event " + e, ex);
-                return;
+                log.error("Failed to process event " + event, ex);
+                //we can't continue iteration
+                break;
             }
-            postEventChangesToStream(e, changes, channelMapper.getChannel(e));
-        });
+            postEventChangesToStream(event, changes, channelMapper.getChannel(event));
+        }
 
         return processedEventsCount.get();
     }
@@ -107,7 +115,7 @@ public class EventListenerImpl implements EventListener {
      * Group the list of events by {@link com.ontometrics.integrations.events.ProcessEventChange#getUpdater()}
      * For each group app will generate and post message to external system (Slack).
      * Message for each group (group of updates to the issue by particular YouTrack user) is generated with
-     * {@link #buildChangesMessage(String, com.ontometrics.integrations.events.ProcessEvent, java.util.List)}
+     * {@link #buildChangesMessage(String, com.ontometrics.integrations.events.ProcessEvent, java.util.Collection)}
      *
      * @param event updated issue
      * @param changes list of change events for particular issue
@@ -117,8 +125,11 @@ public class EventListenerImpl implements EventListener {
         if (changes.isEmpty()) {
             postMessageToChannel(event, channel, getIssueLink(event));
         } else {
-            groupChangesByUpdater(changes).forEach((updater, processEventChanges) ->
-                    postMessageToChannel(event, channel, buildChangesMessage(updater, event, processEventChanges)));
+            for (Map.Entry<String, Collection<ProcessEventChange>> mapEntry : groupChangesByUpdater(changes).entrySet()) {
+                String updater = mapEntry.getKey();
+                Collection<ProcessEventChange> processEventChanges = mapEntry.getValue();
+                postMessageToChannel(event, channel, buildChangesMessage(updater, event, processEventChanges));
+            }
             EventProcessorConfiguration.instance()
                     .saveEventChangeDate(event, changes.get(changes.size() - 1).getUpdated());
         }
@@ -135,11 +146,11 @@ public class EventListenerImpl implements EventListener {
      * @param processEventChanges list of {@link com.ontometrics.integrations.events.ProcessEventChange}
      * @return message about list of changes from updater
      */
-    private String buildChangesMessage(String updater, ProcessEvent event, List<ProcessEventChange> processEventChanges) {
+    private String buildChangesMessage(String updater, ProcessEvent event, Collection<ProcessEventChange> processEventChanges) {
         String message = "*" + updater + "* updated "+getIssueLink(event)+"\n";
+        int i = 0;
+        for (ProcessEventChange change : processEventChanges) {
 
-        for (int i = 0; i < processEventChanges.size(); i++) {
-            ProcessEventChange change = processEventChanges.get(i);
             //noinspection StatementWithEmptyBody
             if (StringUtils.isNotBlank(change.getField())) {
                 message += (change.getField() + ": ");
@@ -157,12 +168,18 @@ public class EventListenerImpl implements EventListener {
                 //it could be the case with "LinkChangeField"
 //                message += " ?";
             }
+            i++;
         }
         return message;
     }
 
-    private Map<String, List<ProcessEventChange>> groupChangesByUpdater(List<ProcessEventChange> changes) {
-        return changes.stream().collect(Collectors.groupingBy(ProcessEventChange::getUpdater));
+    private Map<String, Collection<ProcessEventChange>> groupChangesByUpdater(List<ProcessEventChange> changes) {
+        return Multimaps.index(changes, new Function<ProcessEventChange, String>() {
+            @Override
+            public String apply(ProcessEventChange processEventChange) {
+                return processEventChange.getUpdater();
+            }
+        }).asMap();
     }
 
     private Date getLastEventChangeDate(ProcessEvent event) {
