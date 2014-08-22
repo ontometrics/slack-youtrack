@@ -100,12 +100,18 @@ public class EventListenerImpl implements EventListener {
             }
             try {
                 changes = sourceEventMapper.getChanges(event, minChangeDate);
+                postEventChangesToStream(event, changes, channelMapper.getChannel(event));
             } catch (Exception ex) {
                 log.error("Failed to process event " + event, ex);
-                //we can't continue iteration
-                break;
+            } finally {
+                //whatever happens, update the last event as processed
+                sourceEventMapper.setLastEvent(event);
+                try {
+                    EventProcessorConfiguration.instance().saveLastProcessEvent(event);
+                } catch (ConfigurationException e) {
+                    throw new RuntimeException("Failed to update last processed event", e);
+                }
             }
-            postEventChangesToStream(event, changes, channelMapper.getChannel(event));
         }
 
         return processedEventsCount.get();
@@ -126,18 +132,19 @@ public class EventListenerImpl implements EventListener {
             postMessageToChannel(event, channel, getIssueLink(event));
         } else {
             for (Map.Entry<String, Collection<ProcessEventChange>> mapEntry : groupChangesByUpdater(changes).entrySet()) {
-                String updater = mapEntry.getKey();
-                Collection<ProcessEventChange> processEventChanges = mapEntry.getValue();
-                postMessageToChannel(event, channel, buildChangesMessage(updater, event, processEventChanges));
+                try {
+                    String updater = mapEntry.getKey();
+                    Collection<ProcessEventChange> processEventChanges = mapEntry.getValue();
+                    String message = buildChangesMessage(updater, event, processEventChanges);
+                    postMessageToChannel(event, channel, message);
+                } catch (Exception ex) {
+                    log.error("Failed to post event-change. event = "+event, ex);
+                }
+
             }
+            //whatever happens, update the last change date
             EventProcessorConfiguration.instance()
                     .saveEventChangeDate(event, changes.get(changes.size() - 1).getUpdated());
-        }
-        sourceEventMapper.setLastEvent(event);
-        try {
-            EventProcessorConfiguration.instance().saveLastProcessEvent(event);
-        } catch (ConfigurationException e) {
-            throw new RuntimeException("Failed to update last processed event", e);
         }
     }
 
@@ -198,7 +205,7 @@ public class EventListenerImpl implements EventListener {
 
         WebTarget slackApi = client.target(SLACK_URL).path(CHANNEL_POST_PATH)
                 .queryParam(TOKEN_KEY, ConfigurationFactory.get().getString("SLACK_AUTH_TOKEN"))
-                .queryParam(TEXT_KEY, message)
+                .queryParam(TEXT_KEY, processMessage(message))
                 .queryParam(CHANNEL_KEY, "#" + channel);
 
         Invocation.Builder invocationBuilder = slackApi.request(MediaType.APPLICATION_JSON);
@@ -206,6 +213,10 @@ public class EventListenerImpl implements EventListener {
 
         log.info("response code: {} response: {}", response.getStatus(), response.readEntity(String.class));
 
+    }
+
+    private String processMessage(String message) {
+        return StringUtils.replaceChars(message, "{}", "[]");
     }
 
     private String getIssueLink(ProcessEvent event){

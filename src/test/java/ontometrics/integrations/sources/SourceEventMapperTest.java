@@ -10,6 +10,8 @@ import com.ontometrics.integrations.sources.SourceEventMapper;
 import com.ontometrics.util.DateBuilder;
 import ontometrics.test.util.TestUtil;
 import ontometrics.test.util.UrlStreamProvider;
+import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang.StringUtils;
 import org.hamcrest.Matcher;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -29,7 +31,9 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -133,7 +137,7 @@ public class SourceEventMapperTest {
     public void testThatLastSeenEventTracked() throws Exception {
         SourceEventMapper sourceEventMapper = new SourceEventMapper(mockYouTrackInstance, UrlStreamProvider.instance());
         List<ProcessEvent> events = sourceEventMapper.getLatestEvents();
-        ProcessEvent lastEventFromFetch = events.get(events.size()-1);
+        ProcessEvent lastEventFromFetch = events.get(events.size() - 1);
 
         log.info("last event from fetch: {}", lastEventFromFetch);
 
@@ -173,16 +177,19 @@ public class SourceEventMapperTest {
     }
 
     @Test
-    public void testThatChannelCanBePostedTo(){
+    public void testThatChannelCanBePostedTo() throws UnsupportedEncodingException {
         String token = "xoxp-2427064028-2427064030-2467602952-3d5dc6";
 
         Client client = ClientBuilder.newClient();
         String slackUrl = "https://slack.com/api/";
         String channelPostPath = "chat.postMessage";
 
+        String message = "hi there from unit test... {code} ";
+        message = StringUtils.replaceChars(message, "{}", "[]");
+//        message = message.replaceAll("}", "]");
         WebTarget slackApi = client.target(slackUrl).path(channelPostPath)
                 .queryParam("token", token)
-                .queryParam("text", "hi there from unit test...")
+                .queryParam("text", message)
                 .queryParam("channel", "#process");
 
         Invocation.Builder invocationBuilder = slackApi.request(MediaType.APPLICATION_JSON);

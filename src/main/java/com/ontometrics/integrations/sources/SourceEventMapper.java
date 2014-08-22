@@ -176,7 +176,12 @@ public class SourceEventMapper {
                                             .priorValue(oldValue)
                                             .currentValue(newValue)
                                             .build();
-                                    currentChanges.add(processEventChange);
+
+                                    //include only non-processed changes
+                                    if (upToDate == null || processEventChange.getUpdated().after(upToDate)) {
+                                        currentChanges.add(processEventChange);
+                                    }
+
                                     log.info("process event change: {}", processEventChange);
                                 }
                                 currentFieldName = ""; oldValue = ""; newValue = "";
