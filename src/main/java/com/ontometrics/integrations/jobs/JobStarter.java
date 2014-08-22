@@ -3,9 +3,11 @@ package com.ontometrics.integrations.jobs;
 import com.ontometrics.integrations.configuration.ConfigurationFactory;
 import com.ontometrics.integrations.configuration.EventProcessorConfiguration;
 import com.ontometrics.integrations.sources.AuthenticatedHttpStreamProvider;
+import com.ontometrics.integrations.sources.Authenticator;
 import com.ontometrics.integrations.sources.ChannelMapper;
 import com.ontometrics.integrations.sources.StreamProvider;
 import org.apache.commons.configuration.Configuration;
+import org.apache.http.client.fluent.Executor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,10 +38,16 @@ public class JobStarter {
      * Schedules periodic tasks to fetch the events
      */
     public void scheduleTasks() {
-        Configuration configuration = ConfigurationFactory.get();
-        StreamProvider streamProvider = new AuthenticatedHttpStreamProvider(
-                httpExecutor -> httpExecutor.auth(configuration.getString("YOUTRACK_USERNAME"),
-                        configuration.getString("YOUTRACK_PASSWORD")));
+        final Configuration configuration = ConfigurationFactory.get();
+        Authenticator authenticator = new Authenticator() {
+            @Override
+            public void authenticate(Executor httpExecutor) {
+                httpExecutor.auth(configuration.getString("YOUTRACK_USERNAME"),
+                        configuration.getString("YOUTRACK_PASSWORD"));
+            }
+        };
+        StreamProvider streamProvider = new AuthenticatedHttpStreamProvider(authenticator);
+
         scheduleTask(timer, new EventListenerImpl(streamProvider, createChannelMapper()));
     }
 

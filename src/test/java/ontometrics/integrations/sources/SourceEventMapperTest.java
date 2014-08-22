@@ -5,6 +5,7 @@ import com.ontometrics.integrations.configuration.IssueTracker;
 import com.ontometrics.integrations.events.Issue;
 import com.ontometrics.integrations.events.ProcessEvent;
 import com.ontometrics.integrations.events.ProcessEventChange;
+import com.ontometrics.integrations.sources.ChannelMapper;
 import com.ontometrics.integrations.sources.SourceEventMapper;
 import com.ontometrics.util.DateBuilder;
 import ontometrics.test.util.TestUtil;
@@ -151,8 +152,9 @@ public class SourceEventMapperTest {
                 .addMapping("DMAN", "dminder")
                 .build();
 
-        events.stream().forEach(e -> postEventToChannel(e, channelMapper.getChannel(e)));
-
+        for (ProcessEvent event : events) {
+            postEventToChannel(event, channelMapper.getChannel(event));
+        }
     }
 
     @Test

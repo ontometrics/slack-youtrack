@@ -1,5 +1,7 @@
 package com.ontometrics.integrations.sources;
 
+import com.google.common.base.Predicate;
+import com.google.common.collect.Iterables;
 import com.ontometrics.integrations.events.ProcessEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,11 +46,17 @@ public class ChannelMapper {
     }
 
 
-    public String getChannel(ProcessEvent event){
+    public String getChannel(final ProcessEvent event){
+        String channelKey = Iterables.find(mappings.keySet(), new Predicate<String>() {
+            @Override
+            public boolean apply(String k) {
+                return event.getTitle().contains(k);
+            }
+        }, null);
+
 //        Optional<String> channelKey = mappings.keySet().stream().filter(k -> event.getTitle().contains(k)).findFirst();
-//        log.info("channelKey: {} isPresent: {}", channelKey, channelKey.isPresent());
-//        return channelKey.isPresent() ? mappings.get(channelKey.get()) : defaultChannel;
-        return "process";
+        log.info("channelKey: {} isPresent: {}", channelKey, channelKey != null);
+        return channelKey != null  ? mappings.get(channelKey) : defaultChannel;
     }
 
 
