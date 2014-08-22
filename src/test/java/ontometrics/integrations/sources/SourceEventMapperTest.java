@@ -200,7 +200,7 @@ public class SourceEventMapperTest {
 
         log.info("recent changes: {}", recentChanges);
 
-        assertThat(recentChanges.size(), is(200));
+        assertThat(recentChanges.size(), is(300));
 
     }
 

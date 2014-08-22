@@ -116,75 +116,83 @@ public class SourceEventMapper {
         return streamProvider.openResourceStream(issueTracker.getChangesUrl(e.getIssue()), new InputStreamHandler<List<ProcessEventChange>>() {
             @Override
             public List<ProcessEventChange> handleStream(InputStream is) throws Exception {
-                List<ProcessEventChange> changes = new ArrayList<>();
-
+                Issue issue = new Issue.Builder().projectPrefix("ASOC").id(48).build();
                 XMLInputFactory inputFactory = XMLInputFactory.newInstance();
-                XMLEventReader reader = inputFactory.createXMLEventReader(is);
-                boolean processingChange = false;
-                String fieldName = null;
-                String oldValue = null, newValue = null;
-                String updater = null;
+                XMLEventReader eventReader = inputFactory.createXMLEventReader(is);
+                boolean extractingChange = false;
+                String currentChangeType = "";
+                String currentTag = "", currentFieldName = "";
+                String oldValue = "", newValue = "";
+                String updaterName = "";
                 Date updated = null;
-                while (reader.hasNext()){
-                    XMLEvent nextEvent = reader.nextEvent();
-                    switch (nextEvent.getEventType()){
+                List<ProcessEventChange> currentChanges = new ArrayList<>();
+
+                while (eventReader.hasNext()) {
+                    XMLEvent nextEvent = eventReader.nextEvent();
+                    switch (nextEvent.getEventType()) {
                         case XMLStreamConstants.START_ELEMENT:
                             StartElement startElement = nextEvent.asStartElement();
                             String elementName = startElement.getName().getLocalPart();
-                            if (elementName.equals("change")){
-                                processingChange = true;
-                            }
-                            if (elementName.equals("field") && processingChange){
-                                fieldName = startElement.getAttributeByName(new QName("", "name")).getValue();
-                                boolean isChangeField = startElement.getAttributes().next().toString().contains("ChangeField");
-                                if (isChangeField){
-                                    reader.nextEvent();
-                                    XMLEvent insideChangeEvent = reader.nextEvent();
-                                    log.info("first tag inside change field [type: {}]: {}", insideChangeEvent.getEventType(), insideChangeEvent);
-                                    StartElement firstValueTag = insideChangeEvent.asStartElement();
-                                    if (firstValueTag.getName().getLocalPart().equals("oldValue")){
-                                        oldValue = reader.getElementText();
-                                        reader.nextEvent(); reader.nextEvent();
-                                        newValue = reader.getElementText();
-                                    } else {
-                                        newValue = reader.getElementText();
+                            switch (elementName) {
+                                case "change":
+                                    extractingChange = true;
+                                    currentTag = elementName;
+                                    break;
+                                case "field":
+                                    currentFieldName = nextEvent.asStartElement().getAttributeByName(new QName("", "name")).getValue();
+                                    currentChangeType = nextEvent.asStartElement().getAttributes().next().toString();
+                                    log.info("found field named: {}: change type: {}", currentFieldName, currentChangeType);
+                                    break;
+                                default:
+                                    String elementText;
+                                    try {
+                                        elementText = eventReader.getElementText();
+                                        switch (elementName) {
+                                            case "newValue":
+                                                newValue = elementText;
+                                                break;
+                                            case "oldValue":
+                                                oldValue = elementText;
+                                                break;
+                                            case "value":
+                                                if (currentFieldName.equals("updaterName")) {
+                                                    updaterName = elementText;
+                                                } else if (currentFieldName.equals("updated")) {
+                                                    updated = new Date(Long.parseLong(elementText));
+                                                }
+                                        }
+                                    } catch (Exception e) {
+                                        //no text..
                                     }
-                                } else {
-                                    XMLEvent event = reader.nextEvent(); // eat value tag
-                                    while (event.getEventType() != XMLStreamConstants.START_ELEMENT) {
-                                        event = reader.nextEvent();
-                                    }
-
-                                    String fieldValue = reader.getElementText();
-                                    if (fieldName.equals("updaterName")){
-                                        updater = fieldValue;
-                                    } else if (fieldName.equals("updated")){
-                                        updated = new Date(Long.parseLong(fieldValue));
-                                    }
-                                }
+                                    break;
                             }
                             break;
+
                         case XMLStreamConstants.END_ELEMENT:
                             EndElement endElement = nextEvent.asEndElement();
-                            if (endElement.getName().getLocalPart().equals("change")){
-                                ProcessEventChange change = new ProcessEventChange.Builder()
-                                        .updater(updater)
-                                        .updated(updated)
-                                        .field(fieldName)
-                                        .priorValue(oldValue)
-                                        .currentValue(newValue)
-                                        .build();
-                                log.info("change: {}", change);
-                                if (upToDate == null || change.getUpdated().after(upToDate)) {
-                                    changes.add(change);
+                            String tagName = endElement.getName().getLocalPart();
+                            if (tagName.equals("change")){
+                                extractingChange = false;
+                            } else if (tagName.equals("field")){
+                                if (newValue.length() > 0) {
+                                    ProcessEventChange processEventChange = new ProcessEventChange.Builder()
+                                            .updater(updaterName)
+                                            .updated(updated)
+                                            .field(currentFieldName)
+                                            .priorValue(oldValue)
+                                            .currentValue(newValue)
+                                            .build();
+                                    currentChanges.add(processEventChange);
+                                    log.info("process event change: {}", processEventChange);
                                 }
-                                processingChange = false;
+                                currentFieldName = ""; oldValue = ""; newValue = "";
                             }
                             break;
 
                     }
                 }
-                return changes;
+                log.info("returning changes: {}", currentChanges);
+                return currentChanges;
             }
         });
     }
