@@ -157,13 +157,17 @@ public class EventListenerImpl implements EventListener {
         }
     }
 
+
+//    andrey.chorniy* updated AIA-10: create timer/scheduler to repeat checking for new changes
+//    resolved: 1408821625691State: In Progress -> Fixed
+
     /**
      * @param updater originator of the change
      * @param processEventChanges list of {@link com.ontometrics.integrations.events.ProcessEventChange}
      * @return message about list of changes from updater
      */
     private String buildChangesMessage(String updater, ProcessEvent event, Collection<ProcessEventChange> processEventChanges) {
-        String message = "*" + updater + "* updated "+getIssueLink(event)+"\n";
+        String message = String.format("*%s* updated %s\n", updater, getIssueLink(event));
         int i = 0;
         for (ProcessEventChange change : processEventChanges) {
 
@@ -171,7 +175,7 @@ public class EventListenerImpl implements EventListener {
             if (StringUtils.isNotBlank(change.getField())) {
                 message += (change.getField() + ": ");
                 if (StringUtils.isNotBlank(change.getPriorValue()) && StringUtils.isNotBlank(change.getCurrentValue())) {
-                    message += change.getPriorValue() + " -> " + change.getCurrentValue();
+                    message += String.format(" %s -> %s", change.getPriorValue(), change.getCurrentValue());
                 } else if (StringUtils.isNotBlank(change.getCurrentValue())) {
                     message += change.getCurrentValue();
                 }
