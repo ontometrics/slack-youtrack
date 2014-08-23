@@ -1,5 +1,6 @@
 package com.ontometrics.integrations.jobs;
 
+import com.ontometrics.integrations.configuration.ConfigurationAccessError;
 import com.ontometrics.integrations.configuration.ConfigurationFactory;
 import com.ontometrics.integrations.configuration.EventProcessorConfiguration;
 import com.ontometrics.integrations.sources.AuthenticatedHttpStreamProvider;
@@ -72,6 +73,9 @@ public class JobStarter {
             logger.info("Event processing started");
             try {
                 this.eventListener.checkForNewEvents();
+            } catch (ConfigurationAccessError error) {
+                //this is critical error
+                throw error;
             } catch (Throwable ex) {
                 logger.error("Failed to process", ex);
             }

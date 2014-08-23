@@ -2,6 +2,7 @@ package com.ontometrics.integrations.jobs;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Multimaps;
+import com.ontometrics.integrations.configuration.ConfigurationAccessError;
 import com.ontometrics.integrations.configuration.ConfigurationFactory;
 import com.ontometrics.integrations.configuration.EventProcessorConfiguration;
 import com.ontometrics.integrations.configuration.YouTrackInstance;
@@ -101,6 +102,9 @@ public class EventListenerImpl implements EventListener {
             try {
                 changes = sourceEventMapper.getChanges(event, minChangeDate);
                 postEventChangesToStream(event, changes, channelMapper.getChannel(event));
+            } catch (ConfigurationAccessError error) {
+                log.error("Failed to process event " + event, error);
+                throw error;
             } catch (Exception ex) {
                 log.error("Failed to process event " + event, ex);
             } finally {
@@ -109,7 +113,7 @@ public class EventListenerImpl implements EventListener {
                 try {
                     EventProcessorConfiguration.instance().saveLastProcessEvent(event);
                 } catch (ConfigurationException e) {
-                    throw new RuntimeException("Failed to update last processed event", e);
+                    throw new ConfigurationAccessError("Failed to update last processed event", e);
                 }
             }
         }

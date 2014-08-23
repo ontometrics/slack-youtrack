@@ -32,7 +32,7 @@ public class EventProcessorConfiguration {
         initialize();
     }
 
-    private void initialize() {
+    private void initialize() throws ConfigurationAccessError {
         try {
             File dataDir = new File(ConfigurationFactory.get().getString("APP_DATA_DIRECTORY", "."));
             lastEventConfiguration = new PropertiesConfiguration(new File(dataDir, "lastEvent.properties"));
@@ -43,7 +43,7 @@ public class EventProcessorConfiguration {
             db = DBMaker.newFileDB(new File(dataDir, "app_db")).closeOnJvmShutdown().make();
             eventChangeDatesCollection = getEventChangeDatesCollection();
         } catch (ConfigurationException e) {
-            throw new IllegalStateException("Failed to access properties");
+            throw new ConfigurationAccessError("Failed to access properties", e);
         }
     }
 
