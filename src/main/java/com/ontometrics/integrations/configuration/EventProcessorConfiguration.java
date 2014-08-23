@@ -6,6 +6,8 @@ import org.apache.commons.configuration.PropertiesConfiguration;
 import org.mapdb.BTreeMap;
 import org.mapdb.DB;
 import org.mapdb.DBMaker;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.util.Date;
@@ -16,6 +18,8 @@ import java.util.Date;
  *
  */
 public class EventProcessorConfiguration {
+    private static final Logger logger = LoggerFactory.getLogger(EventProcessorConfiguration.class);
+
     private static final EventProcessorConfiguration instance = new EventProcessorConfiguration();
 
     private static final String LAST_EVENT_LINK = "last.event.link";
@@ -35,7 +39,9 @@ public class EventProcessorConfiguration {
     private void initialize() throws ConfigurationAccessError {
         try {
             File dataDir = new File(ConfigurationFactory.get().getString("APP_DATA_DIRECTORY", "."));
-            lastEventConfiguration = new PropertiesConfiguration(new File(dataDir, "lastEvent.properties"));
+            File file = new File(dataDir, "lastEvent.properties");
+            logger.info("Going to load properties from file {}", file.getAbsolutePath());
+            lastEventConfiguration = new PropertiesConfiguration(file);
             if (!lastEventConfiguration.containsKey(DEPLOYMENT_TIME)) {
                 lastEventConfiguration.setProperty(DEPLOYMENT_TIME, System.currentTimeMillis());
                 lastEventConfiguration.save();
