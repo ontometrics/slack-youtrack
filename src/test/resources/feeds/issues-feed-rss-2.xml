@@ -1,0 +1,572 @@
+<rss xmlns:dc="http://purl.org/dc/elements/1.1/" version="2.0">
+    <channel>
+        <title>YouTrack</title>
+        <link>http://ontometrics.com:8085/_rss/issues</link>
+        <description/>
+        <item>
+            <title>AIA-18: Exception during XML parsing</title>
+            <link>http://ontometrics.com:8085/issue/AIA-18</link>
+            <description>
+                <![CDATA[
+<table> <tr> <th>Reporter</th> <td> <img src="http://www.gravatar.com/avatar/75c2bdacfd2d62abcbfe7beda3d9c613.jpg?s=60&amp;d=monsterid" width="56" height="59" alt="Andrey Chorniy (andrey.chorniy)" title="Andrey Chorniy (andrey.chorniy)"/> Andrey Chorniy (andrey.chorniy) </td> </tr> <tr> <th>Created
+]]>
+                <![CDATA[
+</th> <td>Aug 22, 2014 4:51:43 PM</td> </tr> <tr> <th>Updated</th> <td>Aug 22, 2014 4:51:43 PM</td> </tr> <tr> <th>Priority</th> <td>Normal</td> </tr> <tr> <th>Type</th> <td>Bug</td> </tr> <tr> <th>State</th> <td>Open</td> </tr> <tr> <th>Assignee</th> <td>Rob Williams (rob)</td> </tr> <tr> <th>Subsystem</th> <td>No subsystem</td> </tr> <tr> <th>Fix versions</th> <td>Unscheduled</td> </tr> <tr> <th>Affected versions</th> <td>Unknown</td> </tr> <tr> <th>Fixed in build</th> <td>Next Build</td> </tr> </table> <div class="wiki text"><pre class="wikicode">2014-08-22 16:43:18,487 - [ERROR] - from com.ontometrics.integrations.jobs.JobStarter in Timer-1<br/>Failed to process<br/>java.lang.RuntimeException: java.io.IOException: Failed to process XML<br/> at com.ontometrics.integrations.sources.AuthenticatedHttpStreamProvider$1.handleResponse(AuthenticatedHttpStreamProvider.java:43) ~[AuthenticatedHttpStreamProvider$1.class:na]<br/> at org.apache.http.client.fluent.Response.handleResponse(Response.java:90) ~[fluent-hc-4.3.5.jar:4.3.5]<br/> at com.ontometrics.integrations.sources.AuthenticatedHttpStreamProvider.openResourceStream(AuthenticatedHttpStreamProvider.java:35) ~[AuthenticatedHttpStreamProvider.class:na]<br/> at com.ontometrics.integrations.sources.SourceEventMapper.getLatestEvents(SourceEventMapper.java:52) ~[SourceEventMapper.class:na]<br/> at com.ontometrics.integrations.jobs.EventListenerImpl.checkForNewEvents(EventListenerImpl.java:88) ~[EventListenerImpl.class:na]<br/> at com.ontometrics.integrations.jobs.JobStarter$EventTask.run(JobStarter.java:81) ~[JobStarter$EventTask.class:na]<br/> at java.util.TimerThread.mainLoop(Timer.java:555) [na:1.7.0_21]<br/> at java.util.TimerThread.run(Timer.java:505) [na:1.7.0_21]<br/>Caused by: java.io.IOException: Failed to process XML<br/> at com.ontometrics.integrations.sources.SourceEventMapper$1.handleStream(SourceEventMapper.java:84) ~[SourceEventMapper$1.class:na]<br/> at com.ontometrics.integrations.sources.SourceEventMapper$1.handleStream(SourceEventMapper.java:52) ~[SourceEventMapper$1.class:na]<br/> at com.ontometrics.integrations.sources.AuthenticatedHttpStreamProvider$1.handleResponse(AuthenticatedHttpStreamProvider.java:41) ~[AuthenticatedHttpStreamProvider$1.class:na]<br/> ... 7 common frames omitted<br/>Caused by: javax.xml.stream.XMLStreamException: ParseError at [row,col]:[1,1]<br/>Message: Premature end of file.<br/> at com.sun.org.apache.xerces.internal.impl.XMLStreamReaderImpl.next(XMLStreamReaderImpl.java:598) ~[na:1.7.0_21]<br/> at com.sun.xml.internal.stream.XMLEventReaderImpl.nextEvent(XMLEventReaderImpl.java:83) ~[na:1.7.0_21]<br/> at com.ontometrics.integrations.sources.SourceEventMapper$1.handleStream(SourceEventMapper.java:62) ~[SourceEventMapper$1.class:na]<br/> ... 9 common frames omitted<br/><br/>2014-08-22 16:43:18,488 - [INFO] - from com.ontometrics.integrations.jobs.JobStarter in Timer-1<br/>Event processing finished<br/><br/>2014-08-22 16:44:59,904 - [INFO] - from com.ontometrics.integrations.jobs.WebContextJobStarter in localhost-startStop-1<br/>Started up<br/></pre></div>
+]]>
+            </description>
+            <pubDate>Fri, 22 Aug 2014 23:51:43 UT</pubDate>
+        </item>
+        <item>
+            <title>
+                AIA-15: System needs to skip over Events that cannot be parsed
+            </title>
+            <link>http://ontometrics.com:8085/issue/AIA-15</link>
+            <description>
+                <![CDATA[
+<table> <tr> <th>Reporter</th> <td> <img src="http://www.gravatar.com/avatar/2543fe7b34482922746d3aaf4aa86652.jpg?s=60&amp;d=monsterid" width="56" height="59" alt="Rob Williams (rob)" title="Rob Williams (rob)"/> Rob Williams (rob) </td> </tr> <tr> <th>Created</th> <td>Aug 22, 2014 12:30:41 PM</td> </tr> <tr> <th>Updated</th> <td>Aug 22, 2014 4:47:22 PM</td> </tr> <tr> <th>Priority</th> <td>Normal</td> </tr> <tr> <th>Type</th> <td>Task</td> </tr> <tr> <th>State</th> <td>Open</td> </tr> <tr> <th>Assignee</th> <td>Unassigned</td> </tr> <tr> <th>Subsystem</th> <td>No subsystem</td> </tr> <tr> <th>Fix versions</th> <td>0.0.1</td> </tr> <tr> <th>Affected versions</th> <td>Unknown</td> </tr> <tr> <th>Fixed in build</th> <td>Next Build</td> </tr> </table> <div class="wiki text">There are two keys aspects to this behavior:<br/><br/><ul class="wiki-list0"><li> make sure the rest of the events in the current fetch are processed<br/></li><li> make sure that if we fail on an event that happens to be the last one, we don&#39;t resume with it next time and just fail again</li></ul><br/>Something simple here, a supervisor with a try block.</div>
+]]>
+            </description>
+            <pubDate>Fri, 22 Aug 2014 23:47:22 UT</pubDate>
+        </item>
+        <item>
+            <title>HA-677: Job Feed has stopped pulling in ads</title>
+            <link>http://ontometrics.com:8085/issue/HA-677</link>
+            <description>
+                <![CDATA[
+<table> <tr> <th>Reporter</th> <td> <img src="http://ontometrics.com:8085/_classpath/smartui/img/youPicture.gif" width="56" height="59" alt="Angela Tran (atran)" title="Angela Tran (atran)"/> Angela Tran (atran) </td> </tr> <tr> <th>Created</th> <td>Aug 22, 2014 1:32:42 PM</td> </tr> <tr> <th>Updated</th> <td>Aug 22, 2014 1:36:20 PM</td> </tr> <tr> <th>Priority</th> <td>Show-stopper</td> </tr> <tr> <th>Type</th> <td>Bug</td> </tr> <tr> <th>State</th> <td>Open</td> </tr> <tr> <th>Assignee</th> <td>Andrey Chorniy (andrey.chorniy)</td> </tr> <tr> <th>Subsystem</th> <td>No subsystem</td> </tr> <tr> <th>Fix versions</th> <td>2.1</td> </tr> <tr> <th>Affected versions</th> <td>Unknown</td> </tr> <tr> <th>Fixed in build</th> <td>Next Build</td> </tr> <tr> <th>aggregatetimespent</th> <td>No aggregatetimespent</td> </tr> <tr> <th>aggregatetimeestimate</th> <td>No aggregatetimeestimate</td> </tr> <tr> <th>resolution</th> <td>No resolution</td> </tr> <tr> <th>timespent</th> <td>No timespent</td> </tr> <tr> <th>timeestimate</th> <td>No timeestimate</td> </tr> </table> <div class="wiki text">We have stopped receiving ads in our feed for both Open Source and Microsoft teams on SEP LA, Zion, Lassen, SEP SF, and Boston. If you look thru&ndash;we stopped receiving ads on 8/19 for some and 8/20 for others. </div>
+]]>
+            </description>
+            <pubDate>Fri, 22 Aug 2014 20:36:20 UT</pubDate>
+        </item>
+        <item>
+            <title>AIA-17: Need to externalize properties</title>
+            <link>http://ontometrics.com:8085/issue/AIA-17</link>
+            <description>
+                <![CDATA[
+<table> <tr> <th>Reporter</th> <td> <img src="http://www.gravatar.com/avatar/2543fe7b34482922746d3aaf4aa86652.jpg?s=60&amp;d=monsterid" width="56" height="59" alt="Rob Williams (rob)" title="Rob Williams (rob)"/> Rob Williams (rob) </td> </tr> <tr> <th>Created</th> <td>Aug 22, 2014 1:10:39 PM</td> </tr> <tr> <th>Updated</th> <td>Aug 22, 2014 1:10:39 PM</td> </tr> <tr> <th>Priority</th> <td>Normal</td> </tr> <tr> <th>Type</th> <td>Task</td> </tr> <tr> <th>State</th> <td>Open</td> </tr> <tr> <th>Assignee</th> <td>Unassigned</td> </tr> <tr> <th>Subsystem</th> <td>No subsystem</td> </tr> <tr> <th>Fix versions</th> <td>0.0.1</td> </tr> <tr> <th>Affected versions</th> <td>Unknown</td> </tr> <tr> <th>Fixed in build</th> <td>Next Build</td> </tr> </table> <div class="wiki text">For example, the polling interval. Could make a simple web interface. Or just put them in a properties file and add logic to detect changes.</div>
+]]>
+            </description>
+            <pubDate>Fri, 22 Aug 2014 20:10:39 UT</pubDate>
+        </item>
+        <item>
+            <title>
+                AIA-16: System needs to have a generalized facility for converting extracted events to messages for posting
+            </title>
+            <link>http://ontometrics.com:8085/issue/AIA-16</link>
+            <description>
+                <![CDATA[
+<table> <tr> <th>Reporter</th> <td> <img src="http://www.gravatar.com/avatar/2543fe7b34482922746d3aaf4aa86652.jpg?s=60&amp;d=monsterid" width="56" height="59" alt="Rob Williams (rob)" title="Rob Williams (rob)"/> Rob Williams (rob) </td> </tr> <tr> <th>Created</th> <td>Aug 22, 2014 1:07:49 PM</td> </tr> <tr> <th>Updated</th> <td>Aug 22, 2014 1:07:49 PM</td> </tr> <tr> <th>Priority</th> <td>Normal</td> </tr> <tr> <th>Type</th> <td>Task</td> </tr> <tr> <th>State</th> <td>Open</td> </tr> <tr> <th>Assignee</th> <td>Unassigned</td> </tr> <tr> <th>Subsystem</th> <td>No subsystem</td> </tr> <tr> <th>Fix versions</th> <td>0.0.1</td> </tr> <tr> <th>Affected versions</th> <td>Unknown</td> </tr> <tr> <th>Fixed in build</th> <td>Next Build</td> </tr> </table> <div class="wiki text">Right now, we are converting all messages in the same way. We should make a simple converter, and then have the ability to have different converters for different event types.</div>
+]]>
+            </description>
+            <pubDate>Fri, 22 Aug 2014 20:07:49 UT</pubDate>
+        </item>
+        <item>
+            <title>
+                ASOC-236: Create Account Request API responds with unknown error
+            </title>
+            <link>http://ontometrics.com:8085/issue/ASOC-236</link>
+            <description>
+                <![CDATA[
+<table> <tr> <th>Reporter</th> <td> <img src="http://www.gravatar.com/avatar/0a18770794a74b222730b640455662d9.jpg?s=60&amp;d=monsterid" width="56" height="59" alt="Nikolay Chorniy (nikolay.chorniy@gmail.com)" title="Nikolay Chorniy (nikolay.chorniy@gmail.com)"/> Nikolay Chorniy (nikolay.chorniy@gmail.com) </td> </tr> <tr> <th>Created</th> <td>Jul 30, 2014 7:07:02 AM</td> </tr> <tr> <th>Updated</th> <td>Aug 22, 2014 11:23:58 AM</td> </tr> <tr> <th>Resolved</th> <td>Aug 22, 2014 11:23:58 AM</td> </tr> <tr> <th>Priority</th> <td>Normal</td> </tr> <tr> <th>Type</th> <td>Bug</td> </tr> <tr> <th>State</th> <td>Fixed</td> </tr> <tr> <th>Assignee</th> <td>Pawan Gupta (pawan)</td> </tr> <tr> <th>Subsystem</th> <td>No subsystem</td> </tr> <tr> <th>Fix versions</th> <td>Unscheduled</td> </tr> <tr> <th>Affected versions</th> <td>Unknown</td> </tr> <tr> <th>Fixed in build</th> <td>Next Build</td> </tr> </table> <div class="wiki text">POST<br/><a href="http://devvixletapi-env.elasticbeanstalk.com/user/profile">http://devvixletapi-env.elasticbeanstalk.com/user/profile</a><br/><br/><div class="java code title">Body</div><pre class="wikicode">{<br/>&quot;birthDate&quot;:&quot;1970-01-01T08:00:00.000Z&quot;,<br/>&quot;domainId&quot;:&quot;4&quot;,<br/>&quot;email&quot;:&quot;n.i.k.l.olay.cho.rniy@gmail.com&quot;,<br/>&quot;firstName&quot;:&quot;Nikolay&quot;,<br/>&quot;lastName&quot;:&quot;Chorniy&quot;,<br/>&quot;password&quot;:&quot;password&quot;,<br/>&quot;username&quot;:&quot;nchorniy1298&quot;<br/>}</pre><br/>Response <br/>HTTP Status 400<br/><div class="java code title">Body</div><pre class="wikicode">{&quot;error&quot;:{<br/>&quot;message&quot;:&quot;An unknown error occurred&quot;,<br/>&quot;errorCode&quot;:1,<br/>&quot;error&quot;:&quot;Missing proper parameters. Please refer to API for required params&quot;}<br/>}</pre></div>
+]]>
+            </description>
+            <pubDate>Fri, 22 Aug 2014 18:23:58 UT</pubDate>
+        </item>
+        <item>
+            <title>
+                ASOC-260: "All User Capsules" and "Subscribed Capsules" API requests do not work
+            </title>
+            <link>http://ontometrics.com:8085/issue/ASOC-260</link>
+            <description>
+                <![CDATA[
+<table> <tr> <th>Reporter</th> <td> <img src="http://www.gravatar.com/avatar/0a18770794a74b222730b640455662d9.jpg?s=60&amp;d=monsterid" width="56" height="59" alt="Nikolay Chorniy (nikolay.chorniy@gmail.com)" title="Nikolay Chorniy (nikolay.chorniy@gmail.com)"/> Nikolay Chorniy (nikolay.chorniy@gmail.com) </td> </tr> <tr> <th>Created</th> <td>Aug 8, 2014 4:10:02 AM</td> </tr> <tr> <th>Updated</th> <td>Aug 22, 2014 9:40:48 AM</td> </tr> <tr> <th>Priority</th> <td>Normal</td> </tr> <tr> <th>Type</th> <td>Bug</td> </tr> <tr> <th>State</th> <td>Open</td> </tr> <tr> <th>Assignee</th> <td>Bobby Lincoln (blincoln)</td> </tr> <tr> <th>Subsystem</th> <td>No subsystem</td> </tr> <tr> <th>Fix versions</th> <td>0.10.1</td> </tr> <tr> <th>Affected versions</th> <td>Unknown</td> </tr> <tr> <th>Fixed in build</th> <td>Next Build</td> </tr> </table> <div class="wiki text">Server does not respond on ALL and SUBSCRIPTIONS API requests for Other User Capsules request:<br/><br/>ALL:<br/><br/><a href="http://devvixletapi-env.elasticbeanstalk.com/user/capsule/53aa2638c1f2e600002f129b/all?limit=20&access_token=wS4SlL3RF3Drf65gGmVL9UvqBcQqJJaTN3QasG34wBlFGISovtxPBs4icg2b8gyX5tg88rYtERyjk9jU9okUpr9XemmkHHM2ONY88RCnSYKPkamXuL30KVedYouVT56rqFoI5yeQyWdoVdjNgdZUcxM1EmgQ5OXMFpmEcGdYsS614gBm3I2oiqvVXKXu1Ba8GjJviJ5FHtD2oFYr6IGUyYLkrhwGDRKlwz5OX84yBqkgPS7GK5UBPLDWFn8eNaQO">http://devvixletapi-env.elasticbeanstalk.com/user/capsule/53aa2638c1f2e600002f129b/all?limit=20&access_token=wS4SlL3RF3Drf65gGmVL9UvqBcQqJJaTN3QasG34wBlFGISovtxPBs4icg2b8gyX5tg88rYtERyjk9jU9okUpr9XemmkHHM2ONY88RCnSYKPkamXuL30KVedYouVT56rqFoI5yeQyWdoVdjNgdZUcxM1EmgQ5OXMFpmEcGdYsS614gBm3I2oiqvVXKXu1Ba8GjJviJ5FHtD2oFYr6IGUyYLkrhwGDRKlwz5OX84yBqkgPS7GK5UBPLDWFn8eNaQO</a><br/><br/>SUBSCRIPTIONS:<br/><a href="http://devvixletapi-env.elasticbeanstalk.com/user/capsule/53aa2638c1f2e600002f129b/createdsub?limit=20&access_token=wS4SlL3RF3Drf65gGmVL9UvqBcQqJJaTN3QasG34wBlFGISovtxPBs4icg2b8gyX5tg88rYtERyjk9jU9okUpr9XemmkHHM2ONY88RCnSYKPkamXuL30KVedYouVT56rqFoI5yeQyWdoVdjNgdZUcxM1EmgQ5OXMFpmEcGdYsS614gBm3I2oiqvVXKXu1Ba8GjJviJ5FHtD2oFYr6IGUyYLkrhwGDRKlwz5OX84yBqkgPS7GK5UBPLDWFn8eNaQO">http://devvixletapi-env.elasticbeanstalk.com/user/capsule/53aa2638c1f2e600002f129b/createdsub?limit=20&access_token=wS4SlL3RF3Drf65gGmVL9UvqBcQqJJaTN3QasG34wBlFGISovtxPBs4icg2b8gyX5tg88rYtERyjk9jU9okUpr9XemmkHHM2ONY88RCnSYKPkamXuL30KVedYouVT56rqFoI5yeQyWdoVdjNgdZUcxM1EmgQ5OXMFpmEcGdYsS614gBm3I2oiqvVXKXu1Ba8GjJviJ5FHtD2oFYr6IGUyYLkrhwGDRKlwz5OX84yBqkgPS7GK5UBPLDWFn8eNaQO</a></div>
+]]>
+            </description>
+            <pubDate>Fri, 22 Aug 2014 16:40:48 UT</pubDate>
+        </item>
+        <item>
+            <title>
+                ASOC-285: Long list of user names who liked media is not well formatted
+            </title>
+            <link>http://ontometrics.com:8085/issue/ASOC-285</link>
+            <description>
+                <![CDATA[
+<table> <tr> <th>Reporter</th> <td> <img src="http://www.gravatar.com/avatar/0a18770794a74b222730b640455662d9.jpg?s=60&amp;d=monsterid" width="56" height="59" alt="Nikolay Chorniy (nikolay.chorniy@gmail.com)" title="Nikolay Chorniy (nikolay.chorniy@gmail.com)"/> Nikolay Chorniy (nikolay.chorniy@gmail.com) </td> </tr> <tr> <th>Created</th> <td>Aug 21, 2014 5:47:24 AM</td> </tr> <tr> <th>Updated</th> <td>Aug 22, 2014 7:06:52 AM</td> </tr> <tr> <th>Priority</th> <td>Normal</td> </tr> <tr> <th>Type</th> <td>Bug</td> </tr> <tr> <th>State</th> <td>In Progress</td> </tr> <tr> <th>Assignee</th> <td>Andrey Chorniy (andrey.chorniy)</td> </tr> <tr> <th>Subsystem</th> <td>No subsystem</td> </tr> <tr> <th>Fix versions</th> <td>0.10.1</td> </tr> <tr> <th>Affected versions</th> <td>Unknown</td> </tr> <tr> <th>Fixed in build</th> <td>Next Build</td> </tr> </table> <div class="wiki text">See attached screenshot.</div>
+]]>
+            </description>
+            <pubDate>Fri, 22 Aug 2014 14:06:52 UT</pubDate>
+        </item>
+        <item>
+            <title>DMAN-650: NPE on Profile</title>
+            <link>http://ontometrics.com:8085/issue/DMAN-650</link>
+            <description>
+                <![CDATA[
+<table> <tr> <th>Reporter</th> <td> <img src="http://www.gravatar.com/avatar/2543fe7b34482922746d3aaf4aa86652.jpg?s=60&amp;d=monsterid" width="56" height="59" alt="Rob Williams (rob)" title="Rob Williams (rob)"/> Rob Williams (rob) </td> </tr> <tr> <th>Created</th> <td>Aug 21, 2014 3:07:56 PM</td> </tr> <tr> <th>Updated</th> <td>Aug 21, 2014 3:07:56 PM</td> </tr> <tr> <th>Priority</th> <td>Normal</td> </tr> <tr> <th>Type</th> <td>Bug</td> </tr> <tr> <th>State</th> <td>Submitted</td> </tr> <tr> <th>Assignee</th> <td>Unassigned</td> </tr> <tr> <th>Subsystem</th> <td>No subsystem</td> </tr> <tr> <th>Fix versions</th> <td>Unscheduled</td> </tr> <tr> <th>Affected versions</th> <td>Unknown</td> </tr> <tr> <th>Fixed in build</th> <td>Next Build</td> </tr> <tr> <th>resolution</th> <td>No resolution</td> </tr> </table> <div class="wiki text">From the crashes in the store:<br/><br/><pre class="wikicode">Caused by: java.lang.NullPointerException<br/>at android.widget.ArrayAdapter.init(ArrayAdapter.java:310)<br/>at android.widget.ArrayAdapter.&lt;init&gt;(ArrayAdapter.java:153)<br/>at com.ontometrics.dminder.settings.ProfileFragment.setDateText(ProfileFragment.java:274)<br/>at com.ontometrics.dminder.settings.ProfileFragment.updateView(ProfileFragment.java:234)<br/>at com.ontometrics.dminder.settings.ProfileFragment.onResume(ProfileFragment.java:132)</pre><br/>Twice.</div>
+]]>
+            </description>
+            <pubDate>Thu, 21 Aug 2014 22:07:56 UT</pubDate>
+        </item>
+        <item>
+            <title>
+                ASOC-238: Delete Media request fails due to request timeout
+            </title>
+            <link>http://ontometrics.com:8085/issue/ASOC-238</link>
+            <description>
+                <![CDATA[
+<table> <tr> <th>Reporter</th> <td> <img src="http://www.gravatar.com/avatar/0a18770794a74b222730b640455662d9.jpg?s=60&amp;d=monsterid" width="56" height="59" alt="Nikolay Chorniy (nikolay.chorniy@gmail.com)" title="Nikolay Chorniy (nikolay.chorniy@gmail.com)"/> Nikolay Chorniy (nikolay.chorniy@gmail.com) </td> </tr> <tr> <th>Created</th> <td>Jul 30, 2014 7:39:53 AM</td> </tr> <tr> <th>Updated</th> <td>Aug 21, 2014 2:17:56 PM</td> </tr> <tr> <th>Resolved</th> <td>Aug 21, 2014 12:40:00 PM</td> </tr> <tr> <th>Priority</th> <td>Normal</td> </tr> <tr> <th>Type</th> <td>Bug</td> </tr> <tr> <th>State</th> <td>Fixed</td> </tr> <tr> <th>Assignee</th> <td>Bobby Lincoln (blincoln)</td> </tr> <tr> <th>Subsystem</th> <td>No subsystem</td> </tr> <tr> <th>Fix versions</th> <td>0.10.1</td> </tr> <tr> <th>Affected versions</th> <td>Unknown</td> </tr> <tr> <th>Fixed in build</th> <td>Next Build</td> </tr> </table> <div class="wiki text">DELETE<br/><a href="http://devvixletapi-env.elasticbeanstalk.com/capsule/media?capsuleId=53d18045f19fc7430846c320&mediaId=53d8f2a5420ee87d271fabd4&access_token=qOI86AywzKEp8GQBnfsgmpv7Q2WvLjvLDjL2cClB113F8vWv7tjkMM0qEkovsaEG0EPtHbfhI9BulYJ4FmzKxPgNRqwuAFJjBB07GXAjwtnpj9Sc1jqDtTLbU5K7fjSgZTlnpNzkHt9piPUDLwldfDaRpxqefk8cK8ma2Zq2zazqknh6LRgI8EAT82nRka2Jt6WyAULheInEuUNAsNUxEa4NbFCGyeeJz6JTpH05pu5gohji0q5Rj5HLCHl3hMdy">http://devvixletapi-env.elasticbeanstalk.com/capsule/media?capsuleId=53d18045f19fc7430846c320&mediaId=53d8f2a5420ee87d271fabd4&access_token=qOI86AywzKEp8GQBnfsgmpv7Q2WvLjvLDjL2cClB113F8vWv7tjkMM0qEkovsaEG0EPtHbfhI9BulYJ4FmzKxPgNRqwuAFJjBB07GXAjwtnpj9Sc1jqDtTLbU5K7fjSgZTlnpNzkHt9piPUDLwldfDaRpxqefk8cK8ma2Zq2zazqknh6LRgI8EAT82nRka2Jt6WyAULheInEuUNAsNUxEa4NbFCGyeeJz6JTpH05pu5gohji0q5Rj5HLCHl3hMdy</a><br/><br/>This request fails due to SocketTimeoutException (per Java Doc: Signals that a timeout has occurred on a socket read or accept).</div>
+]]>
+            </description>
+            <pubDate>Thu, 21 Aug 2014 21:17:56 UT</pubDate>
+        </item>
+        <item>
+            <title>ASOC-147: Feed should be filterable by Tag</title>
+            <link>http://ontometrics.com:8085/issue/ASOC-147</link>
+            <description>
+                <![CDATA[
+<table> <tr> <th>Reporter</th> <td> <img src="http://ontometrics.com:8085/_classpath/smartui/img/youPicture.gif" width="56" height="59" alt="Pawan Gupta (pawan)" title="Pawan Gupta (pawan)"/> Pawan Gupta (pawan) </td> </tr> <tr> <th>Created</th> <td>Jul 1, 2014 1:02:23 PM</td> </tr> <tr> <th>Updated</th> <td>Aug 21, 2014 12:38:42 PM</td> </tr> <tr> <th>Resolved</th> <td>Aug 21, 2014 12:38:42 PM</td> </tr> <tr> <th>Priority</th> <td>Normal</td> </tr> <tr> <th>Type</th> <td>Feature</td> </tr> <tr> <th>State</th> <td>Fixed</td> </tr> <tr> <th>Assignee</th> <td>Bobby Lincoln (blincoln)</td> </tr> <tr> <th>Subsystem</th> <td>No subsystem</td> </tr> <tr> <th>Fix versions</th> <td>0.10.1</td> </tr> <tr> <th>Affected versions</th> <td>Unknown</td> </tr> <tr> <th>Fixed in build</th> <td>Next Build</td> </tr> </table> <div class="wiki text">Tag feed: tapping on a hash tag takes user to a feed page with media matching the tag;<br/><br/>API details: <br/>GET <a href="http://devvixletapi-env.elasticbeanstalk.com/feed/tag/something?=true&posts=0&user_created=0&access_token=fcn8Aan6uqjWwJn3PGuiRtE9tORLtxutPHkNKY2sfCNtVrslmkxbFVbScDNbXPomsdgxUQqEZgJTu351NzobRRjrHXQIuX17hJ9goxgEOp6LIYCVevTjeMmDBTYge2zb8lv70eIfL3M7lf2obG47CbnS7gkWEu1wF3xPczxTH8keDEhcSesd2kNmpS7lni5clVIoyOvGXbH2FGqJlkMvM92QnA6xy4b9ZcgXo7foL6GVDHy31spuBvL1thq8MFOK&page=1&direction=desc&per_page=10&sort=createdAt">http://devvixletapi-env.elasticbeanstalk.com/feed/tag/something?=true&posts=0&user_created=0&access_token=fcn8Aan6uqjWwJn3PGuiRtE9tORLtxutPHkNKY2sfCNtVrslmkxbFVbScDNbXPomsdgxUQqEZgJTu351NzobRRjrHXQIuX17hJ9goxgEOp6LIYCVevTjeMmDBTYge2zb8lv70eIfL3M7lf2obG47CbnS7gkWEu1wF3xPczxTH8keDEhcSesd2kNmpS7lni5clVIoyOvGXbH2FGqJlkMvM92QnA6xy4b9ZcgXo7foL6GVDHy31spuBvL1thq8MFOK&page=1&direction=desc&per_page=10&sort=createdAt</a></div>
+]]>
+            </description>
+            <pubDate>Thu, 21 Aug 2014 19:38:42 UT</pubDate>
+        </item>
+        <item>
+            <title>
+                ASOC-69: Make a read me that will get someone up and running
+            </title>
+            <link>http://ontometrics.com:8085/issue/ASOC-69</link>
+            <description>
+                <![CDATA[
+<table> <tr> <th>Reporter</th> <td> <img src="http://www.gravatar.com/avatar/2543fe7b34482922746d3aaf4aa86652.jpg?s=60&amp;d=monsterid" width="56" height="59" alt="Rob Williams (rob)" title="Rob Williams (rob)"/> Rob Williams (rob) </td> </tr> <tr> <th>Created</th> <td>May 29, 2014 3:51:34 PM</td> </tr> <tr> <th>Updated</th> <td>Aug 21, 2014 12:37:54 PM</td> </tr> <tr> <th>Resolved</th> <td>Aug 21, 2014 12:37:54 PM</td> </tr> <tr> <th>Priority</th> <td>Normal</td> </tr> <tr> <th>Type</th> <td>Task</td> </tr> <tr> <th>State</th> <td>Fixed</td> </tr> <tr> <th>Assignee</th> <td>Rob Williams (rob)</td> </tr> <tr> <th>Subsystem</th> <td>No subsystem</td> </tr> <tr> <th>Fix versions</th> <td>0.10.1</td> </tr> <tr> <th>Affected versions</th> <td>Unknown</td> </tr> <tr> <th>Fixed in build</th> <td>Next Build</td> </tr> </table> <div class="wiki text">Should include:<br/><br/><ul class="wiki-list0"><li> cloning the repo<br/></li><li> importing to Android Studio<br/><ul class="wiki-list1"><li> version info<br/></li></ul></li><li> needed SDK libs, etc.</li></ul><br/>Use the markdown.</div>
+]]>
+            </description>
+            <pubDate>Thu, 21 Aug 2014 19:37:54 UT</pubDate>
+        </item>
+        <item>
+            <title>ASOC-286: Add readme section for TeamCity setup</title>
+            <link>http://ontometrics.com:8085/issue/ASOC-286</link>
+            <description>
+                <![CDATA[
+<table> <tr> <th>Reporter</th> <td> <img src="http://www.gravatar.com/avatar/0a18770794a74b222730b640455662d9.jpg?s=60&amp;d=monsterid" width="56" height="59" alt="Nikolay Chorniy (nikolay.chorniy@gmail.com)" title="Nikolay Chorniy (nikolay.chorniy@gmail.com)"/> Nikolay Chorniy (nikolay.chorniy@gmail.com) </td> </tr> <tr> <th>Created</th> <td>Aug 21, 2014 8:29:41 AM</td> </tr> <tr> <th>Updated</th> <td>Aug 21, 2014 12:37:39 PM</td> </tr> <tr> <th>Resolved</th> <td>Aug 21, 2014 12:37:39 PM</td> </tr> <tr> <th>Priority</th> <td>Normal</td> </tr> <tr> <th>Type</th> <td>Task</td> </tr> <tr> <th>State</th> <td>Fixed</td> </tr> <tr> <th>Assignee</th> <td>Nikolay Chorniy (nikolay.chorniy@gmail.com)</td> </tr> <tr> <th>Subsystem</th> <td>No subsystem</td> </tr> <tr> <th>Fix versions</th> <td>0.10.1</td> </tr> <tr> <th>Affected versions</th> <td>Unknown</td> </tr> <tr> <th>Fixed in build</th> <td>Next Build</td> </tr> </table> <div class="wiki text">It should contain information about:<br/><br/><ul class="wiki-list0"><li> Creating a base Build Configuration<br/></li><li> How to hook a build execution on commit<br/></li><li> How to report on build failure / back to normal<br/></li></ul></div>
+]]>
+            </description>
+            <pubDate>Thu, 21 Aug 2014 19:37:39 UT</pubDate>
+        </item>
+        <item>
+            <title>
+                ASOC-288: Create readme section which describe how to build project in Andoid Studio and form console
+            </title>
+            <link>http://ontometrics.com:8085/issue/ASOC-288</link>
+            <description>
+                <![CDATA[
+<table> <tr> <th>Reporter</th> <td> <img src="http://www.gravatar.com/avatar/75c2bdacfd2d62abcbfe7beda3d9c613.jpg?s=60&amp;d=monsterid" width="56" height="59" alt="Andrey Chorniy (andrey.chorniy)" title="Andrey Chorniy (andrey.chorniy)"/> Andrey Chorniy (andrey.chorniy) </td> </tr> <tr> <th>Created</th> <td>Aug 21, 2014 12:14:57 PM</td> </tr> <tr> <th>Updated</th> <td>Aug 21, 2014 12:21:55 PM</td> </tr> <tr> <th>Resolved</th> <td>Aug 21, 2014 12:21:55 PM</td> </tr> <tr> <th>Priority</th> <td>Normal</td> </tr> <tr> <th>Type</th> <td>Task</td> </tr> <tr> <th>State</th> <td>Fixed</td> </tr> <tr> <th>Assignee</th> <td>Andrey Chorniy (andrey.chorniy)</td> </tr> <tr> <th>Subsystem</th> <td>No subsystem</td> </tr> <tr> <th>Fix versions</th> <td>0.10.1</td> </tr> <tr> <th>Affected versions</th> <td>Unknown</td> </tr> <tr> <th>Fixed in build</th> <td>Next Build</td> </tr> </table> <div class="wiki text">It should contain following information<br/><ul class="wiki-list0"><li> how to launch project in AS <br/></li><li> build it in AS <br/></li><li> from console for different environments (dev, staging, production)<br/></li></ul></div>
+]]>
+            </description>
+            <pubDate>Thu, 21 Aug 2014 19:21:55 UT</pubDate>
+        </item>
+        <item>
+            <title>
+                HA-674: SEP website embedding the jobs panel from maxhire
+            </title>
+            <link>http://ontometrics.com:8085/issue/HA-674</link>
+            <description>
+                <![CDATA[
+<table> <tr> <th>Reporter</th> <td> <img src="http://ontometrics.com:8085/_classpath/smartui/img/youPicture.gif" width="56" height="59" alt="Mona Hammad (mona.hammad)" title="Mona Hammad (mona.hammad)"/> Mona Hammad (mona.hammad) </td> </tr> <tr> <th>Created</th> <td>Aug 21, 2014 8:57:10 AM</td> </tr> <tr> <th>Updated</th> <td>Aug 21, 2014 12:11:45 PM</td> </tr> <tr> <th>Priority</th> <td>Normal</td> </tr> <tr> <th>Type</th> <td>Bug</td> </tr> <tr> <th>State</th> <td>Submitted</td> </tr> <tr> <th>Assignee</th> <td>Mona Hammad (mona.hammad)</td> </tr> <tr> <th>Subsystem</th> <td>No subsystem</td> </tr> <tr> <th>Fix versions</th> <td>Unscheduled</td> </tr> <tr> <th>Affected versions</th> <td>Unknown</td> </tr> <tr> <th>Fixed in build</th> <td>Next Build</td> </tr> <tr> <th>aggregatetimespent</th> <td>No aggregatetimespent</td> </tr> <tr> <th>aggregatetimeestimate</th> <td>No aggregatetimeestimate</td> </tr> <tr> <th>resolution</th> <td>No resolution</td> </tr> <tr> <th>timespent</th> <td>No timespent</td> </tr> <tr> <th>timeestimate</th> <td>No timeestimate</td> </tr> </table> <div class="wiki text">Need to embed that job panel into the SEP website using any technique other than iframe,as iframe has problem with safari on iPhone</div>
+]]>
+            </description>
+            <pubDate>Thu, 21 Aug 2014 19:11:45 UT</pubDate>
+        </item>
+        <item>
+            <title>HA-676: Feed has inconsistent results</title>
+            <link>http://ontometrics.com:8085/issue/HA-676</link>
+            <description>
+                <![CDATA[
+<table> <tr> <th>Reporter</th> <td> <img src="http://ontometrics.com:8085/_classpath/smartui/img/youPicture.gif" width="56" height="59" alt="Angela Tran (atran)" title="Angela Tran (atran)"/> Angela Tran (atran) </td> </tr> <tr> <th>Created</th> <td>Aug 21, 2014 11:11:17 AM</td> </tr> <tr> <th>Updated</th> <td>Aug 21, 2014 12:02:35 PM</td> </tr> <tr> <th>Priority</th> <td>Normal</td> </tr> <tr> <th>Type</th> <td>Bug</td> </tr> <tr> <th>State</th> <td>Open</td> </tr> <tr> <th>Assignee</th> <td>Rob Williams (rob)</td> </tr> <tr> <th>Subsystem</th> <td>No subsystem</td> </tr> <tr> <th>Fix versions</th> <td>2.1</td> </tr> <tr> <th>Affected versions</th> <td>Unknown</td> </tr> <tr> <th>Fixed in build</th> <td>Next Build</td> </tr> <tr> <th>aggregatetimespent</th> <td>No aggregatetimespent</td> </tr> <tr> <th>aggregatetimeestimate</th> <td>No aggregatetimeestimate</td> </tr> <tr> <th>resolution</th> <td>No resolution</td> </tr> <tr> <th>timespent</th> <td>No timespent</td> </tr> <tr> <th>timeestimate</th> <td>No timeestimate</td> </tr> </table> <div class="wiki text">The Microsoft Group for SEP LA, Zion, and Lassen are all pulling a different amount of ads&ndash;and this is looking at just 8/20 alone. Please see screen shots. I&#39;m also attaching screen shots of differences in the open source group as well. </div>
+]]>
+            </description>
+            <pubDate>Thu, 21 Aug 2014 19:02:35 UT</pubDate>
+        </item>
+        <item>
+            <title>
+                ASOC-287: All buttons on "Users I Follow" screen must display "Following" button
+            </title>
+            <link>http://ontometrics.com:8085/issue/ASOC-287</link>
+            <description>
+                <![CDATA[
+<table> <tr> <th>Reporter</th> <td> <img src="http://www.gravatar.com/avatar/0a18770794a74b222730b640455662d9.jpg?s=60&amp;d=monsterid" width="56" height="59" alt="Nikolay Chorniy (nikolay.chorniy@gmail.com)" title="Nikolay Chorniy (nikolay.chorniy@gmail.com)"/> Nikolay Chorniy (nikolay.chorniy@gmail.com) </td> </tr> <tr> <th>Created</th> <td>Aug 21, 2014 11:44:06 AM</td> </tr> <tr> <th>Updated</th> <td>Aug 21, 2014 11:44:06 AM</td> </tr> <tr> <th>Priority</th> <td>Normal</td> </tr> <tr> <th>Type</th> <td>Bug</td> </tr> <tr> <th>State</th> <td>Open</td> </tr> <tr> <th>Assignee</th> <td>Unassigned</td> </tr> <tr> <th>Subsystem</th> <td>No subsystem</td> </tr> <tr> <th>Fix versions</th> <td>0.10.1</td> </tr> <tr> <th>Affected versions</th> <td>Unknown</td> </tr> <tr> <th>Fixed in build</th> <td>Next Build</td> </tr> </table> <div class="wiki text"><ol class="wiki-list0"><li> Logged in as &#39;tim&#39; user on dev<br/></li><li> Opened own user profile screen<br/></li><li> Clicked &quot;Following&quot; link, &quot;Users I Follow&quot; screen opened </li></ol><br/>Bug: Only near part of the users &quot;Following&quot; button was displayed, the other part displays &quot;+ Follow&quot; button which is not correct because both users are already followed.<br/><br/>All buttons on &quot;Users I Follow&quot; screen must display &quot;Following&quot; button.</div>
+]]>
+            </description>
+            <pubDate>Thu, 21 Aug 2014 18:44:06 UT</pubDate>
+        </item>
+        <item>
+            <title>
+                HA-673: SEP website redo using Shapes bootstrap template
+            </title>
+            <link>http://ontometrics.com:8085/issue/HA-673</link>
+            <description>
+                <![CDATA[
+<table> <tr> <th>Reporter</th> <td> <img src="http://ontometrics.com:8085/_classpath/smartui/img/youPicture.gif" width="56" height="59" alt="Mona Hammad (mona.hammad)" title="Mona Hammad (mona.hammad)"/> Mona Hammad (mona.hammad) </td> </tr> <tr> <th>Created</th> <td>Aug 21, 2014 8:54:09 AM</td> </tr> <tr> <th>Updated</th> <td>Aug 21, 2014 11:42:53 AM</td> </tr> <tr> <th>Priority</th> <td>Normal</td> </tr> <tr> <th>Type</th> <td>Task</td> </tr> <tr> <th>State</th> <td>In Progress</td> </tr> <tr> <th>Assignee</th> <td>Mona Hammad (mona.hammad)</td> </tr> <tr> <th>Subsystem</th> <td>No subsystem</td> </tr> <tr> <th>Fix versions</th> <td>Unscheduled</td> </tr> <tr> <th>Affected versions</th> <td>Unknown</td> </tr> <tr> <th>Fixed in build</th> <td>Next Build</td> </tr> <tr> <th>aggregatetimespent</th> <td>No aggregatetimespent</td> </tr> <tr> <th>aggregatetimeestimate</th> <td>No aggregatetimeestimate</td> </tr> <tr> <th>resolution</th> <td>No resolution</td> </tr> <tr> <th>timespent</th> <td>No timespent</td> </tr> <tr> <th>timeestimate</th> <td>No timeestimate</td> </tr> </table> <div class="wiki text">here is the SEP website using with the shapes template<br/><a href="http://sep.com.s3.amazonaws.com/index.html">http://sep.com.s3.amazonaws.com/index.html</a></div>
+]]>
+            </description>
+            <pubDate>Thu, 21 Aug 2014 18:42:53 UT</pubDate>
+        </item>
+        <item>
+            <title>ASOC-245: Capsule page filter should be a dropdown</title>
+            <link>http://ontometrics.com:8085/issue/ASOC-245</link>
+            <description>
+                <![CDATA[
+<table> <tr> <th>Reporter</th> <td> <img src="http://www.gravatar.com/avatar/a413e342ab8c3cf30fc3ce2f330f4c3f.jpg?s=60&amp;d=monsterid" width="56" height="59" alt="Bobby Lincoln (blincoln)" title="Bobby Lincoln (blincoln)"/> Bobby Lincoln (blincoln) </td> </tr> <tr> <th>Created</th> <td>Jul 30, 2014 11:16:54 AM</td> </tr> <tr> <th>Updated</th> <td>Aug 21, 2014 11:24:51 AM</td> </tr> <tr> <th>Resolved</th> <td>Aug 21, 2014 11:24:51 AM</td> </tr> <tr> <th>Priority</th> <td>Normal</td> </tr> <tr> <th>Type</th> <td>Bug</td> </tr> <tr> <th>State</th> <td>Fixed</td> </tr> <tr> <th>Assignee</th> <td>Nikolay Chorniy (nikolay.chorniy@gmail.com)</td> </tr> <tr> <th>Subsystem</th> <td>No subsystem</td> </tr> <tr> <th>Fix versions</th> <td>0.10.1</td> </tr> <tr> <th>Affected versions</th> <td>Unknown</td> </tr> <tr> <th>Fixed in build</th> <td>Next Build</td> </tr> </table> <div class="wiki text">Capsule page filter is currently a text box, it should be changed to drop down with the following options:<br/><br/>::: other user&#39;s capsules filters ::: <br/>ALL<br/><a href="http://api.vixlet.com/user/capsule/53d67b56a374b38a686e9ed9/all?limit=20&access_token=">http://api.vixlet.com/user/capsule/53d67b56a374b38a686e9ed9/all?limit=20&access_token=</a><br/><br/>CREATED<br/><a href="http://api.vixlet.com/user/capsule/53d67b56a374b38a686e9ed9/created?limit=20&access_token=">http://api.vixlet.com/user/capsule/53d67b56a374b38a686e9ed9/created?limit=20&access_token=</a><br/><br/>SUBSCRIPTIONS<br/><a href="http://api.vixlet.com/user/capsule/53d67b56a374b38a686e9ed9/createdsub?limit=20&access_token=">http://api.vixlet.com/user/capsule/53d67b56a374b38a686e9ed9/createdsub?limit=20&access_token=</a><br/><br/>::: END other user&#39;s capsules filters ::: <br/><br/><br/>::: LOGGED IN USERS CAPSULES :::<br/><br/>ALL<br/><a href="http://api.vixlet.com/user/capsule/all?dateOffset=2014-07-26T00:21:56.512Z&limit=20&access_token=">http://api.vixlet.com/user/capsule/all?dateOffset=2014-07-26T00:21:56.512Z&limit=20&access_token=</a><br/><br/>CREATED<br/><a href="http://api.vixlet.com/user/capsule/created?dateOffset=2014-07-26T00:21:56.512Z&limit=20&access_token=">http://api.vixlet.com/user/capsule/created?dateOffset=2014-07-26T00:21:56.512Z&limit=20&access_token=</a><br/><br/>SUBSCRIPTIONS (MY COLLECTION)<br/><a href="http://api.vixlet.com/user/capsule/createdsub?limit=20&access_token=">http://api.vixlet.com/user/capsule/createdsub?limit=20&access_token=</a><br/><br/>USERS I FOLLOW<br/><a href="http://api.vixlet.com/user/capsule/follower?limit=20&access_token=">http://api.vixlet.com/user/capsule/follower?limit=20&access_token=</a><br/><br/>::: END LOGGED IN USERS CAPSULES :::<br/><br/><br/>::: OFFICIAL CAPSULES :::<br/><br/><a href="http://api.vixlet.com/user/capsule/brand?limit=20&access_token=">http://api.vixlet.com/user/capsule/brand?limit=20&access_token=</a><br/><br/>:: END OFFICIAL CAPSULES :::</div>
+]]>
+            </description>
+            <pubDate>Thu, 21 Aug 2014 18:24:51 UT</pubDate>
+        </item>
+        <item>
+            <title>
+                ASOC-247: Create screen to display other user's capsules
+            </title>
+            <link>http://ontometrics.com:8085/issue/ASOC-247</link>
+            <description>
+                <![CDATA[
+<table> <tr> <th>Reporter</th> <td> <img src="http://www.gravatar.com/avatar/a413e342ab8c3cf30fc3ce2f330f4c3f.jpg?s=60&amp;d=monsterid" width="56" height="59" alt="Bobby Lincoln (blincoln)" title="Bobby Lincoln (blincoln)"/> Bobby Lincoln (blincoln) </td> </tr> <tr> <th>Created</th> <td>Jul 30, 2014 3:47:03 PM</td> </tr> <tr> <th>Updated</th> <td>Aug 21, 2014 11:23:41 AM</td> </tr> <tr> <th>Resolved</th> <td>Aug 21, 2014 11:23:41 AM</td> </tr> <tr> <th>Priority</th> <td>Major</td> </tr> <tr> <th>Type</th> <td>New Feature</td> </tr> <tr> <th>State</th> <td>Fixed</td> </tr> <tr> <th>Assignee</th> <td>Nikolay Chorniy (nikolay.chorniy@gmail.com)</td> </tr> <tr> <th>Subsystem</th> <td>No subsystem</td> </tr> <tr> <th>Fix versions</th> <td>0.10.1</td> </tr> <tr> <th>Affected versions</th> <td>Unknown</td> </tr> <tr> <th>Fixed in build</th> <td>Next Build</td> </tr> </table> <div class="wiki text">When tapping __ Capsules in another users profile page, it should take you to the capsule explore page with the following options added:<br/><br/>_____&#39;s Capsules<br/>Capsules ____ Created<br/>_____&#39;s Subscriptions</div>
+]]>
+            </description>
+            <pubDate>Thu, 21 Aug 2014 18:23:41 UT</pubDate>
+        </item>
+        <item>
+            <title>
+                DMAN-522: After running the estimator, should have option to set that as value program uses
+            </title>
+            <link>http://ontometrics.com:8085/issue/DMAN-522</link>
+            <description>
+                <![CDATA[
+<table> <tr> <th>Reporter</th> <td> <img src="http://www.gravatar.com/avatar/2543fe7b34482922746d3aaf4aa86652.jpg?s=60&amp;d=monsterid" width="56" height="59" alt="Rob Williams (rob)" title="Rob Williams (rob)"/> Rob Williams (rob) </td> </tr> <tr> <th>Created</th> <td>May 29, 2014 8:34:53 AM</td> </tr> <tr> <th>Updated</th> <td>Aug 21, 2014 11:13:36 AM</td> </tr> <tr> <th>Resolved</th> <td>Aug 21, 2014 11:13:36 AM</td> </tr> <tr> <th>Priority</th> <td>Normal</td> </tr> <tr> <th>Type</th> <td>Task</td> </tr> <tr> <th>State</th> <td>Fixed</td> </tr> <tr> <th>Assignee</th> <td>Noura Hassan (noura)</td> </tr> <tr> <th>Subsystem</th> <td>No subsystem</td> </tr> <tr> <th>Fix versions</th> <td>1.1.0</td> </tr> <tr> <th>Affected versions</th> <td>Unknown</td> </tr> <tr> <th>Fixed in build</th> <td>Next Build</td> </tr> <tr> <th>resolution</th> <td>No resolution</td> </tr> </table> <div class="wiki text">It&#39;s confusing to show their most recent lab result, offer to estimate, then after the estimator, just drop them back there to show the recent lab result.<br/><br/>We should ask which value they want to use, or have a way to replace the lab result with an estimate.. ?</div>
+]]>
+            </description>
+            <pubDate>Thu, 21 Aug 2014 18:13:36 UT</pubDate>
+        </item>
+        <item>
+            <title>
+                DMAN-649: reset the option when user adds new lab results
+            </title>
+            <link>http://ontometrics.com:8085/issue/DMAN-649</link>
+            <description>
+                <![CDATA[
+<table> <tr> <th>Reporter</th> <td> <img src="http://ontometrics.com:8085/_classpath/smartui/img/youPicture.gif" width="56" height="59" alt="Noura Hassan (noura)" title="Noura Hassan (noura)"/> Noura Hassan (noura) </td> </tr> <tr> <th>Created</th> <td>Aug 21, 2014 11:09:58 AM</td> </tr> <tr> <th>Updated</th> <td>Aug 21, 2014 11:13:29 AM</td> </tr> <tr> <th>Resolved</th> <td>Aug 21, 2014 11:13:27 AM</td> </tr> <tr> <th>Priority</th> <td>Normal</td> </tr> <tr> <th>Type</th> <td>Task</td> </tr> <tr> <th>State</th> <td>Fixed</td> </tr> <tr> <th>Assignee</th> <td>Noura Hassan (noura)</td> </tr> <tr> <th>Subsystem</th> <td>No subsystem</td> </tr> <tr> <th>Fix versions</th> <td>Unscheduled</td> </tr> <tr> <th>Affected versions</th> <td>Unknown</td> </tr> <tr> <th>Fixed in build</th> <td>Next Build</td> </tr> <tr> <th>resolution</th> <td>No resolution</td> </tr> </table>
+]]>
+            </description>
+            <pubDate>Thu, 21 Aug 2014 18:13:29 UT</pubDate>
+        </item>
+        <item>
+            <title>
+                DMAN-648: At reports display estimated result instead of lab results when required
+            </title>
+            <link>http://ontometrics.com:8085/issue/DMAN-648</link>
+            <description>
+                <![CDATA[
+<table> <tr> <th>Reporter</th> <td> <img src="http://ontometrics.com:8085/_classpath/smartui/img/youPicture.gif" width="56" height="59" alt="Noura Hassan (noura)" title="Noura Hassan (noura)"/> Noura Hassan (noura) </td> </tr> <tr> <th>Created</th> <td>Aug 21, 2014 9:13:30 AM</td> </tr> <tr> <th>Updated</th> <td>Aug 21, 2014 11:07:24 AM</td> </tr> <tr> <th>Resolved</th> <td>Aug 21, 2014 11:07:20 AM</td> </tr> <tr> <th>Priority</th> <td>Normal</td> </tr> <tr> <th>Type</th> <td>Task</td> </tr> <tr> <th>State</th> <td>Fixed</td> </tr> <tr> <th>Assignee</th> <td>Noura Hassan (noura)</td> </tr> <tr> <th>Subsystem</th> <td>No subsystem</td> </tr> <tr> <th>Fix versions</th> <td>Unscheduled</td> </tr> <tr> <th>Affected versions</th> <td>Unknown</td> </tr> <tr> <th>Fixed in build</th> <td>Next Build</td> </tr> <tr> <th>resolution</th> <td>No resolution</td> </tr> </table>
+]]>
+            </description>
+            <pubDate>Thu, 21 Aug 2014 18:07:24 UT</pubDate>
+        </item>
+        <item>
+            <title>
+                HA-675: Deleting or thumbs downing a lead from the workspace makes the lead disappear from the feed.
+            </title>
+            <link>http://ontometrics.com:8085/issue/HA-675</link>
+            <description>
+                <![CDATA[
+<table> <tr> <th>Reporter</th> <td> <img src="http://ontometrics.com:8085/_classpath/smartui/img/youPicture.gif" width="56" height="59" alt="Darren Mabashov (dmabashov)" title="Darren Mabashov (dmabashov)"/> Darren Mabashov (dmabashov) </td> </tr> <tr> <th>Created</th> <td>Aug 21, 2014 10:52:16 AM</td> </tr> <tr> <th>Updated</th> <td>Aug 21, 2014 10:52:41 AM</td> </tr> <tr> <th>Priority</th> <td>Normal</td> </tr> <tr> <th>Type</th> <td>Bug</td> </tr> <tr> <th>State</th> <td>Open</td> </tr> <tr> <th>Assignee</th> <td>Rob Williams (rob)</td> </tr> <tr> <th>Subsystem</th> <td>No subsystem</td> </tr> <tr> <th>Fix versions</th> <td>2.1</td> </tr> <tr> <th>Affected versions</th> <td>Unknown</td> </tr> <tr> <th>Fixed in build</th> <td>Next Build</td> </tr> <tr> <th>aggregatetimespent</th> <td>No aggregatetimespent</td> </tr> <tr> <th>aggregatetimeestimate</th> <td>No aggregatetimeestimate</td> </tr> <tr> <th>resolution</th> <td>No resolution</td> </tr> <tr> <th>timespent</th> <td>No timespent</td> </tr> <tr> <th>timeestimate</th> <td>No timeestimate</td> </tr> </table> <div class="wiki text">if a user presses the thumbs down button from their workspace or decides to trash a lead in their workspace the lead will disappear from the feed. <br/><br/>only leads that are trashed or thumbs downed directly on the feed should affect the feed. Leads that are thumbs downed or trashed in a users workspace should have no affect on the feed and therefore the ad should not disappear from the feed. </div>
+]]>
+            </description>
+            <pubDate>Thu, 21 Aug 2014 17:52:41 UT</pubDate>
+        </item>
+        <item>
+            <title>
+                ASOC-240: Media opened from capsule details screen does not show owner name
+            </title>
+            <link>http://ontometrics.com:8085/issue/ASOC-240</link>
+            <description>
+                <![CDATA[
+<table> <tr> <th>Reporter</th> <td> <img src="http://www.gravatar.com/avatar/0a18770794a74b222730b640455662d9.jpg?s=60&amp;d=monsterid" width="56" height="59" alt="Nikolay Chorniy (nikolay.chorniy@gmail.com)" title="Nikolay Chorniy (nikolay.chorniy@gmail.com)"/> Nikolay Chorniy (nikolay.chorniy@gmail.com) </td> </tr> <tr> <th>Created</th> <td>Jul 30, 2014 8:05:29 AM</td> </tr> <tr> <th>Updated</th> <td>Aug 21, 2014 10:40:36 AM</td> </tr> <tr> <th>Priority</th> <td>Normal</td> </tr> <tr> <th>Type</th> <td>Bug</td> </tr> <tr> <th>State</th> <td>In Progress</td> </tr> <tr> <th>Assignee</th> <td>Bobby Lincoln (blincoln)</td> </tr> <tr> <th>Subsystem</th> <td>No subsystem</td> </tr> <tr> <th>Fix versions</th> <td>0.10.1</td> </tr> <tr> <th>Affected versions</th> <td>Unknown</td> </tr> <tr> <th>Fixed in build</th> <td>Next Build</td> </tr> </table> <div class="wiki text"><ol class="wiki-list0"><li> Open User Feed<br/></li><li> Open capsule of any media<br/></li><li> Open any media in the list from capsule details screen</li></ol><br/>Bugs: <br/><ul class="wiki-list0"><li> Media author name won&#39;t be shown and default avatar will be shown instead of user avatar<br/></li><li> Tapping on the author avatar won&#39;t open profile screen<br/></li></ul></div>
+]]>
+            </description>
+            <pubDate>Thu, 21 Aug 2014 17:40:36 UT</pubDate>
+        </item>
+        <item>
+            <title>
+                DMAN-647: add an option to estimator results view to display results instead of lab results
+            </title>
+            <link>http://ontometrics.com:8085/issue/DMAN-647</link>
+            <description>
+                <![CDATA[
+<table> <tr> <th>Reporter</th> <td> <img src="http://ontometrics.com:8085/_classpath/smartui/img/youPicture.gif" width="56" height="59" alt="Noura Hassan (noura)" title="Noura Hassan (noura)"/> Noura Hassan (noura) </td> </tr> <tr> <th>Created</th> <td>Aug 21, 2014 9:12:46 AM</td> </tr> <tr> <th>Updated</th> <td>Aug 21, 2014 10:37:44 AM</td> </tr> <tr> <th>Resolved</th> <td>Aug 21, 2014 10:37:44 AM</td> </tr> <tr> <th>Priority</th> <td>Normal</td> </tr> <tr> <th>Type</th> <td>Task</td> </tr> <tr> <th>State</th> <td>Fixed</td> </tr> <tr> <th>Assignee</th> <td>Noura Hassan (noura)</td> </tr> <tr> <th>Subsystem</th> <td>No subsystem</td> </tr> <tr> <th>Fix versions</th> <td>Unscheduled</td> </tr> <tr> <th>Affected versions</th> <td>Unknown</td> </tr> <tr> <th>Fixed in build</th> <td>Next Build</td> </tr> <tr> <th>resolution</th> <td>No resolution</td> </tr> </table>
+]]>
+            </description>
+            <pubDate>Thu, 21 Aug 2014 17:37:44 UT</pubDate>
+        </item>
+        <item>
+            <title>ASOC-284: Got socket timeout exception</title>
+            <link>http://ontometrics.com:8085/issue/ASOC-284</link>
+            <description>
+                <![CDATA[
+<table> <tr> <th>Reporter</th> <td> <img src="http://www.gravatar.com/avatar/75c2bdacfd2d62abcbfe7beda3d9c613.jpg?s=60&amp;d=monsterid" width="56" height="59" alt="Andrey Chorniy (andrey.chorniy)" title="Andrey Chorniy (andrey.chorniy)"/> Andrey Chorniy (andrey.chorniy) </td> </tr> <tr> <th>Created</th> <td>Aug 21, 2014 5:36:13 AM</td> </tr> <tr> <th>Updated</th> <td>Aug 21, 2014 10:28:42 AM</td> </tr> <tr> <th>Priority</th> <td>Normal</td> </tr> <tr> <th>Type</th> <td>Bug</td> </tr> <tr> <th>State</th> <td>Open</td> </tr> <tr> <th>Assignee</th> <td>Bobby Lincoln (blincoln)</td> </tr> <tr> <th>Subsystem</th> <td>Services</td> </tr> <tr> <th>Fix versions</th> <td>Unscheduled</td> </tr> <tr> <th>Affected versions</th> <td>Unknown</td> </tr> <tr> <th>Fixed in build</th> <td>Next Build</td> </tr> </table> <div class="wiki text">It looks like server is down or broken, all requests eneded up with SocketTimeoutException<br/>User Media Feed<br/><pre class="wikicode">08-21 15:33:42.830 24985-27061/com.ontometrics.parent E/﹕ An exception occurred during request network execution :java.net.SocketTimeoutException<br/> retrofit.RetrofitError: java.net.SocketTimeoutException<br/> at retrofit.RestAdapter$RestHandler.invokeRequest(RestAdapter.java:385)<br/> at retrofit.RestAdapter$RestHandler.invoke(RestAdapter.java:241)<br/> at $Proxy6.userMediaFeed(Native Method)<br/> at com.ontometrics.vixlet.app.request.media.UserMediaFeedRequest.execute(UserMediaFeedRequest.java:25)<br/> at com.ontometrics.vixlet.app.request.media.UserMediaFeedRequest.execute(UserMediaFeedRequest.java:11)<br/> at com.ontometrics.vixlet.app.request.SpiceManagerRequestController$SpicedRequest.loadDataFromNetwork(SpiceManagerRequestController.java:75)<br/> at com.octo.android.robospice.request.CachedSpiceRequest.loadDataFromNetwork(CachedSpiceRequest.java:45)<br/> at com.octo.android.robospice.request.DefaultRequestRunner.processRequest(DefaultRequestRunner.java:149)<br/> at com.octo.android.robospice.request.DefaultRequestRunner$1.run(DefaultRequestRunner.java:216)<br/> at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:390)<br/> at java.util.concurrent.FutureTask.run(FutureTask.java:234)<br/> at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1080)<br/> at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:573)<br/> at java.lang.Thread.run(Thread.java:838)<br/> Caused by: java.net.SocketTimeoutException<br/> at java.net.PlainSocketImpl.read(PlainSocketImpl.java:495)<br/> at java.net.PlainSocketImpl.access$000(PlainSocketImpl.java:46)<br/> at java.net.PlainSocketImpl$PlainSocketInputStream.read(PlainSocketImpl.java:240)<br/> at com.squareup.okhttp.internal.okio.Okio$2.read(Okio.java:113)<br/> at com.squareup.okhttp.internal.okio.RealBufferedSource.readUtf8Line(RealBufferedSource.java:89)<br/> at com.squareup.okhttp.internal.http.HttpConnection.readResponse(HttpConnection.java:149)<br/> at com.squareup.okhttp.internal.http.HttpTransport.readResponseHeaders(HttpTransport.java:99)<br/> at com.squareup.okhttp.internal.http.HttpEngine.readResponse(HttpEngine.java:595)<br/> at com.squareup.okhttp.internal.http.HttpURLConnectionImpl.execute(HttpURLConnectionImpl.java:381)<br/> at com.squareup.okhttp.internal.http.HttpURLConnectionImpl.getResponse(HttpURLConnectionImpl.java:328)<br/> at com.squareup.okhttp.internal.http.HttpURLConnectionImpl.getResponseCode(HttpURLConnectionImpl.java:493)<br/> at retrofit.client.UrlConnectionClient.readResponse(UrlConnectionClient.java:71)<br/> at retrofit.client.UrlConnectionClient.execute(UrlConnectionClient.java:38)<br/> at retrofit.RestAdapter$RestHandler.invokeRequest(RestAdapter.java:322)<br/>            at retrofit.RestAdapter$RestHandler.invoke(RestAdapter.java:241)<br/>            at $Proxy6.userMediaFeed(Native Method)<br/>            at com.ontometrics.vixlet.app.request.media.UserMediaFeedRequest.execute(UserMediaFeedRequest.java:25)<br/>            at com.ontometrics.vixlet.app.request.media.UserMediaFeedRequest.execute(UserMediaFeedRequest.java:11)<br/>            at com.ontometrics.vixlet.app.request.SpiceManagerRequestController$SpicedRequest.loadDataFromNetwork(SpiceManagerRequestController.java:75)<br/>            at com.octo.android.robospice.request.CachedSpiceRequest.loadDataFromNetwork(CachedSpiceRequest.java:45)<br/>            at com.octo.android.robospice.request.DefaultRequestRunner.processRequest(DefaultRequestRunner.java:149)<br/>            at com.octo.android.robospice.request.DefaultRequestRunner$1.run(DefaultRequestRunner.java:216)<br/>            at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:390)<br/>            at java.util.concurrent.FutureTask.run(FutureTask.java:234)<br/>            at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1080)<br/>            at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:573)<br/>            at java.lang.Thread.run(Thread.java:838)<br/></pre><br/>List of notifications for user<br/><pre class="wikicode">08-21 15:35:37.677 24985-27061/com.ontometrics.parent E/﹕ An exception occurred during request network execution :java.net.SocketTimeoutException<br/> retrofit.RetrofitError: java.net.SocketTimeoutException<br/> at retrofit.RestAdapter$RestHandler.invokeRequest(RestAdapter.java:385)<br/> at retrofit.RestAdapter$RestHandler.invoke(RestAdapter.java:241)<br/> at $Proxy12.userNotifications(Native Method)<br/> at com.ontometrics.vixlet.app.request.notification.NotificationFeedRequest.execute(NotificationFeedRequest.java:22)<br/> at com.ontometrics.vixlet.app.request.notification.NotificationFeedRequest.execute(NotificationFeedRequest.java:12)<br/> at com.ontometrics.vixlet.app.request.SpiceManagerRequestController$SpicedRequest.loadDataFromNetwork(SpiceManagerRequestController.java:75)<br/> at com.octo.android.robospice.request.CachedSpiceRequest.loadDataFromNetwork(CachedSpiceRequest.java:45)<br/> at com.octo.android.robospice.request.DefaultRequestRunner.processRequest(DefaultRequestRunner.java:149)<br/> at com.octo.android.robospice.request.DefaultRequestRunner$1.run(DefaultRequestRunner.java:216)<br/> at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:390)<br/> at java.util.concurrent.FutureTask.run(FutureTask.java:234)<br/> at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1080)<br/> at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:573)<br/> at java.lang.Thread.run(Thread.java:838)<br/> Caused by: java.net.SocketTimeoutException<br/> at java.net.PlainSocketImpl.read(PlainSocketImpl.java:495)<br/> at java.net.PlainSocketImpl.access$000(PlainSocketImpl.java:46)<br/> at java.net.PlainSocketImpl$PlainSocketInputStream.read(PlainSocketImpl.java:240)<br/> at com.squareup.okhttp.internal.okio.Okio$2.read(Okio.java:113)<br/> at com.squareup.okhttp.internal.okio.RealBufferedSource.readUtf8Line(RealBufferedSource.java:89)<br/> at com.squareup.okhttp.internal.http.HttpConnection.readResponse(HttpConnection.java:149)<br/> at com.squareup.okhttp.internal.http.HttpTransport.readResponseHeaders(HttpTransport.java:99)<br/> at com.squareup.okhttp.internal.http.HttpEngine.readResponse(HttpEngine.java:595)<br/> at com.squareup.okhttp.internal.http.HttpURLConnectionImpl.execute(HttpURLConnectionImpl.java:381)<br/> at com.squareup.okhttp.internal.http.HttpURLConnectionImpl.getResponse(HttpURLConnectionImpl.java:328)<br/> at com.squareup.okhttp.internal.http.HttpURLConnectionImpl.getResponseCode(HttpURLConnectionImpl.java:493)<br/> at retrofit.client.UrlConnectionClient.readResponse(UrlConnectionClient.java:71)<br/> at retrofit.client.UrlConnectionClient.execute(UrlConnectionClient.java:38)<br/> at retrofit.RestAdapter$RestHandler.invokeRequest(RestAdapter.java:322)<br/>            at retrofit.RestAdapter$RestHandler.invoke(RestAdapter.java:241)<br/>            at $Proxy12.userNotifications(Native Method)<br/>            at com.ontometrics.vixlet.app.request.notification.NotificationFeedRequest.execute(NotificationFeedRequest.java:22)<br/>            at com.ontometrics.vixlet.app.request.notification.NotificationFeedRequest.execute(NotificationFeedRequest.java:12)<br/>            at com.ontometrics.vixlet.app.request.SpiceManagerRequestController$SpicedRequest.loadDataFromNetwork(SpiceManagerRequestController.java:75)<br/>            at com.octo.android.robospice.request.CachedSpiceRequest.loadDataFromNetwork(CachedSpiceRequest.java:45)<br/>            at com.octo.android.robospice.request.DefaultRequestRunner.processRequest(DefaultRequestRunner.java:149)<br/>            at com.octo.android.robospice.request.DefaultRequestRunner$1.run(DefaultRequestRunner.java:216)<br/>            at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:390)<br/>            at java.util.concurrent.FutureTask.run(FutureTask.java:234)<br/>            at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1080)<br/>            at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:573)<br/>            at java.lang.Thread.run(Thread.java:838)</pre></div>
+]]>
+            </description>
+            <pubDate>Thu, 21 Aug 2014 17:28:42 UT</pubDate>
+        </item>
+        <item>
+            <title>
+                ASOC-258: Got error on loading feed (converting results)
+            </title>
+            <link>http://ontometrics.com:8085/issue/ASOC-258</link>
+            <description>
+                <![CDATA[
+<table> <tr> <th>Reporter</th> <td> <img src="http://www.gravatar.com/avatar/75c2bdacfd2d62abcbfe7beda3d9c613.jpg?s=60&amp;d=monsterid" width="56" height="59" alt="Andrey Chorniy (andrey.chorniy)" title="Andrey Chorniy (andrey.chorniy)"/> Andrey Chorniy (andrey.chorniy) </td> </tr> <tr> <th>Created</th> <td>Aug 8, 2014 2:14:53 AM</td> </tr> <tr> <th>Updated</th> <td>Aug 21, 2014 10:27:54 AM</td> </tr> <tr> <th>Resolved</th> <td>Aug 21, 2014 10:27:54 AM</td> </tr> <tr> <th>Priority</th> <td>Normal</td> </tr> <tr> <th>Type</th> <td>Bug</td> </tr> <tr> <th>State</th> <td>Fixed</td> </tr> <tr> <th>Assignee</th> <td>Bobby Lincoln (blincoln)</td> </tr> <tr> <th>Subsystem</th> <td>Services</td> </tr> <tr> <th>Fix versions</th> <td>0.10.1</td> </tr> <tr> <th>Affected versions</th> <td>Unknown</td> </tr> <tr> <th>Fixed in build</th> <td>Next Build</td> </tr> </table> <div class="wiki text">Server return unsupported date format<br/><div class="wiki quote">Failed to parse Date value &#39;2014-08-07 08:27:56 +0000&#39;: Can not parse date &quot;2014-08-07 08:27:56 +0000&quot;: not compatible with any of standard forms (&quot;yyyy-MM-dd&#39;T&#39;HH:mm:ss.SSSZ&quot;, &quot;yyyy-MM-dd&#39;T&#39;HH:mm:ss.SSS&#39;Z&#39;&quot;, &quot;EEE, dd MMM yyyy HH:mm:ss zzz&quot;, &quot;yyyy-MM-dd&quot;) </div><br/><br/><pre class="wikicode"> retrofit.RetrofitError: retrofit.converter.ConversionException: com.fasterxml.jackson.databind.JsonMappingException: Failed to parse Date value &#39;2014-08-07 08:27:56 +0000&#39;: Can not parse date &quot;2014-08-07 08:27:56 +0000&quot;: not compatible with any of standard forms (&quot;yyyy-MM-dd&#39;T&#39;HH:mm:ss.SSSZ&quot;, &quot;yyyy-MM-dd&#39;T&#39;HH:mm:ss.SSS&#39;Z&#39;&quot;, &quot;EEE, dd MMM yyyy HH:mm:ss zzz&quot;, &quot;yyyy-MM-dd&quot;) (at offset 10) (through reference chain: com.ontometrics.vixlet.core.model.media.MediaFeed[&quot;data&quot;]-&gt;com.ontometrics.vixlet.core.model.media.Media[&quot;capsuleInfo&quot;]-&gt;com.ontometrics.vixlet.core.model.Capsule[&quot;unlockAt&quot;])<br/> at retrofit.RestAdapter$RestHandler.invokeRequest(RestAdapter.java:373)<br/> at retrofit.RestAdapter$RestHandler.invoke(RestAdapter.java:241)<br/> at $Proxy6.userMediaFeed(Native Method)<br/> at com.ontometrics.vixlet.app.request.media.UserMediaFeedRequest.execute(UserMediaFeedRequest.java:25)<br/> at com.ontometrics.vixlet.app.request.media.UserMediaFeedRequest.execute(UserMediaFeedRequest.java:11)<br/> at com.ontometrics.vixlet.app.request.SpiceManagerRequestController$SpicedRequest.loadDataFromNetwork(SpiceManagerRequestController.java:75)<br/> at com.octo.android.robospice.request.CachedSpiceRequest.loadDataFromNetwork(CachedSpiceRequest.java:45)<br/> at com.octo.android.robospice.request.DefaultRequestRunner.processRequest(DefaultRequestRunner.java:149)<br/> at com.octo.android.robospice.request.DefaultRequestRunner$1.run(DefaultRequestRunner.java:216)<br/> at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:390)<br/> at java.util.concurrent.FutureTask.run(FutureTask.java:234)<br/> at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1080)<br/> at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:573)<br/> at java.lang.Thread.run(Thread.java:838)<br/> Caused by: retrofit.converter.ConversionException: com.fasterxml.jackson.databind.JsonMappingException: Failed to parse Date value &#39;2014-08-07 08:27:56 +0000&#39;: Can not parse date &quot;2014-08-07 08:27:56 +0000&quot;: not compatible with any of standard forms (&quot;yyyy-MM-dd&#39;T&#39;HH:mm:ss.SSSZ&quot;, &quot;yyyy-MM-dd&#39;T&#39;HH:mm:ss.SSS&#39;Z&#39;&quot;, &quot;EEE, dd MMM yyyy HH:mm:ss zzz&quot;, &quot;yyyy-MM-dd&quot;) (at offset 10) (through reference chain: com.ontometrics.vixlet.core.model.media.MediaFeed[&quot;data&quot;]-&gt;com.ontometrics.vixlet.core.model.media.Media[&quot;capsuleInfo&quot;]-&gt;com.ontometrics.vixlet.core.model.Capsule[&quot;unlockAt&quot;])<br/> at retrofit.converter.JacksonConverter.fromBody(JacksonConverter.java:40)<br/> at retrofit.RestAdapter$RestHandler.invokeRequest(RestAdapter.java:358)<br/>            at retrofit.RestAdapter$RestHandler.invoke(RestAdapter.java:241)<br/>            at $Proxy6.userMediaFeed(Native Method)<br/>            at com.ontometrics.vixlet.app.request.media.UserMediaFeedRequest.execute(UserMediaFeedRequest.java:25)<br/>            at com.ontometrics.vixlet.app.request.media.UserMediaFeedRequest.execute(UserMediaFeedRequest.java:11)<br/>            at com.ontometrics.vixlet.app.request.SpiceManagerRequestController$SpicedRequest.loadDataFromNetwork(SpiceManagerRequestController.java:75)<br/>            at com.octo.android.robospice.request.CachedSpiceRequest.loadDataFromNetwork(CachedSpiceRequest.java:45)<br/>            at com.octo.android.robospice.request.DefaultRequestRunner.processRequest(DefaultRequestRunner.java:149)<br/>            at com.octo.android.robospice.request.DefaultRequestRunner$1.run(DefaultRequestRunner.java:216)<br/>            at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:390)<br/>            at java.util.concurrent.FutureTask.run(FutureTask.java:234)<br/>            at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1080)<br/>            at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:573)<br/>            at java.lang.Thread.run(Thread.java:838)<br/> Caused by: com.fasterxml.jackson.databind.JsonMappingException: Failed to parse Date value &#39;2014-08-07 08:27:56 +0000&#39;: Can not parse date &quot;2014-08-07 08:27:56 +0000&quot;: not compatible with any of standard forms (&quot;yyyy-MM-dd&#39;T&#39;HH:mm:ss.SSSZ&quot;, &quot;yyyy-MM-dd&#39;T&#39;HH:mm:ss.SSS&#39;Z&#39;&quot;, &quot;EEE, dd MMM yyyy HH:mm:ss zzz&quot;, &quot;yyyy-MM-dd&quot;) (at offset 10) (through reference chain: com.ontometrics.vixlet.core.model.media.MediaFeed[&quot;data&quot;]-&gt;com.ontometrics.vixlet.core.model.media.Media[&quot;capsuleInfo&quot;]-&gt;com.ontometrics.vixlet.core.model.Capsule[&quot;unlockAt&quot;])<br/> at com.fasterxml.jackson.databind.deser.BeanDeserializerBase.wrapAndThrow(BeanDeserializerBase.java:1420)<br/> at com.fasterxml.jackson.databind.deser.BeanDeserializer.vanillaDeserialize(BeanDeserializer.java:244)<br/> at com.fasterxml.jackson.databind.deser.BeanDeserializer.deserialize(BeanDeserializer.java:118)<br/> at com.fasterxml.jackson.databind.ObjectMapper._readValue(ObjectMapper.java:2965)<br/> at com.f</pre></div>
+]]>
+            </description>
+            <pubDate>Thu, 21 Aug 2014 17:27:54 UT</pubDate>
+        </item>
+        <item>
+            <title>
+                ASOC-223: Media comments request returned an error response
+            </title>
+            <link>http://ontometrics.com:8085/issue/ASOC-223</link>
+            <description>
+                <![CDATA[
+<table> <tr> <th>Reporter</th> <td> <img src="http://www.gravatar.com/avatar/75c2bdacfd2d62abcbfe7beda3d9c613.jpg?s=60&amp;d=monsterid" width="56" height="59" alt="Andrey Chorniy (andrey.chorniy)" title="Andrey Chorniy (andrey.chorniy)"/> Andrey Chorniy (andrey.chorniy) </td> </tr> <tr> <th>Created</th> <td>Jul 29, 2014 8:59:02 AM</td> </tr> <tr> <th>Updated</th> <td>Aug 21, 2014 9:32:26 AM</td> </tr> <tr> <th>Resolved</th> <td>Aug 21, 2014 9:32:26 AM</td> </tr> <tr> <th>Priority</th> <td>Normal</td> </tr> <tr> <th>Type</th> <td>Bug</td> </tr> <tr> <th>State</th> <td>Fixed</td> </tr> <tr> <th>Assignee</th> <td>Andrey Chorniy (andrey.chorniy)</td> </tr> <tr> <th>Subsystem</th> <td>Services</td> </tr> <tr> <th>Fix versions</th> <td>0.10.1</td> </tr> <tr> <th>Affected versions</th> <td>Unknown</td> </tr> <tr> <th>Fixed in build</th> <td>Next Build</td> </tr> </table> <div class="wiki text">Attempt to load media posts returned an error response. This media were uploaded and accessed from My Capsules/Capsule Preview area<br/><br/><div class="java code title">Request</div><pre class="wikicode"><a href="http://devvixletapi-env.elasticbeanstalk.com/post/capsule/53d7c12059f121d30bbfeb82/media/53d7c12859f121d30bbfeb83?limit=50&access_token=QjlwPlCpSrdpKAWOMdIXJwepKnNXNxYUbXzKgHsUMUX6N6lwYxaC31oSDKd79kn5igmHsDdmm0swURTvyWw8IvwQH9W9KJ2QhzLw33YK7RL88BcedeZKJjOJyKKBpmFZedMrxX3Olg3PkYuvybM9FiqIaqiDhKeBmKWncPNSHe6Fam1shs4DVy1mIqeNMkBHn8B6VlsUmDIXlGIcFsplIjuZU3pNJtAgEJupBikpu1GCyIVVtjnSq0sbXA3eaPK0">http://devvixletapi-env.elasticbeanstalk.com/post/capsule/53d7c12059f121d30bbfeb82/media/53d7c12859f121d30bbfeb83?limit=50&access_token=QjlwPlCpSrdpKAWOMdIXJwepKnNXNxYUbXzKgHsUMUX6N6lwYxaC31oSDKd79kn5igmHsDdmm0swURTvyWw8IvwQH9W9KJ2QhzLw33YK7RL88BcedeZKJjOJyKKBpmFZedMrxX3Olg3PkYuvybM9FiqIaqiDhKeBmKWncPNSHe6Fam1shs4DVy1mIqeNMkBHn8B6VlsUmDIXlGIcFsplIjuZU3pNJtAgEJupBikpu1GCyIVVtjnSq0sbXA3eaPK0</a></pre><br/><div class="java code title">Response</div><pre class="wikicode">{&quot;message&quot;:&quot;url: /post/capsule/53d7c12059f121d30bbfeb82/media/53d7c12859f121d30bbfeb83?limit=50&amp;access_token=QjlwPlCpSrdpKAWOMdIXJwepKnNXNxYUbXzKgHsUMUX6N6lwYxaC31oSDKd79kn5igmHsDdmm0swURTvyWw8IvwQH9W9KJ2QhzLw33YK7RL88BcedeZKJjOJyKKBpmFZedMrxX3Olg3PkYuvybM9FiqIaqiDhKeBmKWncPNSHe6Fam1shs4DVy1mIqeNMkBHn8B6VlsUmDIXlGIcFsplIjuZU3pNJtAgEJupBikpu1GCyIVVtjnSq0sbXA3eaPK0, method: GET&quot;,&quot;status&quot;:404}</pre></div>
+]]>
+            </description>
+            <pubDate>Thu, 21 Aug 2014 16:32:26 UT</pubDate>
+        </item>
+        <item>
+            <title>
+                ASOC-255: "followers" or "following" on profile pages
+            </title>
+            <link>http://ontometrics.com:8085/issue/ASOC-255</link>
+            <description>
+                <![CDATA[
+<table> <tr> <th>Reporter</th> <td> <img src="http://www.gravatar.com/avatar/a413e342ab8c3cf30fc3ce2f330f4c3f.jpg?s=60&amp;d=monsterid" width="56" height="59" alt="Bobby Lincoln (blincoln)" title="Bobby Lincoln (blincoln)"/> Bobby Lincoln (blincoln) </td> </tr> <tr> <th>Created</th> <td>Aug 6, 2014 7:38:07 PM</td> </tr> <tr> <th>Updated</th> <td>Aug 21, 2014 7:58:45 AM</td> </tr> <tr> <th>Resolved</th> <td>Aug 21, 2014 7:58:45 AM</td> </tr> <tr> <th>Priority</th> <td>Normal</td> </tr> <tr> <th>Type</th> <td>Story</td> </tr> <tr> <th>State</th> <td>Fixed</td> </tr> <tr> <th>Assignee</th> <td>Andrey Chorniy (andrey.chorniy)</td> </tr> <tr> <th>Subsystem</th> <td>No subsystem</td> </tr> <tr> <th>Fix versions</th> <td>0.10.1</td> </tr> <tr> <th>Affected versions</th> <td>Unknown</td> </tr> <tr> <th>Fixed in build</th> <td>Next Build</td> </tr> </table> <div class="wiki text">As a user, when I navigate to a user&#39;s profile page, I can clicking &quot;followers&quot; or &quot;following&quot; on that profile pages and be taken to a page displaying all the users that user is following, etc.<br/><br/>From this page, I can follow/unfollow users.</div>
+]]>
+            </description>
+            <pubDate>Thu, 21 Aug 2014 14:58:45 UT</pubDate>
+        </item>
+        <item>
+            <title>
+                ASOC-274: Location should not be required on final create capsule step
+            </title>
+            <link>http://ontometrics.com:8085/issue/ASOC-274</link>
+            <description>
+                <![CDATA[
+<table> <tr> <th>Reporter</th> <td> <img src="http://www.gravatar.com/avatar/a413e342ab8c3cf30fc3ce2f330f4c3f.jpg?s=60&amp;d=monsterid" width="56" height="59" alt="Bobby Lincoln (blincoln)" title="Bobby Lincoln (blincoln)"/> Bobby Lincoln (blincoln) </td> </tr> <tr> <th>Created</th> <td>Aug 18, 2014 10:48:52 AM</td> </tr> <tr> <th>Updated</th> <td>Aug 21, 2014 7:32:13 AM</td> </tr> <tr> <th>Resolved</th> <td>Aug 21, 2014 7:32:13 AM</td> </tr> <tr> <th>Priority</th> <td>Normal</td> </tr> <tr> <th>Type</th> <td>Bug</td> </tr> <tr> <th>State</th> <td>Fixed</td> </tr> <tr> <th>Assignee</th> <td>Noura Hassan (noura)</td> </tr> <tr> <th>Subsystem</th> <td>No subsystem</td> </tr> <tr> <th>Fix versions</th> <td>0.10.1</td> </tr> <tr> <th>Affected versions</th> <td>Unknown</td> </tr> <tr> <th>Fixed in build</th> <td>Next Build</td> </tr> </table> <div class="wiki text">STR:<br/><br/>1. Navigate to create capsule<br/>2. Enter capsule name and choose icon (leave location blank)<br/>3. Tap continue - advances to second screen as expected<br/>4. Tap &quot;Finish &amp; Create Capsule&quot;<br/><br/>Expected: Capsule is created<br/>Actual: Error, &quot;Location field required&quot;<br/><br/>Location field should not be required on either screen</div>
+]]>
+            </description>
+            <pubDate>Thu, 21 Aug 2014 14:32:13 UT</pubDate>
+        </item>
+        <item>
+            <title>
+                ASOC-275: On Capsule Creation, User should be returned to capsule explore screen
+            </title>
+            <link>http://ontometrics.com:8085/issue/ASOC-275</link>
+            <description>
+                <![CDATA[
+<table> <tr> <th>Reporter</th> <td> <img src="http://www.gravatar.com/avatar/a413e342ab8c3cf30fc3ce2f330f4c3f.jpg?s=60&amp;d=monsterid" width="56" height="59" alt="Bobby Lincoln (blincoln)" title="Bobby Lincoln (blincoln)"/> Bobby Lincoln (blincoln) </td> </tr> <tr> <th>Created</th> <td>Aug 18, 2014 10:52:24 AM</td> </tr> <tr> <th>Updated</th> <td>Aug 21, 2014 7:03:43 AM</td> </tr> <tr> <th>Resolved</th> <td>Aug 21, 2014 7:03:43 AM</td> </tr> <tr> <th>Priority</th> <td>Normal</td> </tr> <tr> <th>Type</th> <td>Task</td> </tr> <tr> <th>State</th> <td>Fixed</td> </tr> <tr> <th>Assignee</th> <td>Nikolay Chorniy (nikolay.chorniy@gmail.com)</td> </tr> <tr> <th>Subsystem</th> <td>No subsystem</td> </tr> <tr> <th>Fix versions</th> <td>0.10.1</td> </tr> <tr> <th>Affected versions</th> <td>Unknown</td> </tr> <tr> <th>Fixed in build</th> <td>Next Build</td> </tr> </table> <div class="wiki text">As a user, when I create a capsule I should be returned to the capsule explore page (filter: my capsules). The capsule I created should be visible on the screen.</div>
+]]>
+            </description>
+            <pubDate>Thu, 21 Aug 2014 14:03:43 UT</pubDate>
+        </item>
+        <item>
+            <title>
+                ASOC-283: Crash on "My Capsules" screen after returning back from "Upload Media" screen
+            </title>
+            <link>http://ontometrics.com:8085/issue/ASOC-283</link>
+            <description>
+                <![CDATA[
+<table> <tr> <th>Reporter</th> <td> <img src="http://www.gravatar.com/avatar/0a18770794a74b222730b640455662d9.jpg?s=60&amp;d=monsterid" width="56" height="59" alt="Nikolay Chorniy (nikolay.chorniy@gmail.com)" title="Nikolay Chorniy (nikolay.chorniy@gmail.com)"/> Nikolay Chorniy (nikolay.chorniy@gmail.com) </td> </tr> <tr> <th>Created</th> <td>Aug 21, 2014 5:18:16 AM</td> </tr> <tr> <th>Updated</th> <td>Aug 21, 2014 6:49:43 AM</td> </tr> <tr> <th>Priority</th> <td>Normal</td> </tr> <tr> <th>Type</th> <td>Bug</td> </tr> <tr> <th>State</th> <td>Open</td> </tr> <tr> <th>Assignee</th> <td>Unassigned</td> </tr> <tr> <th>Subsystem</th> <td>No subsystem</td> </tr> <tr> <th>Fix versions</th> <td>0.10.1</td> </tr> <tr> <th>Affected versions</th> <td>Unknown</td> </tr> <tr> <th>Fixed in build</th> <td>Next Build</td> </tr> </table> <div class="wiki text"><ol class="wiki-list0"><li> Open &quot;My Capsules&quot;<br/></li><li> Open &quot;Upload Media&quot; and start media upload<br/></li><li> Select some image and submit, input caption and submit<br/></li><li> Tap &quot;Create New Capsule&quot;, create a new capsule<br/></li><li> After creating a capsule upload the selected media to this capsule<br/></li><li> Tap back</li></ol><br/>Application will crash on &quot;My Capsule&quot; activity:<br/><br/><pre class="wikicode"> java.lang.NullPointerException<br/> at com.ontometrics.vixlet.core.model.BaseEntity.equals(BaseEntity.java:70)<br/> at com.ontometrics.vixlet.app.adapter.CapsuleListAdapter.getView(CapsuleListAdapter.java:62)<br/> at android.widget.AbsListView.obtainView(AbsListView.java:2255)<br/> at android.widget.GridView.onMeasure(GridView.java:1044)<br/> at com.ontometrics.vixlet.app.view.ExpandableHeightGridView.onMeasure(ExpandableHeightGridView.java:45)<br/> at android.view.View.measure(View.java:16497)<br/> at android.view.ViewGroup.measureChildWithMargins(ViewGroup.java:5125)<br/> at android.widget.LinearLayout.measureChildBeforeLayout(LinearLayout.java:1404)<br/> at android.widget.LinearLayout.measureVertical(LinearLayout.java:695)<br/> at android.widget.LinearLayout.onMeasure(LinearLayout.java:588)<br/> at android.view.View.measure(View.java:16497)<br/> at android.widget.ScrollView.measureChildWithMargins(ScrollView.java:1226)<br/> at android.widget.FrameLayout.onMeasure(FrameLayout.java:310)<br/> at android.widget.ScrollView.onMeasure(ScrollView.java:326)<br/> at android.view.View.measure(View.java:16497)<br/> at android.widget.RelativeLayout.measureChildHorizontal(RelativeLayout.java:719)<br/> at android.widget.RelativeLayout.onMeasure(RelativeLayout.java:455)<br/> at android.view.View.measure(View.java:16497)<br/> at android.view.ViewGroup.measureChildWithMargins(ViewGroup.java:5125)<br/> at android.widget.FrameLayout.onMeasure(FrameLayout.java:310)<br/> at android.view.View.measure(View.java:16497)<br/> at android.view.ViewGroup.measureChildWithMargins(ViewGroup.java:5125)<br/> at android.widget.FrameLayout.onMeasure(FrameLayout.java:310)<br/> at android.view.View.measure(View.java:16497)<br/> at android.widget.RelativeLayout.measureChildHorizontal(RelativeLayout.java:719)<br/> at android.widget.RelativeLayout.onMeasure(RelativeLayout.java:455)<br/> at android.view.View.measure(View.java:16497)<br/> at android.view.ViewGroup.measureChildWithMargins(ViewGroup.java:5125)<br/> at android.widget.FrameLayout.onMeasure(FrameLayout.java:310)<br/> at android.view.View.measure(View.java:16497)<br/> at android.view.ViewGroup.measureChildWithMargins(ViewGroup.java:5125)<br/> at com.android.internal.widget.ActionBarOverlayLayout.onMeasure(ActionBarOverlayLayout.java:327)<br/> at android.view.View.measure(View.java:16497)<br/> at android.view.ViewGroup.measureChildWithMargins(ViewGroup.java:5125)<br/> at android.widget.FrameLayout.onMeasure(FrameLayout.java:310)<br/> at com.android.internal.policy.impl.PhoneWindow$DecorView.onMeasure(PhoneWindow.java:2291)<br/> at android.view.View.measure(View.java:16497)<br/> at android.view.ViewRootImpl.performMeasure(ViewRootImpl.java:1912)<br/> at android.view.ViewRootImpl.measureHierarchy(ViewRootImpl.java:1109)<br/> at android.view.ViewRootImpl.performTraversals(ViewRootImpl.java:1291)<br/> at android.view.ViewRootImpl.doTraversal(ViewRootImpl.java:996)<br/> at android.view.ViewRootImpl$TraversalRunnable.run(ViewRootImpl.java:5600)<br/> at android.view.Choreographer$CallbackRecord.run(Choreographer.java:761)<br/> at android.view.Choreographer.doCallbacks(Choreographer.java:574)<br/> at android.view.Choreographer.doFrame(Choreographer.java:544)<br/> at android.view.Choreographer$FrameDisplayEventReceiver.run(Choreographer.java:747)<br/> at android.os.Handler.handleCallback(Handler.java:733)<br/> at android.os.Handler.dispatchMessage(Handler.java:95)<br/> at android.os.Looper.loop(Looper.java:136)<br/> at android.app.ActivityThread.main(ActivityThread.java:5001)<br/> at java.lang.reflect.Method.invokeNative(Native Method)<br/> at java.lang.reflect.Method.invoke(Method.java:515)<br/> at com.android.internal.os.ZygoteInit$MethodAndArgsCaller.run(ZygoteInit.java:785)<br/> at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:601)<br/> at dalvik.system.NativeStart.main(Native Method)</pre></div>
+]]>
+            </description>
+            <pubDate>Thu, 21 Aug 2014 13:49:43 UT</pubDate>
+        </item>
+        <item>
+            <title>
+                ASOC-256: Link to page of all users that like a media
+            </title>
+            <link>http://ontometrics.com:8085/issue/ASOC-256</link>
+            <description>
+                <![CDATA[
+<table> <tr> <th>Reporter</th> <td> <img src="http://www.gravatar.com/avatar/a413e342ab8c3cf30fc3ce2f330f4c3f.jpg?s=60&amp;d=monsterid" width="56" height="59" alt="Bobby Lincoln (blincoln)" title="Bobby Lincoln (blincoln)"/> Bobby Lincoln (blincoln) </td> </tr> <tr> <th>Created</th> <td>Aug 6, 2014 7:43:45 PM</td> </tr> <tr> <th>Updated</th> <td>Aug 21, 2014 6:31:11 AM</td> </tr> <tr> <th>Resolved</th> <td>Aug 21, 2014 6:31:11 AM</td> </tr> <tr> <th>Priority</th> <td>Normal</td> </tr> <tr> <th>Type</th> <td>Story</td> </tr> <tr> <th>State</th> <td>Fixed</td> </tr> <tr> <th>Assignee</th> <td>Nikolay Chorniy (nikolay.chorniy@gmail.com)</td> </tr> <tr> <th>Subsystem</th> <td>No subsystem</td> </tr> <tr> <th>Fix versions</th> <td>0.10.1</td> </tr> <tr> <th>Affected versions</th> <td>Unknown</td> </tr> <tr> <th>Fixed in build</th> <td>Next Build</td> </tr> </table> <div class="wiki text">If more than 3 users like a piece of media and the list is collapse, this list should then be clickable to a list of all the users that like that particular media item. This list can look very similar to the followers list accessed from a user&#39;s profile</div>
+]]>
+            </description>
+            <pubDate>Thu, 21 Aug 2014 13:31:11 UT</pubDate>
+        </item>
+        <item>
+            <title>HA-665: Scraper does not fetch Glassdoor urls</title>
+            <link>http://ontometrics.com:8085/issue/HA-665</link>
+            <description>
+                <![CDATA[
+<table> <tr> <th>Reporter</th> <td> <img src="http://www.gravatar.com/avatar/0a18770794a74b222730b640455662d9.jpg?s=60&amp;d=monsterid" width="56" height="59" alt="Nikolay Chorniy (nikolay.chorniy@gmail.com)" title="Nikolay Chorniy (nikolay.chorniy@gmail.com)"/> Nikolay Chorniy (nikolay.chorniy@gmail.com) </td> </tr> <tr> <th>Created</th> <td>Aug 15, 2014 5:39:13 AM</td> </tr> <tr> <th>Updated</th> <td>Aug 20, 2014 2:03:05 PM</td> </tr> <tr> <th>Priority</th> <td>Major</td> </tr> <tr> <th>Type</th> <td>Bug</td> </tr> <tr> <th>State</th> <td>Open</td> </tr> <tr> <th>Assignee</th> <td>Unassigned</td> </tr> <tr> <th>Subsystem</th> <td>No subsystem</td> </tr> <tr> <th>Fix versions</th> <td>2.1</td> </tr> <tr> <th>Affected versions</th> <td>Unknown</td> </tr> <tr> <th>Fixed in build</th> <td>Next Build</td> </tr> <tr> <th>aggregatetimespent</th> <td>No aggregatetimespent</td> </tr> <tr> <th>aggregatetimeestimate</th> <td>No aggregatetimeestimate</td> </tr> <tr> <th>resolution</th> <td>No resolution</td> </tr> <tr> <th>timespent</th> <td>No timespent</td> </tr> <tr> <th>timeestimate</th> <td>No timeestimate</td> </tr> </table> <div class="wiki text">When scraper tries to fetch contents of Glassdoor job listing url, it gets HTTP status 403 response<br/><br/><pre class="wikicode">java.io.IOException: Server returned HTTP response code: 403 for URL: <br/><a href="http://www.glassdoor.com/Job/california-java-developer-jobs-SRCH_IL.0,10_IS2280_KO11,25_IP6.htm">http://www.glassdoor.com/Job/california-java-developer-jobs-SRCH_IL.0,10_IS2280_KO11,25_IP6.htm</a></pre></div>
+]]>
+            </description>
+            <pubDate>Wed, 20 Aug 2014 21:03:05 UT</pubDate>
+        </item>
+        <item>
+            <title>HA-658: Setup an Akka cluster</title>
+            <link>http://ontometrics.com:8085/issue/HA-658</link>
+            <description>
+                <![CDATA[
+<table> <tr> <th>Reporter</th> <td> <img src="http://www.gravatar.com/avatar/2543fe7b34482922746d3aaf4aa86652.jpg?s=60&amp;d=monsterid" width="56" height="59" alt="Rob Williams (rob)" title="Rob Williams (rob)"/> Rob Williams (rob) </td> </tr> <tr> <th>Created</th> <td>Aug 13, 2014 9:51:37 AM</td> </tr> <tr> <th>Updated</th> <td>Aug 20, 2014 1:37:10 PM</td> </tr> <tr> <th>Resolved</th> <td>Aug 20, 2014 1:37:10 PM</td> </tr> <tr> <th>Priority</th> <td>Normal</td> </tr> <tr> <th>Type</th> <td>Task</td> </tr> <tr> <th>State</th> <td>Fixed</td> </tr> <tr> <th>Assignee</th> <td>Unassigned</td> </tr> <tr> <th>Subsystem</th> <td>No subsystem</td> </tr> <tr> <th>Fix versions</th> <td>2.1</td> </tr> <tr> <th>Affected versions</th> <td>Unknown</td> </tr> <tr> <th>Fixed in build</th> <td>Next Build</td> </tr> <tr> <th>aggregatetimespent</th> <td>No aggregatetimespent</td> </tr> <tr> <th>aggregatetimeestimate</th> <td>No aggregatetimeestimate</td> </tr> <tr> <th>resolution</th> <td>No resolution</td> </tr> <tr> <th>timespent</th> <td>No timespent</td> </tr> <tr> <th>timeestimate</th> <td>No timeestimate</td> </tr> </table> <div class="wiki text">We need to make it so that:<br/><br/><ul class="wiki-list0"><li> the main instance is configured to create a cluster<br/></li><li> we have an instance pool that we control through config<br/></li><li> we can make a new instance and add it to the pool<br/></li><li> we can tell the geocoding actor to run on that instance</li></ul><br/>Then we can bring up the dev instance and do a run through.</div>
+]]>
+            </description>
+            <pubDate>Wed, 20 Aug 2014 20:37:10 UT</pubDate>
+        </item>
+        <item>
+            <title>HA-661: Install a circuit breaker</title>
+            <link>http://ontometrics.com:8085/issue/HA-661</link>
+            <description>
+                <![CDATA[
+<table> <tr> <th>Reporter</th> <td> <img src="http://www.gravatar.com/avatar/2543fe7b34482922746d3aaf4aa86652.jpg?s=60&amp;d=monsterid" width="56" height="59" alt="Rob Williams (rob)" title="Rob Williams (rob)"/> Rob Williams (rob) </td> </tr> <tr> <th>Created</th> <td>Aug 13, 2014 9:55:39 AM</td> </tr> <tr> <th>Updated</th> <td>Aug 20, 2014 1:36:29 PM</td> </tr> <tr> <th>Priority</th> <td>Normal</td> </tr> <tr> <th>Type</th> <td>Bug</td> </tr> <tr> <th>State</th> <td>Submitted</td> </tr> <tr> <th>Assignee</th> <td>Unassigned</td> </tr> <tr> <th>Subsystem</th> <td>No subsystem</td> </tr> <tr> <th>Fix versions</th> <td>2.1</td> </tr> <tr> <th>Affected versions</th> <td>Unknown</td> </tr> <tr> <th>Fixed in build</th> <td>Next Build</td> </tr> <tr> <th>aggregatetimespent</th> <td>No aggregatetimespent</td> </tr> <tr> <th>aggregatetimeestimate</th> <td>No aggregatetimeestimate</td> </tr> <tr> <th>resolution</th> <td>No resolution</td> </tr> <tr> <th>timespent</th> <td>No timespent</td> </tr> <tr> <th>timeestimate</th> <td>No timeestimate</td> </tr> </table> <div class="wiki text">We have to know when we have been banned and then we have to throw the circuit breaker and not allow another request to be sent until the wait period has elapsed. This is for sure why we ended up with a complete ban.</div>
+]]>
+            </description>
+            <pubDate>Wed, 20 Aug 2014 20:36:29 UT</pubDate>
+        </item>
+        <item>
+            <title>
+                HA-659: get a new micro instance on AWS that will run the Actors
+            </title>
+            <link>http://ontometrics.com:8085/issue/HA-659</link>
+            <description>
+                <![CDATA[
+<table> <tr> <th>Reporter</th> <td> <img src="http://www.gravatar.com/avatar/2543fe7b34482922746d3aaf4aa86652.jpg?s=60&amp;d=monsterid" width="56" height="59" alt="Rob Williams (rob)" title="Rob Williams (rob)"/> Rob Williams (rob) </td> </tr> <tr> <th>Created</th> <td>Aug 13, 2014 9:52:48 AM</td> </tr> <tr> <th>Updated</th> <td>Aug 20, 2014 1:27:51 PM</td> </tr> <tr> <th>Resolved</th> <td>Aug 20, 2014 1:27:51 PM</td> </tr> <tr> <th>Priority</th> <td>Normal</td> </tr> <tr> <th>Type</th> <td>Task</td> </tr> <tr> <th>State</th> <td>Fixed</td> </tr> <tr> <th>Assignee</th> <td>Unassigned</td> </tr> <tr> <th>Subsystem</th> <td>No subsystem</td> </tr> <tr> <th>Fix versions</th> <td>2.1</td> </tr> <tr> <th>Affected versions</th> <td>Unknown</td> </tr> <tr> <th>Fixed in build</th> <td>Next Build</td> </tr> <tr> <th>aggregatetimespent</th> <td>No aggregatetimespent</td> </tr> <tr> <th>aggregatetimeestimate</th> <td>No aggregatetimeestimate</td> </tr> <tr> <th>resolution</th> <td>No resolution</td> </tr> <tr> <th>timespent</th> <td>No timespent</td> </tr> <tr> <th>timeestimate</th> <td>No timeestimate</td> </tr> </table> <div class="wiki text">Need to deploy just our actor on that machine, with the Akka cluster runtime.<br/><br/>Here&#39;s the good news: micro instance costs ~$10 per MONTH!</div>
+]]>
+            </description>
+            <pubDate>Wed, 20 Aug 2014 20:27:51 UT</pubDate>
+        </item>
+        <item>
+            <title>
+                HA-668: New instance request: backend application server
+            </title>
+            <link>http://ontometrics.com:8085/issue/HA-668</link>
+            <description>
+                <![CDATA[
+<table> <tr> <th>Reporter</th> <td> <img src="http://www.gravatar.com/avatar/0a18770794a74b222730b640455662d9.jpg?s=60&amp;d=monsterid" width="56" height="59" alt="Nikolay Chorniy (nikolay.chorniy@gmail.com)" title="Nikolay Chorniy (nikolay.chorniy@gmail.com)"/> Nikolay Chorniy (nikolay.chorniy@gmail.com) </td> </tr> <tr> <th>Created</th> <td>Aug 18, 2014 10:44:23 AM</td> </tr> <tr> <th>Updated</th> <td>Aug 20, 2014 1:27:31 PM</td> </tr> <tr> <th>Resolved</th> <td>Aug 20, 2014 1:27:31 PM</td> </tr> <tr> <th>Priority</th> <td>Normal</td> </tr> <tr> <th>Type</th> <td>Task</td> </tr> <tr> <th>State</th> <td>Fixed</td> </tr> <tr> <th>Assignee</th> <td>Dru Grote (dru)</td> </tr> <tr> <th>Subsystem</th> <td>No subsystem</td> </tr> <tr> <th>Fix versions</th> <td>2.1</td> </tr> <tr> <th>Affected versions</th> <td>Unknown</td> </tr> <tr> <th>Fixed in build</th> <td>Next Build</td> </tr> <tr> <th>aggregatetimespent</th> <td>No aggregatetimespent</td> </tr> <tr> <th>aggregatetimeestimate</th> <td>No aggregatetimeestimate</td> </tr> <tr> <th>resolution</th> <td>No resolution</td> </tr> <tr> <th>timespent</th> <td>No timespent</td> </tr> <tr> <th>timeestimate</th> <td>No timeestimate</td> </tr> </table> <div class="wiki text">We need a new instance for deploying a backend for Job Spider. It will be responsible for performing address geocoding and job posting scraping. None of these tasks requires storing data on disk, so the new instance does not have to have a lot of disk capacity. It has to run many processes in parallel though, so instance needs at least 2 CPUs.<br/><br/>We reviewed EC2 instance types with their pricing and think that &#39;c3.large&#39; instance with 3.75 GiB of memory and 2 virtual CPUs will be a good fit.</div>
+]]>
+            </description>
+            <pubDate>Wed, 20 Aug 2014 20:27:31 UT</pubDate>
+        </item>
+        <item>
+            <title>
+                HA-657: Introduce clustering so interfacing with remote services occurs on separate instance
+            </title>
+            <link>http://ontometrics.com:8085/issue/HA-657</link>
+            <description>
+                <![CDATA[
+<table> <tr> <th>Reporter</th> <td> <img src="http://www.gravatar.com/avatar/2543fe7b34482922746d3aaf4aa86652.jpg?s=60&amp;d=monsterid" width="56" height="59" alt="Rob Williams (rob)" title="Rob Williams (rob)"/> Rob Williams (rob) </td> </tr> <tr> <th>Created</th> <td>Aug 13, 2014 9:46:41 AM</td> </tr> <tr> <th>Updated</th> <td>Aug 20, 2014 1:19:36 PM</td> </tr> <tr> <th>Resolved</th> <td>Aug 20, 2014 1:19:36 PM</td> </tr> <tr> <th>Priority</th> <td>Normal</td> </tr> <tr> <th>Type</th> <td>Task</td> </tr> <tr> <th>State</th> <td>Fixed</td> </tr> <tr> <th>Assignee</th> <td>Unassigned</td> </tr> <tr> <th>Subsystem</th> <td>No subsystem</td> </tr> <tr> <th>Fix versions</th> <td>2.1</td> </tr> <tr> <th>Affected versions</th> <td>Unknown</td> </tr> <tr> <th>Fixed in build</th> <td>Next Build</td> </tr> <tr> <th>aggregatetimespent</th> <td>No aggregatetimespent</td> </tr> <tr> <th>aggregatetimeestimate</th> <td>No aggregatetimeestimate</td> </tr> <tr> <th>resolution</th> <td>No resolution</td> </tr> <tr> <th>timespent</th> <td>No timespent</td> </tr> <tr> <th>timeestimate</th> <td>No timeestimate</td> </tr> </table> <div class="wiki text">Right now, we are making requests of Actors to talk to the systems that we have to talk to in order for us to get the streams of data we need. This is good, because it means that each job has a supervisor and minor failures do not cascade into catastrophic ones. However, all of the actors are on the main instance and now that that instance has a DNS name (insidehire), it is very for people to blacklist us.<br/><br/>Just to be clear: we did something wrong and that&#39;s why we got blacklisted by Google, we did NOT exceed the quota, we just hammered them with requests and they shut us down.<br/><br/>Problem is time passed and we were not automatically reinstated. If we had paying customers, that would be a seriously critical problem.<br/><br/>So this ticket covers the most comprehensive way to address these issues. Notice also, the title does not refer to geocoding because if we are going to go to the trouble of getting an Akka cluster working (frankly not that much trouble), we might as well also make the scraping run on it.</div>
+]]>
+            </description>
+            <pubDate>Wed, 20 Aug 2014 20:19:36 UT</pubDate>
+        </item>
+        <item>
+            <title>HA-635: Advanced Search Failed Geocode Address</title>
+            <link>http://ontometrics.com:8085/issue/HA-635</link>
+            <description>
+                <![CDATA[
+<table> <tr> <th>Reporter</th> <td> <img src="http://ontometrics.com:8085/_classpath/smartui/img/youPicture.gif" width="56" height="59" alt="Ryan King (rking)" title="Ryan King (rking)"/> Ryan King (rking) </td> </tr> <tr> <th>Created</th> <td>May 15, 2014 3:28:46 PM</td> </tr> <tr> <th>Updated</th> <td>Aug 20, 2014 1:19:35 PM</td> </tr> <tr> <th>Resolved</th> <td>Aug 20, 2014 1:16:54 PM</td> </tr> <tr> <th>Priority</th> <td>Major</td> </tr> <tr> <th>Type</th> <td>Bug</td> </tr> <tr> <th>State</th> <td>Fixed</td> </tr> <tr> <th>Assignee</th> <td>Unassigned</td> </tr> <tr> <th>Subsystem</th> <td>No subsystem</td> </tr> <tr> <th>Fix versions</th> <td>2.1</td> </tr> <tr> <th>Affected versions</th> <td>Unknown</td> </tr> <tr> <th>Fixed in build</th> <td>Next Build</td> </tr> <tr> <th>aggregatetimespent</th> <td>No aggregatetimespent</td> </tr> <tr> <th>aggregatetimeestimate</th> <td>No aggregatetimeestimate</td> </tr> <tr> <th>resolution</th> <td>No resolution</td> </tr> <tr> <th>timespent</th> <td>No timespent</td> </tr> <tr> <th>timeestimate</th> <td>No timeestimate</td> </tr> </table> <div class="wiki text">When we enter different zip codes we get an error. See attachment</div>
+]]>
+            </description>
+            <pubDate>Wed, 20 Aug 2014 20:19:35 UT</pubDate>
+        </item>
+        <item>
+            <title>
+                ASOC-197: Copy artifacts from build server to shared cloud drive
+            </title>
+            <link>http://ontometrics.com:8085/issue/ASOC-197</link>
+            <description>
+                <![CDATA[
+<table> <tr> <th>Reporter</th> <td> <img src="http://www.gravatar.com/avatar/2543fe7b34482922746d3aaf4aa86652.jpg?s=60&amp;d=monsterid" width="56" height="59" alt="Rob Williams (rob)" title="Rob Williams (rob)"/> Rob Williams (rob) </td> </tr> <tr> <th>Created</th> <td>Jul 17, 2014 12:15:23 PM</td> </tr> <tr> <th>Updated</th> <td>Aug 20, 2014 10:27:34 AM</td> </tr> <tr> <th>Priority</th> <td>Normal</td> </tr> <tr> <th>Type</th> <td>Task</td> </tr> <tr> <th>State</th> <td>In Progress</td> </tr> <tr> <th>Assignee</th> <td>Rob Williams (rob)</td> </tr> <tr> <th>Subsystem</th> <td>No subsystem</td> </tr> <tr> <th>Fix versions</th> <td>0.10.1</td> </tr> <tr> <th>Affected versions</th> <td>Unknown</td> </tr> <tr> <th>Fixed in build</th> <td>Next Build</td> </tr> </table> <div class="wiki text">The APK and AAR files should get copied out into the cloud after each build and published to the Slack Channel</div>
+]]>
+            </description>
+            <pubDate>Wed, 20 Aug 2014 17:27:34 UT</pubDate>
+        </item>
+        <item>
+            <title>DMIN-314: Create a view to change user's skin type</title>
+            <link>http://ontometrics.com:8085/issue/DMIN-314</link>
+            <description>
+                <![CDATA[
+<table> <tr> <th>Reporter</th> <td> <img src="http://ontometrics.com:8085/_classpath/smartui/img/youPicture.gif" width="56" height="59" alt="Noura Hassan (noura)" title="Noura Hassan (noura)"/> Noura Hassan (noura) </td> </tr> <tr> <th>Created</th> <td>Aug 20, 2014 8:17:09 AM</td> </tr> <tr> <th>Updated</th> <td>Aug 20, 2014 8:17:09 AM</td> </tr> <tr> <th>Priority</th> <td>Normal</td> </tr> <tr> <th>Type</th> <td>Task</td> </tr> <tr> <th>State</th> <td>Open</td> </tr> <tr> <th>Assignee</th> <td>Unassigned</td> </tr> <tr> <th>Subsystem</th> <td>No subsystem</td> </tr> <tr> <th>Fix versions</th> <td>3.0</td> </tr> <tr> <th>Affected versions</th> <td>Unknown</td> </tr> <tr> <th>Fixed in build</th> <td>Next Build</td> </tr> <tr> <th>aggregatetimespent</th> <td>No aggregatetimespent</td> </tr> <tr> <th>aggregatetimeestimate</th> <td>No aggregatetimeestimate</td> </tr> <tr> <th>resolution</th> <td>No resolution</td> </tr> <tr> <th>timespent</th> <td>No timespent</td> </tr> <tr> <th>timeestimate</th> <td>No timeestimate</td> </tr> <tr> <th>Estimation</th> <td>No Estimation</td> </tr> <tr> <th>aggregatetimeoriginalestimate</th> <td>No aggregatetimeoriginalestimate</td> </tr> </table> <div class="wiki text">We need to change user&#39;s pigmentation to skin type. For old users we can either get their skin type from their pigmentation or ask them to set it.</div>
+]]>
+            </description>
+            <pubDate>Wed, 20 Aug 2014 15:17:09 UT</pubDate>
+        </item>
+        <item>
+            <title>
+                DMIN-313: Refactor classes using SolarConditionsCalculator to observe conditions changed notification
+            </title>
+            <link>http://ontometrics.com:8085/issue/DMIN-313</link>
+            <description>
+                <![CDATA[
+<table> <tr> <th>Reporter</th> <td> <img src="http://ontometrics.com:8085/_classpath/smartui/img/youPicture.gif" width="56" height="59" alt="Noura Hassan (noura)" title="Noura Hassan (noura)"/> Noura Hassan (noura) </td> </tr> <tr> <th>Created</th> <td>Aug 20, 2014 8:15:27 AM</td> </tr> <tr> <th>Updated</th> <td>Aug 20, 2014 8:15:27 AM</td> </tr> <tr> <th>Priority</th> <td>Normal</td> </tr> <tr> <th>Type</th> <td>Task</td> </tr> <tr> <th>State</th> <td>Submitted</td> </tr> <tr> <th>Assignee</th> <td>Unassigned</td> </tr> <tr> <th>Subsystem</th> <td>No subsystem</td> </tr> <tr> <th>Fix versions</th> <td>3.0</td> </tr> <tr> <th>Affected versions</th> <td>Unknown</td> </tr> <tr> <th>Fixed in build</th> <td>Next Build</td> </tr> <tr> <th>aggregatetimespent</th> <td>No aggregatetimespent</td> </tr> <tr> <th>aggregatetimeestimate</th> <td>No aggregatetimeestimate</td> </tr> <tr> <th>resolution</th> <td>No resolution</td> </tr> <tr> <th>timespent</th> <td>No timespent</td> </tr> <tr> <th>timeestimate</th> <td>No timeestimate</td> </tr> <tr> <th>Estimation</th> <td>No Estimation</td> </tr> <tr> <th>aggregatetimeoriginalestimate</th> <td>No aggregatetimeoriginalestimate</td> </tr> </table> <div class="wiki text">no class should calculate current conditions, classes can only use calculator if they need to calculate another day/time conditions.<br/><br/>will update the task with list of changed classes</div>
+]]>
+            </description>
+            <pubDate>Wed, 20 Aug 2014 15:15:27 UT</pubDate>
+        </item>
+        <item>
+            <title>DMIN-311: Calculate solar conditions in one place</title>
+            <link>http://ontometrics.com:8085/issue/DMIN-311</link>
+            <description>
+                <![CDATA[
+<table> <tr> <th>Reporter</th> <td> <img src="http://ontometrics.com:8085/_classpath/smartui/img/youPicture.gif" width="56" height="59" alt="Noura Hassan (noura)" title="Noura Hassan (noura)"/> Noura Hassan (noura) </td> </tr> <tr> <th>Created</th> <td>Aug 20, 2014 7:45:23 AM</td> </tr> <tr> <th>Updated</th> <td>Aug 20, 2014 8:13:35 AM</td> </tr> <tr> <th>Priority</th> <td>Normal</td> </tr> <tr> <th>Type</th> <td>Task</td> </tr> <tr> <th>State</th> <td>In Progress</td> </tr> <tr> <th>Assignee</th> <td>Unassigned</td> </tr> <tr> <th>Subsystem</th> <td>No subsystem</td> </tr> <tr> <th>Fix versions</th> <td>3.0</td> </tr> <tr> <th>Affected versions</th> <td>Unknown</td> </tr> <tr> <th>Fixed in build</th> <td>Next Build</td> </tr> <tr> <th>aggregatetimespent</th> <td>No aggregatetimespent</td> </tr> <tr> <th>aggregatetimeestimate</th> <td>No aggregatetimeestimate</td> </tr> <tr> <th>resolution</th> <td>No resolution</td> </tr> <tr> <th>timespent</th> <td>No timespent</td> </tr> <tr> <th>timeestimate</th> <td>No timeestimate</td> </tr> <tr> <th>Estimation</th> <td>No Estimation</td> </tr> <tr> <th>aggregatetimeoriginalestimate</th> <td>No aggregatetimeoriginalestimate</td> </tr> </table> <div class="wiki text">We should make the solar conditions in one place and when it is changed a notification will be fired and other objects need conditions should listen to the notification</div>
+]]>
+            </description>
+            <pubDate>Wed, 20 Aug 2014 15:13:35 UT</pubDate>
+        </item>
+        <item>
+            <title>DMIN-312: Create SolarConditionsManager class</title>
+            <link>http://ontometrics.com:8085/issue/DMIN-312</link>
+            <description>
+                <![CDATA[
+<table> <tr> <th>Reporter</th> <td> <img src="http://ontometrics.com:8085/_classpath/smartui/img/youPicture.gif" width="56" height="59" alt="Noura Hassan (noura)" title="Noura Hassan (noura)"/> Noura Hassan (noura) </td> </tr> <tr> <th>Created</th> <td>Aug 20, 2014 8:13:03 AM</td> </tr> <tr> <th>Updated</th> <td>Aug 20, 2014 8:13:03 AM</td> </tr> <tr> <th>Priority</th> <td>Normal</td> </tr> <tr> <th>Type</th> <td>Task</td> </tr> <tr> <th>State</th> <td>Submitted</td> </tr> <tr> <th>Assignee</th> <td>Unassigned</td> </tr> <tr> <th>Subsystem</th> <td>No subsystem</td> </tr> <tr> <th>Fix versions</th> <td>Unscheduled</td> </tr> <tr> <th>Affected versions</th> <td>Unknown</td> </tr> <tr> <th>Fixed in build</th> <td>Next Build</td> </tr> <tr> <th>aggregatetimespent</th> <td>No aggregatetimespent</td> </tr> <tr> <th>aggregatetimeestimate</th> <td>No aggregatetimeestimate</td> </tr> <tr> <th>resolution</th> <td>No resolution</td> </tr> <tr> <th>timespent</th> <td>No timespent</td> </tr> <tr> <th>timeestimate</th> <td>No timeestimate</td> </tr> <tr> <th>Estimation</th> <td>No Estimation</td> </tr> <tr> <th>aggregatetimeoriginalestimate</th> <td>No aggregatetimeoriginalestimate</td> </tr> </table> <div class="wiki text">this class will keep updating solar conditions and post notifications when conditions is changed</div>
+]]>
+            </description>
+            <pubDate>Wed, 20 Aug 2014 15:13:03 UT</pubDate>
+        </item>
+        <item>
+            <title>
+                AIA-14: Create YouTrackInstance class for url management
+            </title>
+            <link>http://ontometrics.com:8085/issue/AIA-14</link>
+            <description>
+                <![CDATA[
+<table> <tr> <th>Reporter</th> <td> <img src="http://www.gravatar.com/avatar/2543fe7b34482922746d3aaf4aa86652.jpg?s=60&amp;d=monsterid" width="56" height="59" alt="Rob Williams (rob)" title="Rob Williams (rob)"/> Rob Williams (rob) </td> </tr> <tr> <th>Created</th> <td>Aug 19, 2014 10:54:53 AM</td> </tr> <tr> <th>Updated</th> <td>Aug 19, 2014 7:17:06 PM</td> </tr> <tr> <th>Resolved</th> <td>Aug 19, 2014 7:17:06 PM</td> </tr> <tr> <th>Priority</th> <td>Normal</td> </tr> <tr> <th>Type</th> <td>Task</td> </tr> <tr> <th>State</th> <td>Fixed</td> </tr> <tr> <th>Assignee</th> <td>Rob Williams (rob)</td> </tr> <tr> <th>Subsystem</th> <td>No subsystem</td> </tr> <tr> <th>Fix versions</th> <td>0.0.1</td> </tr> <tr> <th>Affected versions</th> <td>Unknown</td> </tr> <tr> <th>Fixed in build</th> <td>Next Build</td> </tr> </table> <div class="wiki text">Make it easy to fetch the various URLs we need.</div>
+]]>
+            </description>
+            <pubDate>Wed, 20 Aug 2014 02:17:06 UT</pubDate>
+        </item>
+        <item>
+            <title>HA-672: sorting leads by date</title>
+            <link>http://ontometrics.com:8085/issue/HA-672</link>
+            <description>
+                <![CDATA[
+<table> <tr> <th>Reporter</th> <td> <img src="http://ontometrics.com:8085/_classpath/smartui/img/youPicture.gif" width="56" height="59" alt="Darren Mabashov (dmabashov)" title="Darren Mabashov (dmabashov)"/> Darren Mabashov (dmabashov) </td> </tr> <tr> <th>Created</th> <td>Aug 19, 2014 3:02:35 PM</td> </tr> <tr> <th>Updated</th> <td>Aug 19, 2014 3:02:35 PM</td> </tr> <tr> <th>Priority</th> <td>Normal</td> </tr> <tr> <th>Type</th> <td>Bug</td> </tr> <tr> <th>State</th> <td>Submitted</td> </tr> <tr> <th>Assignee</th> <td>Unassigned</td> </tr> <tr> <th>Subsystem</th> <td>No subsystem</td> </tr> <tr> <th>Fix versions</th> <td>Unscheduled</td> </tr> <tr> <th>Affected versions</th> <td>Unknown</td> </tr> <tr> <th>Fixed in build</th> <td>Next Build</td> </tr> <tr> <th>aggregatetimespent</th> <td>No aggregatetimespent</td> </tr> <tr> <th>aggregatetimeestimate</th> <td>No aggregatetimeestimate</td> </tr> <tr> <th>resolution</th> <td>No resolution</td> </tr> <tr> <th>timespent</th> <td>No timespent</td> </tr> <tr> <th>timeestimate</th> <td>No timeestimate</td> </tr> </table> <div class="wiki text">1. Screenshot 1 - this screenshot is an example when we run a search for a company. the list is out of date. We can click on &quot;posted&quot; but the sort fuction does not work<br/><br/>2. Screenshot 2 - this screenshot is an example of when we run an advanced search. the results are out of order as far as the dates are concerned. the system in this case will not allow the user to click on the word &quot;posted&quot; and the spider does not sort by date</div>
+]]>
+            </description>
+            <pubDate>Tue, 19 Aug 2014 22:02:35 UT</pubDate>
+        </item>
+        <item>
+            <title>ASOC-282: Create tests for new Capsule Grid</title>
+            <link>http://ontometrics.com:8085/issue/ASOC-282</link>
+            <description>
+                <![CDATA[
+<table> <tr> <th>Reporter</th> <td> <img src="http://www.gravatar.com/avatar/a413e342ab8c3cf30fc3ce2f330f4c3f.jpg?s=60&amp;d=monsterid" width="56" height="59" alt="Bobby Lincoln (blincoln)" title="Bobby Lincoln (blincoln)"/> Bobby Lincoln (blincoln) </td> </tr> <tr> <th>Created</th> <td>Aug 19, 2014 11:44:33 AM</td> </tr> <tr> <th>Updated</th> <td>Aug 19, 2014 2:19:09 PM</td> </tr> <tr> <th>Resolved</th> <td>Aug 19, 2014 2:19:04 PM</td> </tr> <tr> <th>Priority</th> <td>Normal</td> </tr> <tr> <th>Type</th> <td>Task</td> </tr> <tr> <th>State</th> <td>Fixed</td> </tr> <tr> <th>Assignee</th> <td>Bobby Lincoln (blincoln)</td> </tr> <tr> <th>Subsystem</th> <td>No subsystem</td> </tr> <tr> <th>Fix versions</th> <td>Unscheduled</td> </tr> <tr> <th>Affected versions</th> <td>0.10.1</td> </tr> <tr> <th>Fixed in build</th> <td>Next Build</td> </tr> </table> <div class="wiki text">Need to create the new test cases for the new capsule grid</div>
+]]>
+            </description>
+            <pubDate>Tue, 19 Aug 2014 21:19:09 UT</pubDate>
+        </item>
+        <item>
+            <title>ASOC-278: Fix failed tests</title>
+            <link>http://ontometrics.com:8085/issue/ASOC-278</link>
+            <description>
+                <![CDATA[
+<table> <tr> <th>Reporter</th> <td> <img src="http://www.gravatar.com/avatar/75c2bdacfd2d62abcbfe7beda3d9c613.jpg?s=60&amp;d=monsterid" width="56" height="59" alt="Andrey Chorniy (andrey.chorniy)" title="Andrey Chorniy (andrey.chorniy)"/> Andrey Chorniy (andrey.chorniy) </td> </tr> <tr> <th>Created</th> <td>Aug 18, 2014 12:19:59 PM</td> </tr> <tr> <th>Updated</th> <td>Aug 19, 2014 2:18:26 PM</td> </tr> <tr> <th>Resolved</th> <td>Aug 19, 2014 2:18:26 PM</td> </tr> <tr> <th>Priority</th> <td>Normal</td> </tr> <tr> <th>Type</th> <td>Task</td> </tr> <tr> <th>State</th> <td>Fixed</td> </tr> <tr> <th>Assignee</th> <td>Pawan Gupta (pawan)</td> </tr> <tr> <th>Subsystem</th> <td>No subsystem</td> </tr> <tr> <th>Fix versions</th> <td>0.10.1</td> </tr> <tr> <th>Affected versions</th> <td>Unknown</td> </tr> <tr> <th>Fixed in build</th> <td>Next Build</td> </tr> </table> <div class="wiki text">Some unit tests are failing after recent changes</div>
+]]>
+            </description>
+            <pubDate>Tue, 19 Aug 2014 21:18:26 UT</pubDate>
+        </item>
+    </channel>
+</rss>

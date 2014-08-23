@@ -2,6 +2,7 @@ package ontometrics.integrations.sources;
 
 import com.ontometrics.integrations.configuration.EventProcessorConfiguration;
 import com.ontometrics.integrations.configuration.IssueTracker;
+import com.ontometrics.integrations.configuration.YouTrackInstance;
 import com.ontometrics.integrations.events.Issue;
 import com.ontometrics.integrations.events.ProcessEvent;
 import com.ontometrics.integrations.events.ProcessEventChange;
@@ -254,6 +255,25 @@ public class SourceEventMapperTest {
         SourceEventMapper sourceEventMapper = new SourceEventMapper(mockYouTrackInstance, UrlStreamProvider.instance());
         List<ProcessEventChange> changes = sourceEventMapper.getChanges(createProcessEvent());
         assertThat(changes, not((Matcher)empty()));
+    }
+
+    @Test
+    public void testThatRSSRawFileCanBeRead() throws Exception {
+        mockYouTrackInstance = new MockIssueTracker("/feeds/issues-feed-rss-2.xml", "/feeds/issue-changes.xml");
+        SourceEventMapper sourceEventMapper = new SourceEventMapper(mockYouTrackInstance, UrlStreamProvider.instance());
+        List<ProcessEvent> changes = sourceEventMapper.getLatestEvents();
+        assertThat(changes, not((Matcher)empty()));
+
+    }
+
+    @Test
+    @Ignore
+    public void testThatWeCanGetEventsFromRealFeed() throws Exception {
+        YouTrackInstance youTrackInstance = new YouTrackInstance.Builder().baseUrl("http://ontometrics.com").port(8085).build();
+        SourceEventMapper sourceEventMapper = new SourceEventMapper(youTrackInstance, UrlStreamProvider.instance());
+        List<ProcessEvent> changes = sourceEventMapper.getLatestEvents();
+        assertThat(changes, not((Matcher)empty()));
+
     }
 
     private static class MockIssueTracker implements IssueTracker {
