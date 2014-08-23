@@ -8,6 +8,7 @@ import java.util.Date;
  */
 public class ProcessEventChange {
 
+    private Issue issue;
     private final String field;
     private final String priorValue;
     private final String currentValue;
@@ -15,6 +16,7 @@ public class ProcessEventChange {
     private final Date updated;
 
     public ProcessEventChange(Builder builder) {
+        issue = builder.issue;
         updater = builder.updater;
         updated = builder.updated;
         field = builder.field;
@@ -29,6 +31,12 @@ public class ProcessEventChange {
         private String currentValue;
         private String updater;
         private Date updated;
+        private Issue issue;
+
+        public Builder issue(Issue issue){
+            this.issue = issue;
+            return this;
+            }
 
         public Builder updater(String updater){
             this.updater = updater;
@@ -58,6 +66,10 @@ public class ProcessEventChange {
         public ProcessEventChange build(){
             return new ProcessEventChange(this);
             }
+    }
+
+    public Issue getIssue() {
+        return issue;
     }
 
     public String getField() {

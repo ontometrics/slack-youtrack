@@ -104,7 +104,7 @@ public class EventListenerImpl implements EventListener {
             }
             try {
                 changes = sourceEventMapper.getChanges(event, minChangeDate);
-                postEventChangesToStream(event, changes, channelMapper.getChannel(event));
+                postEventChangesToStream(event, changes, channelMapper.getChannel(event.getIssue()));
             } catch (ConfigurationAccessError error) {
                 log.error("Failed to process event " + event, error);
                 throw error;

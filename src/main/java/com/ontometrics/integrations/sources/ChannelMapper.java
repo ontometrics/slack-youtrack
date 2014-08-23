@@ -2,7 +2,7 @@ package com.ontometrics.integrations.sources;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
-import com.ontometrics.integrations.events.ProcessEvent;
+import com.ontometrics.integrations.events.Issue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,11 +45,11 @@ public class ChannelMapper {
     }
 
 
-    public String getChannel(final ProcessEvent event){
+    public String getChannel(final Issue issue){
         String channelKey = Iterables.find(mappings.keySet(), new Predicate<String>() {
             @Override
             public boolean apply(String k) {
-                return event.getTitle().contains(k);
+                return issue.getTitle().contains(k);
             }
         }, null);
 

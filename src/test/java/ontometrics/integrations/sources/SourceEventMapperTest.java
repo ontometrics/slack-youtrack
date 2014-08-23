@@ -161,7 +161,7 @@ public class SourceEventMapperTest {
                 .build();
 
         for (ProcessEvent event : events) {
-            postEventToChannel(event, channelMapper.getChannel(event));
+            postEventToChannel(event, channelMapper.getChannel(event.getIssue()));
         }
     }
 

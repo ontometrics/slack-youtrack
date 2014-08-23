@@ -9,9 +9,11 @@ import java.net.URL;
  * Copyright (c) ontometrics, 2014 All Rights Reserved
  */
 public interface IssueTracker {
+
     URL getBaseUrl();
 
     URL getFeedUrl();
 
     URL getChangesUrl(Issue issue);
+
 }
