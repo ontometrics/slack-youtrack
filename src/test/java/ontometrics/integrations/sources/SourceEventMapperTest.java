@@ -6,14 +6,14 @@ import com.ontometrics.integrations.configuration.YouTrackInstance;
 import com.ontometrics.integrations.events.Issue;
 import com.ontometrics.integrations.events.ProcessEvent;
 import com.ontometrics.integrations.events.ProcessEventChange;
+import com.ontometrics.integrations.sources.AuthenticatedHttpStreamProvider;
 import com.ontometrics.integrations.sources.ChannelMapper;
 import com.ontometrics.integrations.sources.SourceEventMapper;
+import com.ontometrics.integrations.sources.StreamProvider;
 import com.ontometrics.util.DateBuilder;
 import ontometrics.test.util.TestUtil;
 import ontometrics.test.util.UrlStreamProvider;
-import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
-import org.hamcrest.Matcher;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -34,7 +34,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
-import java.net.URLEncoder;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -47,6 +46,10 @@ import static org.hamcrest.Matchers.*;
 public class SourceEventMapperTest {
 
     private static final Logger log = LoggerFactory.getLogger(SourceEventMapperTest.class);
+    private static final String SLACK_AUT_TOKEN = "xoxp-2427064028-2427064030-2467602952-3d5dc6";
+    private static final String YOUTRACK_USER = "slackbot";
+    private static final String YOUTRACK_PASSWORD = "X9y-86A-bZN-93h";
+    private static final String YOUTRACK_URL = "http://ontometrics.com";
 
     private IssueTracker mockYouTrackInstance;
 
@@ -164,7 +167,7 @@ public class SourceEventMapperTest {
 
     @Test
     public void testThatWeCanGetSlackUserList(){
-        String token = "xoxp-2427064028-2427064030-2467602952-3d5dc6";
+        String token = SLACK_AUT_TOKEN;
 
         Client client = ClientBuilder.newClient();
         String slackUrl = "https://slack.com/api/users.list?token=" + token;
@@ -179,7 +182,7 @@ public class SourceEventMapperTest {
 
     @Test
     public void testThatChannelCanBePostedTo() throws UnsupportedEncodingException {
-        String token = "xoxp-2427064028-2427064030-2467602952-3d5dc6";
+        String token = SLACK_AUT_TOKEN;
 
         Client client = ClientBuilder.newClient();
         String slackUrl = "https://slack.com/api/";
@@ -254,7 +257,7 @@ public class SourceEventMapperTest {
         mockYouTrackInstance = new MockIssueTracker("/feeds/issues-feed-rss.xml", "/feeds/issue-changes2.xml");
         SourceEventMapper sourceEventMapper = new SourceEventMapper(mockYouTrackInstance, UrlStreamProvider.instance());
         List<ProcessEventChange> changes = sourceEventMapper.getChanges(createProcessEvent());
-        assertThat(changes, not((Matcher)empty()));
+        assertThat(changes, not(empty()));
     }
 
     @Test
@@ -262,17 +265,19 @@ public class SourceEventMapperTest {
         mockYouTrackInstance = new MockIssueTracker("/feeds/issues-feed-rss-2.xml", "/feeds/issue-changes.xml");
         SourceEventMapper sourceEventMapper = new SourceEventMapper(mockYouTrackInstance, UrlStreamProvider.instance());
         List<ProcessEvent> changes = sourceEventMapper.getLatestEvents();
-        assertThat(changes, not((Matcher)empty()));
+        assertThat(changes, not(empty()));
 
     }
 
     @Test
-    @Ignore
     public void testThatWeCanGetEventsFromRealFeed() throws Exception {
-        YouTrackInstance youTrackInstance = new YouTrackInstance.Builder().baseUrl("http://ontometrics.com").port(8085).build();
-        SourceEventMapper sourceEventMapper = new SourceEventMapper(youTrackInstance, UrlStreamProvider.instance());
+        YouTrackInstance youTrackInstance = new YouTrackInstance.Builder().baseUrl(YOUTRACK_URL).port(8085).build();
+        StreamProvider streamProvider = AuthenticatedHttpStreamProvider.basicAuthenticatedHttpStreamProvider(
+                YOUTRACK_USER, YOUTRACK_PASSWORD
+        );
+        SourceEventMapper sourceEventMapper = new SourceEventMapper(youTrackInstance, streamProvider);
         List<ProcessEvent> changes = sourceEventMapper.getLatestEvents();
-        assertThat(changes, not((Matcher)empty()));
+        assertThat(changes, not(empty()));
 
     }
 

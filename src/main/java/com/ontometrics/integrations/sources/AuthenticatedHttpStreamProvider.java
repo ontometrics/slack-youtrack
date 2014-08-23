@@ -26,6 +26,17 @@ public class AuthenticatedHttpStreamProvider implements StreamProvider {
         authenticator.authenticate(httpExecutor);
     }
 
+    public static AuthenticatedHttpStreamProvider basicAuthenticatedHttpStreamProvider
+            (final String login, final String password) {
+        return new AuthenticatedHttpStreamProvider( new Authenticator() {
+                @Override
+                public void authenticate(Executor httpExecutor) {
+                    httpExecutor.auth(login,password);
+                }
+            }
+        );
+    }
+
 
     /**
      * @throws IOException

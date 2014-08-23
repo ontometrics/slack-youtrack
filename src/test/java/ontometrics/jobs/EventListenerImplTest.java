@@ -6,6 +6,7 @@ import com.ontometrics.integrations.jobs.EventListenerImpl;
 import com.ontometrics.integrations.sources.ChannelMapper;
 import com.ontometrics.integrations.sources.InputStreamHandler;
 import com.ontometrics.integrations.sources.StreamProvider;
+import ontometrics.test.util.UrlStreamProvider;
 import org.apache.commons.configuration.ConfigurationException;
 import org.junit.Test;
 
@@ -52,12 +53,7 @@ public class EventListenerImplTest {
     }
 
     private EventListenerImpl createEventListener() {
-        return new EventListenerImpl(new StreamProvider() {
-            @Override
-            public <RES> RES openResourceStream(URL resourceUrl, InputStreamHandler<RES> inputStreamHandler) throws IOException {
-                return null;
-            }
-        }, new ChannelMapper.Builder().build());
+        return new EventListenerImpl(UrlStreamProvider.instance(), new ChannelMapper.Builder().build());
     }
 
 }
