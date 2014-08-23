@@ -136,8 +136,10 @@ public class EventListenerImpl implements EventListener {
      */
     private void postEventChangesToStream(ProcessEvent event, List<ProcessEventChange> changes, String channel) {
         if (changes.isEmpty()) {
+            log.info("List of changes for event is empty {}");
             postMessageToChannel(event, channel, getIssueLink(event));
         } else {
+            log.info("List of changes {} for event {}", changes, event);
             for (Map.Entry<String, Collection<ProcessEventChange>> mapEntry : groupChangesByUpdater(changes).entrySet()) {
                 try {
                     String updater = mapEntry.getKey();
