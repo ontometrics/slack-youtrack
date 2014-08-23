@@ -11,6 +11,7 @@ import com.ontometrics.integrations.events.ProcessEventChange;
 import com.ontometrics.integrations.sources.ChannelMapper;
 import com.ontometrics.integrations.sources.SourceEventMapper;
 import com.ontometrics.integrations.sources.StreamProvider;
+import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -37,7 +38,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class EventListenerImpl implements EventListener {
     private static final Logger log = LoggerFactory.getLogger(EventListenerImpl.class);
 
-    //TODO move into configuration
     private static final String YT_FEED_URL = "http://ontometrics.com";
     private static final int YT_PORT = 8085;
 
@@ -60,8 +60,11 @@ public class EventListenerImpl implements EventListener {
         if(feedStreamProvider == null || channelMapper == null) throw new IllegalArgumentException("You must provide sourceURL and channelMapper.");
 
 
+        Configuration configuration = ConfigurationFactory.get();
         sourceEventMapper = new SourceEventMapper(
-                new YouTrackInstance.Builder().baseUrl(YT_FEED_URL).port(YT_PORT).build(),
+                new YouTrackInstance.Builder().baseUrl(
+                        configuration.getString("YOUTRACK_HOST", YT_FEED_URL))
+                        .port(configuration.getInt("YOUTRACK_PORT", YT_PORT)).build(),
                 feedStreamProvider);
         sourceEventMapper.setLastEvent(EventProcessorConfiguration.instance().loadLastProcessedEvent());
     }
