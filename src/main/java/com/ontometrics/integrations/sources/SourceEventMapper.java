@@ -6,6 +6,7 @@ import com.ontometrics.integrations.configuration.IssueTracker;
 import com.ontometrics.integrations.events.Issue;
 import com.ontometrics.integrations.events.ProcessEvent;
 import com.ontometrics.integrations.events.ProcessEventChange;
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,6 +18,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.events.EndElement;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.DateFormat;
@@ -52,11 +54,13 @@ public class SourceEventMapper {
         return streamProvider.openResourceStream(issueTracker.getFeedUrl(), new InputStreamHandler<List<ProcessEvent>>() {
             @Override
             public List<ProcessEvent> handleStream(InputStream is) throws Exception {
+                byte[] buf = IOUtils.toByteArray(is);
+                ByteArrayInputStream bas = new ByteArrayInputStream(buf);
                 LinkedList<ProcessEvent> events = new LinkedList<>();
                 try {
                     Date deploymentDate = EventProcessorConfiguration.instance().getDeploymentTime();
                     XMLInputFactory inputFactory = XMLInputFactory.newInstance();
-                    eventReader = inputFactory.createXMLEventReader(is);
+                    eventReader = inputFactory.createXMLEventReader(bas);
                     DateFormat dateFormat = createEventDateFormat();
                     while (eventReader.hasNext()) {
                         XMLEvent nextEvent = eventReader.nextEvent();
@@ -81,7 +85,7 @@ public class SourceEventMapper {
                         }
                     }
                 } catch (XMLStreamException e) {
-                    throw new IOException("Failed to process XML", e);
+                    throw new IOException("Failed to process XML: content is\n"+new String(buf), e);
                 }
                 return events;
             }
