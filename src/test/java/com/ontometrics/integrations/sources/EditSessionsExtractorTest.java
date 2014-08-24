@@ -44,6 +44,11 @@ public class EditSessionsExtractorTest {
 
         log.info("latest edits: {}", sessions);
         assertThat(sessions.size(), is(not(0)));
+
+        int editCount = 0;
+        for (IssueEdit edit : sessions.get(0).getChanges()){
+            log.info("change #{}: {}", editCount++, edit);
+        }
     }
 
     @Test

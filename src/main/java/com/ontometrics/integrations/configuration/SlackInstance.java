@@ -1,7 +1,8 @@
 package com.ontometrics.integrations.configuration;
 
 import com.ontometrics.integrations.events.Issue;
-import com.ontometrics.integrations.events.ProcessEventChange;
+import com.ontometrics.integrations.events.IssueEdit;
+import com.ontometrics.integrations.events.IssueEditSession;
 import com.ontometrics.integrations.sources.ChannelMapper;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -12,7 +13,6 @@ import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.List;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -51,9 +51,9 @@ public class SlackInstance implements ChatServer {
     }
 
     @Override
-    public void post(ProcessEventChange change){
-        String channel = channelMapper.getChannel(change.getIssue());
-        postToChannel(channel, buildChangeMessage(change));
+    public void post(IssueEditSession issueEditSession){
+        String channel = channelMapper.getChannel(issueEditSession.getIssue());
+        postToChannel(channel, buildSessionMessage(issueEditSession));
         
     }
 
@@ -77,24 +77,23 @@ public class SlackInstance implements ChatServer {
         return StringUtils.replaceChars(message, "{}", "[]");
     }
 
-    protected String buildChangeMessage(ProcessEventChange change) {
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(String.format("*%s*", change.getUpdater()))
-                .append(" updated ")
-                .append(MessageFormatter.getIssueLink(change.getIssue()))
-                .append("\n");
-        stringBuilder.append(change.getField()).append(": ");
-        if (change.getPriorValue().length() > 0) {
-            stringBuilder.append(change.getPriorValue()).append(" -> ");
+    protected String buildSessionMessage(IssueEditSession session) {
+        StringBuilder s = new StringBuilder(String.format("*%s*", session.getUpdater()));
+        s.append(String.format(" updated %s\n", MessageFormatter.getIssueLink(session.getIssue())));
+        int changeCounter = 0;
+        for (IssueEdit edit : session.getChanges()){
+            s.append(edit.toString());
+            if (changeCounter++ < session.getChanges().size()-1){
+                s.append(", ");
+            }
         }
-        stringBuilder.append(change.getCurrentValue());
-        return stringBuilder.toString();
+        return s.toString();
     }
 
-    @Override
-    public List<String> getUsers(){
-        return null;
-    }
+//    @Override
+//    public List<String> getUsers(){
+//        return null;
+//    }
 
     private static class MessageFormatter {
         static String getIssueLink(Issue issue){

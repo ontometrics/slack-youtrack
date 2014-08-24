@@ -5,6 +5,12 @@ import java.util.Date;
 import java.util.List;
 
 /**
+ * <p>
+ * Represents a single User (updater) making one or more changes to
+ * an {@link com.ontometrics.integrations.events.Issue} at a given
+ * time.
+ * </p>
+ *
  * User: Rob
  * Date: 8/23/14
  * Time: 7:25 PM
@@ -69,17 +75,26 @@ public class IssueEditSession {
         return updated;
     }
 
+    /**
+     * The changes that were made in this session.
+     *
+     * @return all edits made by the updater in this session
+     */
     public List<IssueEdit> getChanges() {
         return changes;
     }
 
     @Override
     public String toString() {
-        return "IssueEditSession{" +
-                "issue=" + issue +
-                ", updater='" + updater + '\'' +
-                ", changes=" + changes +
-                ", updated=" + updated +
-                '}';
+        StringBuilder b = new StringBuilder(issue.toString());
+        b.append(String.format(" %s ", updater));
+        int changeCounter = 0;
+        for (IssueEdit edit : changes){
+            b.append(edit.toString());
+            if (changeCounter++ < changes.size()-1){
+                b.append(", ");
+            }
+        }
+        return b.toString();
     }
 }

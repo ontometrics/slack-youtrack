@@ -136,6 +136,9 @@ public class EditSessionsExtractor {
                             String tagName = endElement.getName().getLocalPart();
                             if (tagName.equals("field")) {
                                 if (newValue.length() > 0) {
+                                    if (currentFieldName.equals("resolved")){
+                                        newValue = new Date(Long.parseLong(newValue)).toString();
+                                    }
                                     ProcessEventChange processEventChange = new ProcessEventChange.Builder()
                                             .updater(updaterName)
                                             .updated(updated)

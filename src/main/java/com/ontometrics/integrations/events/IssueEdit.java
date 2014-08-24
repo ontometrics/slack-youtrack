@@ -68,11 +68,12 @@ public class IssueEdit {
 
     @Override
     public String toString() {
-        StringBuilder b = new StringBuilder(getField());
+        StringBuilder b = new StringBuilder();
         if (getPriorValue().length() > 0){
-            b.append(getPriorValue()).append(" -> ");
+            b.append(getField()).append(":");
+            b.append(String.format(" %s -> ", getPriorValue()));
         } else {
-            b.append(" set to ");
+            b.append("set ").append(getField()).append(" to ");
         }
         b.append(getCurrentValue());
         return b.toString();

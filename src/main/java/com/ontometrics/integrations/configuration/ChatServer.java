@@ -1,8 +1,6 @@
 package com.ontometrics.integrations.configuration;
 
-import com.ontometrics.integrations.events.ProcessEventChange;
-
-import java.util.List;
+import com.ontometrics.integrations.events.IssueEditSession;
 
 /**
  * <p>
@@ -23,14 +21,14 @@ public interface ChatServer {
     /**
      * Put a message about a change out to the chat server.
      *
-     * @param change some transformation of one or more properties on a given @{@link com.ontometrics.integrations.events.Issue}
+     * @param issueEditSession information about the things changed in a single edit session
      */
-    void post(ProcessEventChange change);
+    void post(IssueEditSession issueEditSession);
 
     /**
      * Provides a list of the Users that are members of our chat server team.
      *
      * @return the usernames that are known members right now
      */
-    List<String> getUsers();
+//    List<String> getUsers();
 }
