@@ -23,29 +23,27 @@ public class TestDataFactory {
                 .link(linkUrl)
                 .build();
 
-        ProcessEventChange change1 = new ProcessEventChange.Builder()
+        IssueEdit edit1 = new IssueEdit.Builder()
                 .issue(issue)
                 .field("State")
                 .priorValue("Assigned")
                 .currentValue("Fixed")
-                .updater("Noura")
                 .build();
 
-        ProcessEventChange change2 = new ProcessEventChange.Builder()
+        IssueEdit edit2 = new IssueEdit.Builder()
                 .issue(issue)
                 .field("Priority")
                 .priorValue("Normal")
                 .currentValue("Critical")
-                .updater("Noura")
                 .build();
 
-        List<ProcessEventChange> changes = new ArrayList<>();
-        changes.add(change1);
-        changes.add(change2);
+        List<IssueEdit> edits = new ArrayList<>();
+        edits.add(edit1);
+        edits.add(edit2);
 
         return new IssueEditSession.Builder()
                 .issue(issue)
-                .changes(changes)
+                .changes(edits)
                 .updated(new Date())
                 .updater("Noura")
                 .build();

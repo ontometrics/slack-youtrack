@@ -2,10 +2,7 @@ package com.ontometrics.integrations.sources;
 
 import com.ontometrics.integrations.configuration.EventProcessorConfiguration;
 import com.ontometrics.integrations.configuration.IssueTracker;
-import com.ontometrics.integrations.events.Issue;
-import com.ontometrics.integrations.events.IssueEditSession;
-import com.ontometrics.integrations.events.ProcessEvent;
-import com.ontometrics.integrations.events.ProcessEventChange;
+import com.ontometrics.integrations.events.*;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 
@@ -27,6 +24,17 @@ import java.util.*;
 import static org.slf4j.LoggerFactory.getLogger;
 
 /**
+ * <p>
+ * Provides a means of seeing what things were changed on an {@link com.ontometrics.integrations.events.Issue} and by whom.
+ * Does the work of going first through the feed (RSS) and finding out what tickets
+ * have been touched, then looking up changes done to each ticket using the REST interface.
+ * </p>
+ * <p>
+ * Note that the things found in the feed are extracted into the classes {@link com.ontometrics.integrations.events.ProcessEvent}
+ * and {@link com.ontometrics.integrations.events.ProcessEventChange}, preserving precisely the information found.
+ * But then the changes are converted into {@link com.ontometrics.integrations.events.IssueEdit} instances because they
+ * are part of a session that contains the information about who updated them and when.
+ * </p>
  * User: Rob
  * Date: 8/23/14
  * Time: 10:19 PM
@@ -42,9 +50,8 @@ public class EditSessionsExtractor {
     private StreamProvider streamProvider;
 
     /**
-     * Provides a means of seeing what things were changed on an {@link com.ontometrics.integrations.events.Issue} and by whom.
-     * The changes are grouped into an {@link com.ontometrics.integrations.events.IssueEditSession} because one
-     * updater might make multiple changes at one time.
+     * Need to talk to the IssueTracker that has the ticket information, and we will probably
+     * have to authenticate, hence the streamProvider.
      *
      * @param issueTracker   the system that is used to track issues
      * @param streamProvider authenticated access to the feed stream
@@ -54,6 +61,14 @@ public class EditSessionsExtractor {
         this.streamProvider = streamProvider;
     }
 
+    /**
+     * Provides a means of seeing what things were changed on an {@link com.ontometrics.integrations.events.Issue} and by whom.
+     * Gets a list of IssueEditSessions, being sure to only include edits that were made since we last
+     * extracted changes.
+     *
+     * @return all sessions found that occurred after the last edit
+     * @throws Exception
+     */
     public List<IssueEditSession> getLatestEdits() throws Exception {
         List<IssueEditSession> sessions = new ArrayList<>();
         List<ProcessEvent> events = getLatestEvents();
@@ -69,7 +84,7 @@ public class EditSessionsExtractor {
             public List<IssueEditSession> handleStream(InputStream is) throws Exception {
                 XMLInputFactory inputFactory = XMLInputFactory.newInstance();
                 XMLEventReader eventReader = inputFactory.createXMLEventReader(is);
-                String currentChangeType;
+                //String currentChangeType;
                 String currentFieldName = "";
                 String oldValue = "", newValue = "";
                 String updaterName = "";
@@ -88,8 +103,8 @@ public class EditSessionsExtractor {
                                     break;
                                 case "field":
                                     currentFieldName = nextEvent.asStartElement().getAttributeByName(new QName("", "name")).getValue();
-                                    currentChangeType = nextEvent.asStartElement().getAttributes().next().toString();
-                                    log.info("found field named: {}: change type: {}", currentFieldName, currentChangeType);
+                                    //currentChangeType = nextEvent.asStartElement().getAttributes().next().toString();
+                                    //log.info("found field named: {}: change type: {}", currentFieldName, currentChangeType);
                                     break;
                                 default:
                                     String elementText;
@@ -140,10 +155,13 @@ public class EditSessionsExtractor {
                                     log.info("process event change: {}", processEventChange);
                                 }
                             } else if (tagName.equals("change")) {
+                                List<IssueEdit> edits = buildIssueEdits(currentChanges);
+
                                 IssueEditSession session = new IssueEditSession.Builder()
                                         .updater(updaterName)
+                                        .updated(updated)
                                         .issue(e.getIssue())
-                                        .changes(currentChanges)
+                                        .changes(edits)
                                         .build();
                                 extractedEdits.add(session);
                                 currentChanges.clear();
@@ -155,6 +173,19 @@ public class EditSessionsExtractor {
                 return extractedEdits;
             }
         });
+    }
+
+    private List<IssueEdit> buildIssueEdits(List<ProcessEventChange> changes) {
+        List<IssueEdit> edits = new ArrayList<>(changes.size());
+        for (ProcessEventChange change : changes){
+            edits.add(new IssueEdit.Builder()
+                            .issue(change.getIssue())
+                            .field(change.getField())
+                            .priorValue(change.getPriorValue())
+                            .currentValue(change.getCurrentValue())
+                            .build());
+        }
+        return edits;
     }
 
     /**

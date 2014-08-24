@@ -2,9 +2,7 @@ package com.ontometrics.integrations.sources;
 
 import com.ontometrics.integrations.configuration.EventProcessorConfiguration;
 import com.ontometrics.integrations.configuration.IssueTracker;
-import com.ontometrics.integrations.events.Issue;
-import com.ontometrics.integrations.events.IssueEditSession;
-import com.ontometrics.integrations.events.ProcessEvent;
+import com.ontometrics.integrations.events.*;
 import ontometrics.test.util.TestUtil;
 import ontometrics.test.util.UrlStreamProvider;
 import org.junit.Before;
@@ -46,6 +44,17 @@ public class EditSessionsExtractorTest {
 
         log.info("latest edits: {}", sessions);
         assertThat(sessions.size(), is(not(0)));
+    }
+
+    @Test
+    public void changesToUpdatedShouldNotBeTreatedAsAFieldChange() throws Exception {
+        for (IssueEditSession session : editsExtractor.getLatestEdits()){
+            for (IssueEdit edit : session.getChanges()){
+                if (edit.getField().equals("updated")){
+                    fail("updated is a timestamp, not a separate change field.");
+                }
+            }
+        }
     }
 
     private ProcessEvent createProcessEvent() {

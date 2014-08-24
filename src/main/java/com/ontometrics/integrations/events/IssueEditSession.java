@@ -15,7 +15,7 @@ public class IssueEditSession {
 
     private final Issue issue;
     private final String updater;
-    private final List<ProcessEventChange> changes;
+    private final List<IssueEdit> changes;
     private final Date updated;
 
     public IssueEditSession(Builder builder) {
@@ -29,7 +29,7 @@ public class IssueEditSession {
 
         private Issue issue;
         private String updater;
-        private List<ProcessEventChange> changes;
+        private List<IssueEdit> changes;
         private Date updated;
 
         public Builder issue(Issue issue){
@@ -47,7 +47,7 @@ public class IssueEditSession {
             return this;
             }
 
-        public Builder changes(List<ProcessEventChange> changes){
+        public Builder changes(List<IssueEdit> changes){
             this.changes = changes;
             return this;
             }
@@ -69,7 +69,7 @@ public class IssueEditSession {
         return updated;
     }
 
-    public List<ProcessEventChange> getChanges() {
+    public List<IssueEdit> getChanges() {
         return changes;
     }
 

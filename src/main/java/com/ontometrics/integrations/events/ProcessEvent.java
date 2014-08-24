@@ -108,7 +108,7 @@ public class ProcessEvent {
      * @return Unique key of the event: combination of issueID and publish Date
      */
     public String getKey() {
-        return getIssue().getId() + KEY_FIELD_SEPARATOR + createDateFormat().format(publishDate);
+        return (issue==null) ? "" : getIssue().getId() + KEY_FIELD_SEPARATOR + createDateFormat().format(publishDate);
     }
 
     private DateFormat createDateFormat() {
