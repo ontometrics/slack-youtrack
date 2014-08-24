@@ -95,7 +95,7 @@ public class EventListenerImpl implements EventListener {
         for (ProcessEvent event : events) {
             processedEventsCount.incrementAndGet();
             //load list of updates (using REST service of YouTrack)
-            List<ProcessEventChange> changes = null;
+            List<ProcessEventChange> changes;
             Date minChangeDate = getLastEventChangeDate(event);
             if (minChangeDate == null) {
                 // if there is no last event change date, then minimum issue change date to be retrieved should be
@@ -116,7 +116,7 @@ public class EventListenerImpl implements EventListener {
                 try {
                     EventProcessorConfiguration.instance().saveLastProcessEvent(event);
                 } catch (ConfigurationException e) {
-                    throw new ConfigurationAccessError("Failed to update last processed event", e);
+                    log.error("Failed to update last processed event", e);
                 }
             }
         }
@@ -157,9 +157,6 @@ public class EventListenerImpl implements EventListener {
         }
     }
 
-
-//    andrey.chorniy* updated AIA-10: create timer/scheduler to repeat checking for new changes
-//    resolved: 1408821625691State: In Progress -> Fixed
 
     /**
      * @param updater originator of the change

@@ -7,6 +7,21 @@ import java.util.Locale;
 import java.util.TimeZone;
 
 /**
+ * <p>
+ * Represents the record found in the feed that indicates that an
+ * Issue was touched.
+ * </p>
+ * <p>
+ * Instances of this class are created when the feed is parsed.
+ * </p>
+ * <p>
+ * Because we have to gather more information about the changes that
+ * were made, this class is not used to communicate the substance of
+ * what occurred through the chat server.
+ * </p>
+ *
+ * @see com.ontometrics.integrations.events.IssueEditSession
+ *
  * User: Rob
  * Date: 7/15/14
  * Time: 8:42 PM
@@ -22,7 +37,6 @@ public class ProcessEvent {
     private final String description;
     private final Date publishDate;
     private final String link;
-    private String issueID;
 
     public ProcessEvent(Builder builder) {
         issue = builder.issue;
@@ -94,7 +108,7 @@ public class ProcessEvent {
      * @return Unique key of the event: combination of issueID and publish Date
      */
     public String getKey() {
-        return issueID + KEY_FIELD_SEPARATOR + createDateFormat().format(publishDate);
+        return getIssue().getId() + KEY_FIELD_SEPARATOR + createDateFormat().format(publishDate);
     }
 
     private DateFormat createDateFormat() {
