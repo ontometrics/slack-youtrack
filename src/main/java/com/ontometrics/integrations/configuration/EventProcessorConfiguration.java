@@ -1,5 +1,6 @@
 package com.ontometrics.integrations.configuration;
 
+import com.ontometrics.integrations.events.Issue;
 import com.ontometrics.integrations.events.ProcessEvent;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
@@ -10,6 +11,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Date;
 
 /**
@@ -65,7 +68,16 @@ public class EventProcessorConfiguration {
         String lastEventTitle = lastEventConfiguration.getString(LAST_EVENT_TITLE, null);
         long published= lastEventConfiguration.getLong(LAST_EVENT_PUBLISHED, 0);
         if (lastEventLink != null && published > 0) {
-            return new ProcessEvent.Builder().title(lastEventTitle).link(lastEventLink).published(new Date(published)).build();
+            try {
+                String i = lastEventLink.substring(lastEventLink.lastIndexOf("/" + 1));
+                String[] iParts = i.split("-");
+                String prefix = iParts[0];
+                int id = Integer.parseInt(iParts[1]);
+                Issue issue = new Issue.Builder().projectPrefix(prefix).id(id).title(lastEventTitle).link(new URL(lastEventLink)).build();
+                return new ProcessEvent.Builder().issue(issue).published(new Date(published)).build();
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            }
         }
         return null;
     }
@@ -91,9 +103,9 @@ public class EventProcessorConfiguration {
     }
 
     public void saveLastProcessEvent(ProcessEvent processEvent) throws ConfigurationException {
-        lastEventConfiguration.setProperty(LAST_EVENT_LINK, processEvent.getLink());
+        lastEventConfiguration.setProperty(LAST_EVENT_LINK, processEvent.getIssue().getLink());
         lastEventConfiguration.setProperty(LAST_EVENT_PUBLISHED, processEvent.getPublishDate().getTime());
-        lastEventConfiguration.setProperty(LAST_EVENT_TITLE, processEvent.getTitle());
+        lastEventConfiguration.setProperty(LAST_EVENT_TITLE, processEvent.getIssue().getTitle());
         lastEventConfiguration.save();
     }
 

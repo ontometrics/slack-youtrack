@@ -6,6 +6,8 @@ import org.apache.commons.configuration.ConfigurationException;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -30,7 +32,7 @@ public class EventProcessorConfigurationTest {
      * Verifies that last event change date is stored (even after database is restarted)
      */
     @Test
-    public void testThatLastEventChangeDateIsStored() throws ConfigurationException {
+    public void testThatLastEventChangeDateIsStored() throws ConfigurationException, MalformedURLException {
 //        configuration.clearLastProcessEvent();
 //        assertThat(configuration.loadLastProcessedEvent(), nullValue());
 
@@ -38,10 +40,15 @@ public class EventProcessorConfigurationTest {
         Calendar lastEventChangeTime = Calendar.getInstance();
         lastEventChangeTime.add(Calendar.MINUTE, -2);
 
+        Issue issue = new Issue.Builder().projectPrefix("ASOC").id(148)
+                .link(new URL("http://ontometrics.com:8085/issue/ASOC-148"))
+                .title("ASOC-148: New Embedding requirement")
+                .build();
+
         ProcessEvent event1 = new ProcessEvent.Builder()
-                .issue(new Issue.Builder().projectPrefix("ASOC").id(148).build())
-                .link("http://ontometrics.com:8085/issue/ASOC-148")
-                .published(new Date()).title("ASOC-148: New Embedding requirement").build();
+                .issue(issue)
+                .published(new Date())
+                .build();
 
         configuration.saveEventChangeDate(event1, lastEventChangeTime.getTime());
 
@@ -52,11 +59,15 @@ public class EventProcessorConfigurationTest {
         assertThat(storedChangeDate, notNullValue());
         assertThat(storedChangeDate, is(lastEventChangeTime.getTime()));
 
+        Issue issue2 = new Issue.Builder().projectPrefix("ASOC").id(149)
+                .link(new URL("http://ontometrics.com:8085/issue/ASOC-149"))
+                .title("ASOC-149: Newer Embedding requirement")
+                .build();
+
+
         ProcessEvent event2 = new ProcessEvent.Builder()
-                .issue(new Issue.Builder().projectPrefix("ASOC").id(149).build())
-                .link("http://ontometrics.com:8085/issue/ASOC-149")
+                .issue(issue2)
                 .published(new Date())
-                .title("ASOC-149: New Embedding requirement")
                 .build();
         assertThat(configuration.getEventChangeDate(event2), nullValue());
 

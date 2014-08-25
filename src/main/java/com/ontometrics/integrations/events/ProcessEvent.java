@@ -33,25 +33,16 @@ public class ProcessEvent {
     private static final String KEY_FIELD_SEPARATOR = "::";
 
     private final Issue issue;
-    private final String title;
-    private final String description;
     private final Date publishDate;
-    private final String link;
 
     public ProcessEvent(Builder builder) {
         issue = builder.issue;
-        title = builder.title;
-        description = builder.description;
         publishDate = builder.publishDate;
-        link = builder.link;
     }
 
     public static class Builder {
 
-        private String title;
-        private String description;
         private Date publishDate;
-        private String link;
         private Issue issue;
 
         public Builder issue(Issue issue){
@@ -59,23 +50,8 @@ public class ProcessEvent {
             return this;
             }
 
-        public Builder title(String title){
-            this.title = title;
-            return this;
-            }
-
-        public Builder description(String description){
-            this.description = description;
-            return this;
-            }
-
         public Builder published(Date publishDate){
             this.publishDate = publishDate;
-            return this;
-            }
-
-        public Builder link(String link){
-            this.link = link;
             return this;
             }
 
@@ -88,20 +64,8 @@ public class ProcessEvent {
         return issue;
     }
 
-    public String getTitle() {
-        return title;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
     public Date getPublishDate() {
         return publishDate;
-    }
-
-    public String getLink() {
-        return link;
     }
 
     /**
@@ -120,10 +84,8 @@ public class ProcessEvent {
     @Override
     public String toString() {
         return "ProcessEvent{" +
-                "title='" + title + '\'' +
-                ", description='" + description + '\'' +
+                " issue=" + getIssue() +
                 ", publishDate=" + getPublishDate() +
-                ", link='" + link + '\'' +
                 '}';
     }
 }

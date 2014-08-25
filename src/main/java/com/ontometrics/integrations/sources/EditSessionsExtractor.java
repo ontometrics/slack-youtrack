@@ -266,9 +266,6 @@ public class EditSessionsExtractor {
                 .build();
         ProcessEvent event = new ProcessEvent.Builder()
                 .issue(issue)
-                .title(currentTitle)
-                .description(currentDescription)
-                .link(currentLink)
                 .published(currentPublishDate)
                 .build();
         log.debug("process event extracted and built: {}", event);

@@ -2,6 +2,7 @@ package ontometrics.jobs;
 
 import com.ontometrics.integrations.configuration.EventProcessorConfiguration;
 import com.ontometrics.integrations.configuration.SlackInstance;
+import com.ontometrics.integrations.events.Issue;
 import com.ontometrics.integrations.events.ProcessEvent;
 import com.ontometrics.integrations.jobs.EventListenerImpl;
 import com.ontometrics.integrations.sources.ChannelMapperFactory;
@@ -9,6 +10,8 @@ import ontometrics.test.util.UrlStreamProvider;
 import org.apache.commons.configuration.ConfigurationException;
 import org.junit.Test;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Date;
 
 import static org.hamcrest.CoreMatchers.*;
@@ -32,19 +35,20 @@ public class EventListenerImplTest {
     }
 
     @Test
-    public void testThatSourceEventMapperCorrectlyInitializedWithExistingConfiguration() throws ConfigurationException {
+    public void testThatSourceEventMapperCorrectlyInitializedWithExistingConfiguration() throws ConfigurationException, MalformedURLException {
 
         EventProcessorConfiguration configuration = EventProcessorConfiguration.instance();
-        ProcessEvent processEvent = new ProcessEvent.Builder()
+        Issue issue = new Issue.Builder().projectPrefix("ASOC").id(28)
                 .title("ASOC-28: title")
-                .link("http://ontometrics.com:8085/issue/ASOC-28")
-                .published(new Date()).build();
+                .link(new URL("http://ontometrics.com:8085/issue/ASOC-28"))
+                .build();
+        ProcessEvent processEvent = new ProcessEvent.Builder().issue(issue).published(new Date()).build();
         configuration.saveLastProcessEvent(processEvent);
 
         EventListenerImpl eventListener = createEventListener();
         assertThat(eventListener.getEditSessionsExtractor(), notNullValue());
         assertThat(eventListener.getEditSessionsExtractor().getLastEvent(), notNullValue());
-        assertThat(eventListener.getEditSessionsExtractor().getLastEvent().getLink(), is(processEvent.getLink()));
+        assertThat(eventListener.getEditSessionsExtractor().getLastEvent().getIssue().getLink(), is(processEvent.getIssue().getLink()));
         assertThat(eventListener.getEditSessionsExtractor().getLastEvent().getPublishDate(), is(processEvent.getPublishDate()));
 
     }

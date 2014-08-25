@@ -1,7 +1,12 @@
 package com.ontometrics.integrations.sources;
 
-import com.ontometrics.integrations.configuration.*;
-import com.ontometrics.integrations.events.*;
+import com.ontometrics.integrations.configuration.EventProcessorConfiguration;
+import com.ontometrics.integrations.configuration.IssueTracker;
+import com.ontometrics.integrations.configuration.YouTrackInstance;
+import com.ontometrics.integrations.events.Issue;
+import com.ontometrics.integrations.events.IssueEdit;
+import com.ontometrics.integrations.events.IssueEditSession;
+import com.ontometrics.integrations.events.ProcessEvent;
 import com.ontometrics.util.DateBuilder;
 import ontometrics.test.util.TestUtil;
 import ontometrics.test.util.UrlStreamProvider;
@@ -16,10 +21,8 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -27,10 +30,8 @@ import static java.util.Calendar.JULY;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.*;
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.fail;
 import static org.slf4j.LoggerFactory.getLogger;
 
 public class EditSessionsExtractorTest {
@@ -183,9 +184,8 @@ public class EditSessionsExtractorTest {
         String title = "ASOC-148: New Embedding requirement";
         try {
             String link = "http://ontometrics.com:8085/issue/ASOC-148";
-            return new ProcessEvent.Builder().issue(new Issue.Builder().id(148).link(new URL(link)).title(title).build()).
-            link(link)
-                    .published(dateFormat.parse("Mon, 14 Jul 2014 16:09:07")).title(title)
+            return new ProcessEvent.Builder().issue(new Issue.Builder().id(148).link(new URL(link)).title(title).build())
+                    .published(dateFormat.parse("Mon, 14 Jul 2014 16:09:07"))
                     .build();
         } catch (Exception e) {
             throw new RuntimeException(e);
