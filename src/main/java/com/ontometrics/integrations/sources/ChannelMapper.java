@@ -49,7 +49,7 @@ public class ChannelMapper {
         String channelKey = Iterables.find(mappings.keySet(), new Predicate<String>() {
             @Override
             public boolean apply(String k) {
-                return issue.getTitle().contains(k);
+                return issue.getPrefix().contains(k);
             }
         }, null);
 
