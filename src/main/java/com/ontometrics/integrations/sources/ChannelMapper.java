@@ -15,7 +15,7 @@ public class ChannelMapper {
 
     private final Map<String, String> mappings;
     private final String defaultChannel;
-    private Logger log = LoggerFactory.getLogger(ChannelMapper.class);
+    private static final Logger log = LoggerFactory.getLogger(ChannelMapper.class);
 
     public ChannelMapper(Builder builder) {
         mappings = builder.mappings;
@@ -30,12 +30,12 @@ public class ChannelMapper {
         public Builder defaultChannel(String defaultChannel){
             this.defaultChannel = defaultChannel;
             return this;
-            }
+        }
 
         public Builder addMapping(String from, String to){
             mappings.put(from, to);
             return this;
-            }
+        }
 
         public ChannelMapper build(){
             return new ChannelMapper(this);
@@ -45,8 +45,8 @@ public class ChannelMapper {
 
     public String getChannel(final Issue issue){
         String targetChannel = mappings.get(issue.getPrefix());
+        log.debug("Source: {} Target: {}", issue.getPrefix(), targetChannel);
         return targetChannel != null  ? targetChannel : defaultChannel;
     }
-
 
 }
