@@ -45,9 +45,8 @@ public class ChannelMapper {
 
     public String getChannel(final Issue issue){
         String targetChannel = mappings.get(issue.getPrefix());
-        log.info("Source: {} Target: {}", issue.getPrefix(), targetChannel);
+        log.debug("Source: {} Target: {}", issue.getPrefix(), targetChannel);
         return targetChannel != null  ? targetChannel : defaultChannel;
     }
-
 
 }
