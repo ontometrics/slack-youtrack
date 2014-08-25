@@ -96,9 +96,9 @@ public class ProcessEventChange {
     public String toString() {
         StringBuilder stringBuilder = new StringBuilder(String.format("%s changed %s ", updater, field));
         if (priorValue.length() > 0) {
-            stringBuilder.append("from " + priorValue + " ");
+            stringBuilder.append("from ").append(priorValue).append(" ");
         }
-        stringBuilder.append("to " +  currentValue);
+        stringBuilder.append("to ").append(currentValue);
         return stringBuilder.toString();
     }
 }

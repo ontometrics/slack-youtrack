@@ -58,6 +58,7 @@ public class JobStarter {
      * @param eventListener event listener
      */
     private void scheduleTask(Timer timer, EventListener eventListener) {
+        logger.info("Scheduling EventListener task");
         TimerTask timerTask = new EventTask(eventListener);
         timerTasks.add(timerTask);
         timer.schedule(timerTask, EXECUTION_DELAY, REPEAT_INTERVAL);
@@ -84,8 +85,6 @@ public class JobStarter {
             logger.info("Event processing finished");
         }
     }
-
-
 
     public void dispose () {
         //cancelling all previously launched tasks and timer
