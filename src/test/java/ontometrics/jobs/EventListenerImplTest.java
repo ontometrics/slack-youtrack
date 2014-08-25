@@ -5,7 +5,7 @@ import com.ontometrics.integrations.configuration.SlackInstance;
 import com.ontometrics.integrations.events.Issue;
 import com.ontometrics.integrations.events.ProcessEvent;
 import com.ontometrics.integrations.jobs.EventListenerImpl;
-import com.ontometrics.integrations.sources.ChannelMapperFactory;
+import com.ontometrics.integrations.sources.ChannelMapper;
 import ontometrics.test.util.UrlStreamProvider;
 import org.apache.commons.configuration.ConfigurationException;
 import org.junit.Test;
@@ -55,7 +55,20 @@ public class EventListenerImplTest {
 
     private EventListenerImpl createEventListener() {
         return new EventListenerImpl(UrlStreamProvider.instance(), new SlackInstance.Builder()
-                .channelMapper(ChannelMapperFactory.createChannelMapper()).build());
+                .channelMapper(createChannelMapper()).build());
+    }
+
+
+    /**
+     * @return channel mapper with default projects: ASOC, Job Spider and Dminder
+     */
+    private static ChannelMapper createChannelMapper() {
+        return new ChannelMapper.Builder()
+                .defaultChannel("process")
+                .addMapping("ASOC", "vixlet")
+                .addMapping("HA", "jobspider")
+                .addMapping("DMAN", "dminder")
+                .build();
     }
 
 }

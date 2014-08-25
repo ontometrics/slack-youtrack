@@ -5,7 +5,7 @@ import com.ontometrics.integrations.configuration.ConfigurationFactory;
 import com.ontometrics.integrations.configuration.EventProcessorConfiguration;
 import com.ontometrics.integrations.configuration.SlackInstance;
 import com.ontometrics.integrations.sources.AuthenticatedHttpStreamProvider;
-import com.ontometrics.integrations.sources.ChannelMapper;
+import com.ontometrics.integrations.sources.ChannelMapperFactory;
 import com.ontometrics.integrations.sources.StreamProvider;
 import org.apache.commons.configuration.Configuration;
 import org.slf4j.Logger;
@@ -44,7 +44,7 @@ public class JobStarter {
         );
 
         scheduleTask(timer, new EventListenerImpl(streamProvider, new SlackInstance.Builder()
-                .channelMapper(createChannelMapper()).build()));
+                .channelMapper(ChannelMapperFactory.fromConfiguration(configuration, "youtrack-slack.")).build()));
     }
 
     private void initialize() {
@@ -85,14 +85,6 @@ public class JobStarter {
         }
     }
 
-    private ChannelMapper createChannelMapper() {
-        return new ChannelMapper.Builder()
-                .defaultChannel("process")
-                .addMapping("ASOC", "vixlet")
-                .addMapping("HA", "jobspider")
-                .addMapping("DMAN", "dminder")
-                .build();
-    }
 
 
     public void dispose () {

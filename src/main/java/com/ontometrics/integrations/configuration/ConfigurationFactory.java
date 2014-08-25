@@ -8,7 +8,7 @@ import org.apache.commons.configuration.PropertiesConfiguration;
  * Factory for obtaining a global application config
  */
 public class ConfigurationFactory {
-    private static Configuration CONFIGURATION;
+    private static PropertiesConfiguration CONFIGURATION;
 
     /**
      * @return application configuration
@@ -17,6 +17,7 @@ public class ConfigurationFactory {
         if (CONFIGURATION == null) {
             try {
                 CONFIGURATION = new PropertiesConfiguration("application.properties");
+                CONFIGURATION.setListDelimiter(';');
             } catch (ConfigurationException e) {
                 throw new RuntimeException("Failed to load configuration", e);
             }
