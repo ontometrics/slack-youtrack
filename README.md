@@ -23,6 +23,8 @@ Installation and configuration
     * YOUTRACK_PASSWORD - YouTrack password
     * SLACK_AUTH_TOKEN - token for authentication to Slack REST services
     * APP_DATA_DIR - directory where app will store it's data-files (configuration)
+    * YOUTRACK_HOST - YouTrack server host
+    * YOUTRACK_PORT - YouTrack server port
 2. Run "mvn -DYOUTRACK_USERNAME=user -DYOUTRACK_PASSWORD=pwd ... package" to build war file
 3. Drop war file into servlet container "webapps" directory
 
