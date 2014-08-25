@@ -64,12 +64,13 @@ public class EventProcessorConfiguration {
      * @return last event processed (issue) or null if not available
      */
     public ProcessEvent loadLastProcessedEvent() {
-        String lastEventLink = lastEventConfiguration.getString(LAST_EVENT_LINK, null);
+        URL lastEventUrl = ((URL)lastEventConfiguration.getProperty(LAST_EVENT_LINK));
+        String lastEventLink = lastEventUrl == null ? null : lastEventUrl.toExternalForm();
         String lastEventTitle = lastEventConfiguration.getString(LAST_EVENT_TITLE, null);
         long published= lastEventConfiguration.getLong(LAST_EVENT_PUBLISHED, 0);
         if (lastEventLink != null && published > 0) {
             try {
-                String i = lastEventLink.substring(lastEventLink.lastIndexOf("/" + 1));
+                String i = lastEventLink.substring(lastEventLink.lastIndexOf("/") + 1);
                 String[] iParts = i.split("-");
                 String prefix = iParts[0];
                 int id = Integer.parseInt(iParts[1]);

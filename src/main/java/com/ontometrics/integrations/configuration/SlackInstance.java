@@ -43,11 +43,11 @@ public class SlackInstance implements ChatServer {
         public Builder channelMapper(ChannelMapper channelMapper){
             this.channelMapper = channelMapper;
             return this;
-            }
+        }
 
         public SlackInstance build(){
             return new SlackInstance(this);
-            }
+        }
     }
 
     @Override
