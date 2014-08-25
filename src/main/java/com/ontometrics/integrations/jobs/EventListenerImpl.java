@@ -50,8 +50,8 @@ public class EventListenerImpl implements EventListener {
 
         Configuration configuration = ConfigurationFactory.get();
         editSessionsExtractor = new EditSessionsExtractor(new YouTrackInstance.Builder().baseUrl(
-                configuration.getString("YOUTRACK_HOST", YT_FEED_URL))
-                .port(configuration.getInt("YOUTRACK_PORT", YT_PORT)).build(), feedStreamProvider);
+                configuration.getString("PROP.YOUTRACK_HOST", YT_FEED_URL))
+                .port(configuration.getInt("PROP.YOUTRACK_PORT", YT_PORT)).build(), feedStreamProvider);
         editSessionsExtractor.setLastEvent(EventProcessorConfiguration.instance().loadLastProcessedEvent());
         this.chatServer = chatServer;
     }

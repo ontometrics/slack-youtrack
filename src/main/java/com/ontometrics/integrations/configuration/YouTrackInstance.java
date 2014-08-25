@@ -41,22 +41,22 @@ public class YouTrackInstance implements IssueTracker {
 
     @Override
     public URL getBaseUrl() {
-        URL url = null;
+        URL url;
         try {
             url = new URL(String.format("%s%s", baseUrl, (port > 0) ? ":" + port : ""));
         } catch (MalformedURLException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
         return url;
     }
 
         @Override
     public URL getFeedUrl() {
-        URL url = null;
+        URL url;
         try {
             url = new URL(String.format("%s/_rss/issues", getBaseUrl()));
         } catch (MalformedURLException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
         return url;
     }
@@ -67,7 +67,7 @@ public class YouTrackInstance implements IssueTracker {
         try {
             url = new URL(String.format("%s/rest/issue/%s/changes", getBaseUrl(), issue.toString()));
         } catch (MalformedURLException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
         return url;
     }

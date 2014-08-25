@@ -40,7 +40,7 @@ public class JobStarter {
     public void scheduleTasks() {
         final Configuration configuration = ConfigurationFactory.get();
         StreamProvider streamProvider = AuthenticatedHttpStreamProvider.basicAuthenticatedHttpStreamProvider(
-                configuration.getString("YOUTRACK_USERNAME"), configuration.getString("YOUTRACK_PASSWORD")
+                configuration.getString("PROP.YOUTRACK_USERNAME"), configuration.getString("PROP.YOUTRACK_PASSWORD")
         );
 
         scheduleTask(timer, new EventListenerImpl(streamProvider, new SlackInstance.Builder()

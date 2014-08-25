@@ -67,7 +67,7 @@ public class SlackInstance implements ChatServer {
         Client client = ClientBuilder.newClient();
 
         WebTarget slackApi = client.target(BASE_URL).path(String.format("%s/%s", API_PATH, CHANNEL_POST_PATH))
-                .queryParam(TOKEN_KEY, ConfigurationFactory.get().getString("SLACK_AUTH_TOKEN"))
+                .queryParam(TOKEN_KEY, ConfigurationFactory.get().getString("PROP.SLACK_AUTH_TOKEN"))
                 .queryParam(TEXT_KEY, processMessage(message))
                 .queryParam(CHANNEL_KEY, "#" + channel);
 

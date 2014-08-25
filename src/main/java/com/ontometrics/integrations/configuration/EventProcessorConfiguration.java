@@ -41,7 +41,7 @@ public class EventProcessorConfiguration {
 
     private void initialize() throws ConfigurationAccessError {
         try {
-            File dataDir = new File(ConfigurationFactory.get().getString("APP_DATA_DIRECTORY", "."));
+            File dataDir = new File(ConfigurationFactory.get().getString("PROP.APP_DATA_DIR", "."));
             File file = new File(dataDir, "lastEvent.properties");
             logger.info("Going to load properties from file {}", file.getAbsolutePath());
             lastEventConfiguration = new PropertiesConfiguration(file);
