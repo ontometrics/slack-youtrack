@@ -85,7 +85,7 @@ public class SlackInstance implements ChatServer {
     protected String buildSessionMessage(IssueEditSession session) {
         StringBuilder s = new StringBuilder(String.format("*%s*", session.getUpdater()));
         s.append(String.format(" updated %s: ", MessageFormatter.getIssueLink(session.getIssue())));
-        s.append(session.getIssue().getTitle());
+        s.append(removeIssueId(session.getIssue().getTitle()));
         s.append(System.lineSeparator());
         int changeCounter = 0;
         for (IssueEdit edit : session.getChanges()){
