@@ -64,8 +64,7 @@ public class EventProcessorConfiguration {
      * @return last event processed (issue) or null if not available
      */
     public ProcessEvent loadLastProcessedEvent() {
-        URL lastEventUrl = ((URL)lastEventConfiguration.getProperty(LAST_EVENT_LINK));
-        String lastEventLink = lastEventUrl == null ? null : lastEventUrl.toExternalForm();
+        String lastEventLink = lastEventConfiguration.getString(LAST_EVENT_LINK);
         String lastEventTitle = lastEventConfiguration.getString(LAST_EVENT_TITLE, null);
         long published= lastEventConfiguration.getLong(LAST_EVENT_PUBLISHED, 0);
         if (lastEventLink != null && published > 0) {
@@ -104,7 +103,7 @@ public class EventProcessorConfiguration {
     }
 
     public void saveLastProcessEvent(ProcessEvent processEvent) throws ConfigurationException {
-        lastEventConfiguration.setProperty(LAST_EVENT_LINK, processEvent.getIssue().getLink());
+        lastEventConfiguration.setProperty(LAST_EVENT_LINK, processEvent.getIssue().getLink().toExternalForm());
         lastEventConfiguration.setProperty(LAST_EVENT_PUBLISHED, processEvent.getPublishDate().getTime());
         lastEventConfiguration.setProperty(LAST_EVENT_TITLE, processEvent.getIssue().getTitle());
         lastEventConfiguration.save();
