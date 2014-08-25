@@ -17,6 +17,7 @@ import javax.xml.stream.events.XMLEvent;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -258,8 +259,13 @@ public class EditSessionsExtractor {
         String t = currentTitle;
         prefix = t.substring(0, t.indexOf("-"));
         issueNumber = Integer.parseInt(t.substring(t.indexOf("-")+1, t.indexOf(":")));
+        Issue issue = new Issue.Builder().id(issueNumber).projectPrefix(prefix)
+                .title(currentTitle)
+                .description(currentDescription)
+                .link(new URL(currentLink))
+                .build();
         ProcessEvent event = new ProcessEvent.Builder()
-                .issue(new Issue.Builder().id(issueNumber).projectPrefix(prefix).build())
+                .issue(issue)
                 .title(currentTitle)
                 .description(currentDescription)
                 .link(currentLink)
