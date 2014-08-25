@@ -76,6 +76,12 @@ public class EventListenerImpl implements EventListener {
         //get events
         List<ProcessEvent> events = editSessionsExtractor.getLatestEvents();
 
+        if (events.isEmpty()) {
+            log.info("There are no new events to process");
+        } else {
+            log.info("There are {} events to process", events.size());
+        }
+
         final AtomicInteger processedSessionsCount = new AtomicInteger(0);
         for (ProcessEvent event : events) {
             processedSessionsCount.incrementAndGet();
@@ -115,9 +121,11 @@ public class EventListenerImpl implements EventListener {
      */
     private void postEditSessionsToChatServer(ProcessEvent event, List<IssueEditSession> editSessions) {
         if (editSessions.isEmpty()) {
-            log.info("List of edit sessions for event is empty {}");
+            log.info("List of edit sessions for event is empty");
             chatServer.postIssueCreation(event.getIssue());
         } else {
+            log.info("There are {} edit sessions for issue {}", editSessions.size(), event.getIssue().toString());
+
             try {
                 for (Map.Entry<String, Collection<IssueEditSession>> mapEntry : groupChangesByUpdater(editSessions).entrySet()) {
                     for (IssueEditSession editSession : mapEntry.getValue()) {
