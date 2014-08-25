@@ -84,12 +84,14 @@ public class SlackInstance implements ChatServer {
 
     protected String buildSessionMessage(IssueEditSession session) {
         StringBuilder s = new StringBuilder(String.format("*%s*", session.getUpdater()));
-        s.append(String.format(" updated %s\n", MessageFormatter.getIssueLink(session.getIssue())));
+        s.append(String.format(" updated %s: ", MessageFormatter.getIssueLink(session.getIssue())));
+        s.append(session.getIssue().getTitle());
+        s.append(System.lineSeparator());
         int changeCounter = 0;
         for (IssueEdit edit : session.getChanges()){
             s.append(edit.toString());
             if (changeCounter++ < session.getChanges().size()-1){
-                s.append(", ");
+                s.append(System.lineSeparator());
             }
         }
         return s.toString();
