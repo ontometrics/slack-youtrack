@@ -51,6 +51,11 @@ public class SlackInstance implements ChatServer {
     }
 
     @Override
+    public void postIssueCreation(Issue issue) {
+        postToChannel(channelMapper.getChannel(issue), buildIssueCreationMessage(issue));
+    }
+
+    @Override
     public void post(IssueEditSession issueEditSession){
         String channel = channelMapper.getChannel(issueEditSession.getIssue());
         postToChannel(channel, buildSessionMessage(issueEditSession));
@@ -79,14 +84,12 @@ public class SlackInstance implements ChatServer {
 
     protected String buildSessionMessage(IssueEditSession session) {
         StringBuilder s = new StringBuilder(String.format("*%s*", session.getUpdater()));
-        s.append(String.format(" updated %s: ", MessageFormatter.getIssueLink(session.getIssue())));
-        s.append(removeIssueId(session.getIssue().getTitle()));
-        s.append("\n");
+        s.append(String.format(" updated %s\n", MessageFormatter.getIssueLink(session.getIssue())));
         int changeCounter = 0;
         for (IssueEdit edit : session.getChanges()){
             s.append(edit.toString());
             if (changeCounter++ < session.getChanges().size()-1){
-                s.append("\n");
+                s.append(", ");
             }
         }
         return s.toString();
@@ -96,10 +99,14 @@ public class SlackInstance implements ChatServer {
         return title.substring(title.indexOf(":")+1);
     }
 
-//    @Override
-//    public List<String> getUsers(){
-//        return null;
-//    }
+    private String buildIssueCreationMessage(Issue issue) {
+
+        StringBuilder builder = new StringBuilder();
+        String title = issue.getTitle();
+        title = title.replace(String.valueOf(issue.toString()), "");
+        builder.append("<").append(issue.getLink()).append("|").append(issue.toString()).append(">").append(title);
+        return builder.toString();
+    }
 
     private static class MessageFormatter {
         static String getIssueLink(Issue issue){

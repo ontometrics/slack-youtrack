@@ -3,6 +3,7 @@ package com.ontometrics.integrations.jobs;
 import com.ontometrics.integrations.configuration.ConfigurationAccessError;
 import com.ontometrics.integrations.configuration.ConfigurationFactory;
 import com.ontometrics.integrations.configuration.EventProcessorConfiguration;
+import com.ontometrics.integrations.configuration.SlackInstance;
 import com.ontometrics.integrations.sources.AuthenticatedHttpStreamProvider;
 import com.ontometrics.integrations.sources.ChannelMapper;
 import com.ontometrics.integrations.sources.StreamProvider;
@@ -42,7 +43,8 @@ public class JobStarter {
                 configuration.getString("YOUTRACK_USERNAME"), configuration.getString("YOUTRACK_PASSWORD")
         );
 
-        scheduleTask(timer, new EventListenerImpl(streamProvider, createChannelMapper()));
+        scheduleTask(timer, new EventListenerImpl(streamProvider, new SlackInstance.Builder()
+                .channelMapper(createChannelMapper()).build()));
     }
 
     private void initialize() {

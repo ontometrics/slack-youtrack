@@ -1,7 +1,5 @@
 package com.ontometrics.integrations.events;
 
-import com.ontometrics.integrations.configuration.IssueTracker;
-
 import java.net.URL;
 
 /**
