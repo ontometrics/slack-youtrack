@@ -1,7 +1,5 @@
 package com.ontometrics.integrations.events;
 
-import com.ontometrics.integrations.events.ProcessEvent;
-
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 

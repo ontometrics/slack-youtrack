@@ -1,30 +1,45 @@
 package com.ontometrics.integrations.sources;
 
-import com.ontometrics.integrations.configuration.EventProcessorConfiguration;
-import com.ontometrics.integrations.configuration.IssueTracker;
+import com.ontometrics.integrations.configuration.*;
 import com.ontometrics.integrations.events.*;
+import com.ontometrics.util.DateBuilder;
 import ontometrics.test.util.TestUtil;
 import ontometrics.test.util.UrlStreamProvider;
+import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 
+import javax.xml.stream.XMLEventReader;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.List;
-import java.util.Locale;
-import java.util.TimeZone;
+import java.util.*;
 
+import static java.util.Calendar.JULY;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.*;
 import static org.slf4j.LoggerFactory.getLogger;
 
 public class EditSessionsExtractorTest {
+    private static final Logger log = getLogger(EditSessionsExtractorTest.class);
 
-    private Logger log = getLogger(EditSessionsExtractorTest.class);
+    private static final String YOUTRACK_USER = "slackbot";
+    private static final String YOUTRACK_PASSWORD = "X9y-86A-bZN-93h";
+    private static final String YOUTRACK_URL = "http://ontometrics.com";
+
     private MockIssueTracker mockYouTrackInstance;
     private EditSessionsExtractor editsExtractor;
 
@@ -62,14 +77,117 @@ public class EditSessionsExtractorTest {
         }
     }
 
+    @Test
+    public void testThatWeCanReadFromFile() throws IOException, XMLStreamException {
+        int startElementCount = 0;
+        int endElementCount = 0;
+        InputStream inputStream = mockYouTrackInstance.getFeedUrl().openStream();
+        XMLInputFactory inputFactory = XMLInputFactory.newInstance();
+        XMLStreamReader reader = inputFactory.createXMLStreamReader(inputStream);
+
+        while (reader.hasNext()) {
+            int eventType = reader.next();
+            switch (eventType) {
+                case XMLStreamReader.START_ELEMENT:
+                    log.info("start element");
+                    startElementCount++;
+                case XMLStreamReader.ATTRIBUTE:
+                    log.info("end element");
+                    endElementCount++;
+            }
+        }
+        assertThat(startElementCount, Matchers.is(Matchers.not(0)));
+        assertThat(endElementCount, Matchers.is(equalTo(startElementCount)));
+    }
+
+    @Test
+    public void testThatWeCanReadAsEventStream() throws IOException, XMLStreamException {
+        InputStream inputStream = mockYouTrackInstance.getFeedUrl().openStream();
+        XMLInputFactory inputFactory = XMLInputFactory.newInstance();
+        XMLEventReader eventReader = inputFactory.createXMLEventReader(inputStream);
+
+        while (eventReader.hasNext()) {
+            log.info("event: {}", eventReader.nextEvent());
+        }
+    }
+
+    @Test
+    public void testCanParseDate() {
+        Date date = new DateBuilder().day(14).month(JULY).year(2014).hour(16).minutes(41).seconds(3).build();
+        DateFormat df = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zz");
+
+        log.info("date: {}", df.format(date));
+    }
+
+    @Test
+    public void testGettingLocalFileAsUrlWorks(){
+        assertThat(mockYouTrackInstance.getFeedUrl(), notNullValue());
+    }
+
+    @Test
+    public void testThatWeCanGetMostRecentEdits() throws Exception {
+        EditSessionsExtractor editSessionsExtractor = new EditSessionsExtractor(mockYouTrackInstance,
+                UrlStreamProvider.instance());
+        List<IssueEditSession> recentEdits = editSessionsExtractor.getLatestEdits();
+
+        log.info("recent changes: {}", recentEdits);
+        assertThat(recentEdits.size(), Matchers.is(200));
+
+    }
+
+    @Test
+    /**
+     * Tests that {@link com.ontometrics.integrations.sources.SourceEventMapper} initialized with specified lastEvent
+     * field returns correct list of latest events (does not return already processed events)
+     */
+    public void testThatLastEventIsCorrectlyUsedToRetrieveLatestEvents() throws Exception {
+        EditSessionsExtractor editSessionsExtractor = new EditSessionsExtractor(mockYouTrackInstance,
+                UrlStreamProvider.instance());
+        editSessionsExtractor.setLastEvent(createProcessEvent());
+        List<ProcessEvent> latestEvents = editSessionsExtractor.getLatestEvents();
+        assertThat(latestEvents.size(), Matchers.is(9));
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void testThatEventChangesAreParsed() throws Exception {
+        mockYouTrackInstance = new MockIssueTracker("/feeds/issues-feed-rss.xml", "/feeds/issue-changes2.xml");
+        EditSessionsExtractor sessionsExtractor = new EditSessionsExtractor(mockYouTrackInstance, UrlStreamProvider.instance());
+        List<IssueEditSession> edits = sessionsExtractor.getEdits(createProcessEvent(), null);
+        assertThat(edits, Matchers.not(empty()));
+    }
+
+    @Test
+    public void testThatRSSRawFileCanBeRead() throws Exception {
+        mockYouTrackInstance = new MockIssueTracker("/feeds/issues-feed-rss-2.xml", "/feeds/issue-changes.xml");
+        EditSessionsExtractor sourceEventMapper = new EditSessionsExtractor(mockYouTrackInstance, UrlStreamProvider.instance());
+        List<ProcessEvent> changes = sourceEventMapper.getLatestEvents();
+        assertThat(changes, Matchers.not(empty()));
+
+    }
+
+    @Test
+    public void testThatWeCanGetEventsFromRealFeed() throws Exception {
+        YouTrackInstance youTrackInstance = new YouTrackInstance.Builder().baseUrl(YOUTRACK_URL).port(8085).build();
+        StreamProvider streamProvider = AuthenticatedHttpStreamProvider.basicAuthenticatedHttpStreamProvider(
+                YOUTRACK_USER, YOUTRACK_PASSWORD
+        );
+        EditSessionsExtractor sourceEventMapper = new EditSessionsExtractor(youTrackInstance, streamProvider);
+        List<ProcessEvent> changes = sourceEventMapper.getLatestEvents();
+        assertThat(changes, Matchers.not(empty()));
+    }
+
     private ProcessEvent createProcessEvent() {
         SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, dd MMM yyy HH:mm:ss", Locale.ENGLISH);
         dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+        String title = "ASOC-148: New Embedding requirement";
         try {
-            return new ProcessEvent.Builder().link("http://ontometrics.com:8085/issue/ASOC-148")
-                    .published(dateFormat.parse("Mon, 14 Jul 2014 16:09:07")).title("ASOC-148: New Embedding requirement")
+            String link = "http://ontometrics.com:8085/issue/ASOC-148";
+            return new ProcessEvent.Builder().issue(new Issue.Builder().id(148).link(new URL(link)).title(title).build()).
+            link(link)
+                    .published(dateFormat.parse("Mon, 14 Jul 2014 16:09:07")).title(title)
                     .build();
-        } catch (ParseException e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }

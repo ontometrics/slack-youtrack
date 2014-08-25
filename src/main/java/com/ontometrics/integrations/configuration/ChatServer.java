@@ -1,5 +1,6 @@
 package com.ontometrics.integrations.configuration;
 
+import com.ontometrics.integrations.events.Issue;
 import com.ontometrics.integrations.events.IssueEditSession;
 
 /**
@@ -17,6 +18,13 @@ import com.ontometrics.integrations.events.IssueEditSession;
  * Copyright (c) ontometrics, 2014 All Rights Reserved
  */
 public interface ChatServer {
+
+    /**
+     * Put a message about creation of the issue
+     *
+     * @param issue created issue
+     */
+    void postIssueCreation(Issue issue);
 
     /**
      * Put a message about a change out to the chat server.

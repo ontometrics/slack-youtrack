@@ -1,6 +1,5 @@
 package com.ontometrics.integrations.sources;
 
-import java.io.IOException;
 import java.io.InputStream;
 
 /**

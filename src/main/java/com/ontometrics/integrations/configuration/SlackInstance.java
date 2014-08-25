@@ -51,6 +51,11 @@ public class SlackInstance implements ChatServer {
     }
 
     @Override
+    public void postIssueCreation(Issue issue) {
+        postToChannel(channelMapper.getChannel(issue), buildIssueCreationMessage(issue));
+    }
+
+    @Override
     public void post(IssueEditSession issueEditSession){
         String channel = channelMapper.getChannel(issueEditSession.getIssue());
         postToChannel(channel, buildSessionMessage(issueEditSession));
@@ -90,10 +95,14 @@ public class SlackInstance implements ChatServer {
         return s.toString();
     }
 
-//    @Override
-//    public List<String> getUsers(){
-//        return null;
-//    }
+    private String buildIssueCreationMessage(Issue issue) {
+
+        StringBuilder builder = new StringBuilder();
+        String title = issue.getTitle();
+        title = title.replace(String.valueOf(issue.toString()), "");
+        builder.append("<").append(issue.getLink()).append("|").append(issue.toString()).append(">").append(title);
+        return builder.toString();
+    }
 
     private static class MessageFormatter {
         static String getIssueLink(Issue issue){

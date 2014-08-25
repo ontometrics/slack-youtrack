@@ -73,12 +73,12 @@ public class EditSessionsExtractor {
         List<IssueEditSession> sessions = new ArrayList<>();
         List<ProcessEvent> events = getLatestEvents();
         for (ProcessEvent event : events){
-            sessions.addAll(getEdits(event, lastEvent.getPublishDate()));
+            sessions.addAll(getEdits(event, lastEvent == null ? null : lastEvent.getPublishDate()));
         }
         return sessions;
     }
 
-    private List<IssueEditSession> getEdits(final ProcessEvent e, final Date upToDate) throws Exception {
+    public List<IssueEditSession> getEdits(final ProcessEvent e, final Date upToDate) throws Exception {
         return streamProvider.openResourceStream(issueTracker.getChangesUrl(e.getIssue()), new InputStreamHandler<List<IssueEditSession>>() {
             @Override
             public List<IssueEditSession> handleStream(InputStream is) throws Exception {
@@ -285,5 +285,9 @@ public class EditSessionsExtractor {
 
     public void setLastEvent(ProcessEvent lastEvent) {
         this.lastEvent = lastEvent;
+    }
+
+    public ProcessEvent getLastEvent() {
+        return lastEvent;
     }
 }

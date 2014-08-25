@@ -1,17 +1,14 @@
 package ontometrics.jobs;
 
 import com.ontometrics.integrations.configuration.EventProcessorConfiguration;
+import com.ontometrics.integrations.configuration.SlackInstance;
 import com.ontometrics.integrations.events.ProcessEvent;
 import com.ontometrics.integrations.jobs.EventListenerImpl;
-import com.ontometrics.integrations.sources.ChannelMapper;
-import com.ontometrics.integrations.sources.InputStreamHandler;
-import com.ontometrics.integrations.sources.StreamProvider;
+import com.ontometrics.integrations.sources.ChannelMapperFactory;
 import ontometrics.test.util.UrlStreamProvider;
 import org.apache.commons.configuration.ConfigurationException;
 import org.junit.Test;
 
-import java.io.IOException;
-import java.net.URL;
 import java.util.Date;
 
 import static org.hamcrest.CoreMatchers.*;
@@ -30,8 +27,8 @@ public class EventListenerImplTest {
         EventProcessorConfiguration configuration = EventProcessorConfiguration.instance();
         configuration.clearLastProcessEvent();
         EventListenerImpl eventListener = createEventListener();
-        assertThat(eventListener.getSourceEventMapper(), notNullValue());
-        assertThat(eventListener.getSourceEventMapper().getLastEvent(), nullValue());
+        assertThat(eventListener.getEditSessionsExtractor(), notNullValue());
+        assertThat(eventListener.getEditSessionsExtractor().getLastEvent(), nullValue());
     }
 
     @Test
@@ -45,15 +42,16 @@ public class EventListenerImplTest {
         configuration.saveLastProcessEvent(processEvent);
 
         EventListenerImpl eventListener = createEventListener();
-        assertThat(eventListener.getSourceEventMapper(), notNullValue());
-        assertThat(eventListener.getSourceEventMapper().getLastEvent(), notNullValue());
-        assertThat(eventListener.getSourceEventMapper().getLastEvent().getLink(), is(processEvent.getLink()));
-        assertThat(eventListener.getSourceEventMapper().getLastEvent().getPublishDate(), is(processEvent.getPublishDate()));
+        assertThat(eventListener.getEditSessionsExtractor(), notNullValue());
+        assertThat(eventListener.getEditSessionsExtractor().getLastEvent(), notNullValue());
+        assertThat(eventListener.getEditSessionsExtractor().getLastEvent().getLink(), is(processEvent.getLink()));
+        assertThat(eventListener.getEditSessionsExtractor().getLastEvent().getPublishDate(), is(processEvent.getPublishDate()));
 
     }
 
     private EventListenerImpl createEventListener() {
-        return new EventListenerImpl(UrlStreamProvider.instance(), new ChannelMapper.Builder().build());
+        return new EventListenerImpl(UrlStreamProvider.instance(), new SlackInstance.Builder()
+                .channelMapper(ChannelMapperFactory.createChannelMapper()).build());
     }
 
 }
