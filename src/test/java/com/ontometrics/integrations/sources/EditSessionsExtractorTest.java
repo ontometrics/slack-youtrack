@@ -192,12 +192,12 @@ public class EditSessionsExtractorTest {
 
         List<IssueEditSession> allEditSessions = editSessionsExtractor.getEdits(createProcessEvent(), null);
         //all changes should be included if no date is specified
-        assertThat(allEditSessions, hasSize(4));
+        assertThat(allEditSessions, hasSize(9));
 
 
-        Date minDate = new Date(1405952832156L);
+        Date minDate = new Date(1407626732316L);
         List<IssueEditSession> changesAfterDate = editSessionsExtractor.getEdits(createProcessEvent(), minDate);
-        assertThat(changesAfterDate, hasSize(2));
+        assertThat(changesAfterDate, hasSize(4));
         for (IssueEditSession issueEditSession : changesAfterDate) {
             assertThat(issueEditSession.getUpdated(), OrderingComparison.greaterThan(minDate));
         }
