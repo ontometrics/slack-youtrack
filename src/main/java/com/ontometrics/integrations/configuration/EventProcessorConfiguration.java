@@ -51,10 +51,21 @@ public class EventProcessorConfiguration {
             }
             db = DBMaker.newFileDB(new File(dataDir, "app_db")).closeOnJvmShutdown().make();
             eventChangeDatesCollection = getEventChangeDatesCollection();
+            logDatabase();
             logger.info("Initialized EventProcessorConfiguration");
         } catch (ConfigurationException e) {
             throw new ConfigurationAccessError("Failed to access properties", e);
         }
+    }
+
+    private void logDatabase() {
+        StringBuilder builder = new StringBuilder("Last Event Change keyset:\n");
+        for (String key: eventChangeDatesCollection.keySet()) {
+            Long value = eventChangeDatesCollection.get(key);
+            builder.append("Issue Key: ").append(key).append(", Last Change: ").append(value).append(". ")
+                    .append(new Date(value)).append("\n");
+        }
+        logger.info(builder.toString());
     }
 
     public static EventProcessorConfiguration instance() {
