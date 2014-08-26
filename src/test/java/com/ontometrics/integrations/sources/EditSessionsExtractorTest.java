@@ -11,6 +11,7 @@ import com.ontometrics.util.DateBuilder;
 import ontometrics.test.util.TestUtil;
 import ontometrics.test.util.UrlStreamProvider;
 import org.hamcrest.Matchers;
+import org.hamcrest.number.OrderingComparison;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -176,6 +177,30 @@ public class EditSessionsExtractorTest {
         EditSessionsExtractor sourceEventMapper = new EditSessionsExtractor(youTrackInstance, streamProvider);
         List<ProcessEvent> changes = sourceEventMapper.getLatestEvents();
         assertThat(changes, Matchers.not(empty()));
+    }
+
+
+    @Test
+    /**
+     * Tests that {@link com.ontometrics.integrations.sources.EditSessionsExtractor#getEdits(com.ontometrics.integrations.events.ProcessEvent, java.util.Date)}
+     * return the changes which happened after the "upToDate"
+     */
+    public void testThatOnlyChangesAfterSpecifiedDateAreIncluded() throws Exception {
+        EditSessionsExtractor editSessionsExtractor = new EditSessionsExtractor(
+                mockYouTrackInstance, UrlStreamProvider.instance());
+
+
+        List<IssueEditSession> allEditSessions = editSessionsExtractor.getEdits(createProcessEvent(), null);
+        //all changes should be included if no date is specified
+        assertThat(allEditSessions, hasSize(4));
+
+
+        Date minDate = new Date(1405952832156L);
+        List<IssueEditSession> changesAfterDate = editSessionsExtractor.getEdits(createProcessEvent(), minDate);
+        assertThat(changesAfterDate, hasSize(2));
+        for (IssueEditSession issueEditSession : changesAfterDate) {
+            assertThat(issueEditSession.getUpdated(), OrderingComparison.greaterThan(minDate));
+        }
     }
 
     private ProcessEvent createProcessEvent() {
