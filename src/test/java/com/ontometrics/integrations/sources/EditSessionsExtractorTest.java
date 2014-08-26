@@ -133,7 +133,7 @@ public class EditSessionsExtractorTest {
         List<IssueEditSession> recentEdits = editSessionsExtractor.getLatestEdits();
 
         log.info("recent changes: {}", recentEdits);
-        assertThat(recentEdits.size(), Matchers.is(200));
+        assertThat(recentEdits.size(), Matchers.is(450));
 
     }
 

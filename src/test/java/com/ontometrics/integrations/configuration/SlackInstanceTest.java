@@ -17,8 +17,9 @@ public class SlackInstanceTest {
     @Before
     public void setUp() throws Exception {
         ChannelMapper channelMapper = new ChannelMapper.Builder()
-                .addMapping("ASCO", "vixlet")
+                .addMapping("ASOC", "vixlet")
                 .addMapping("DMIN", "dminder")
+                .addMapping("DMAN", "dminder")
                 .build();
 
         slackInstance = new SlackInstance.Builder().channelMapper(channelMapper).build();

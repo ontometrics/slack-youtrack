@@ -25,6 +25,7 @@ public class WebContextJobStarter implements ServletContextListener {
 
     @Override
     public void contextDestroyed(ServletContextEvent servletContextEvent) {
+        logger.info("Shutting down");
         jobStarter.dispose();
     }
 }

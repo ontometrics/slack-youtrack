@@ -51,6 +51,7 @@ public class EventProcessorConfiguration {
             }
             db = DBMaker.newFileDB(new File(dataDir, "app_db")).closeOnJvmShutdown().make();
             eventChangeDatesCollection = getEventChangeDatesCollection();
+            logger.info("Initialized EventProcessorConfiguration");
         } catch (ConfigurationException e) {
             throw new ConfigurationAccessError("Failed to access properties", e);
         }
@@ -135,6 +136,7 @@ public class EventProcessorConfiguration {
      * Releases resource: closes database
      */
     public void dispose() {
+        logger.info("Disposing database");
         db.close();
     }
 
