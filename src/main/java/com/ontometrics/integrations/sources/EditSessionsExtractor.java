@@ -160,14 +160,15 @@ public class EditSessionsExtractor {
                                 }
                             } else if (tagName.equals("change")) {
                                 List<IssueEdit> edits = buildIssueEdits(currentChanges);
-
-                                IssueEditSession session = new IssueEditSession.Builder()
-                                        .updater(updaterName)
-                                        .updated(updated)
-                                        .issue(e.getIssue())
-                                        .changes(edits)
-                                        .build();
-                                extractedEdits.add(session);
+                                if (upToDate == null || updated.after(upToDate)) {
+                                    IssueEditSession session = new IssueEditSession.Builder()
+                                            .updater(updaterName)
+                                            .updated(updated)
+                                            .issue(e.getIssue())
+                                            .changes(edits)
+                                            .build();
+                                    extractedEdits.add(session);
+                                }
                                 currentChanges.clear();
                             }
                             break;
