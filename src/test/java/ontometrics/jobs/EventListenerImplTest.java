@@ -1,5 +1,7 @@
 package ontometrics.jobs;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import com.ontometrics.integrations.configuration.*;
 import com.ontometrics.integrations.events.Issue;
 import com.ontometrics.integrations.events.IssueEditSession;
@@ -16,10 +18,12 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 
 
 /**
@@ -130,6 +134,101 @@ public class EventListenerImplTest {
         //asserting that there are 2 issues processed
         assertThat(issueOrder.get(), is(2));
         assertThat(events, is(2));
+    }
+
+
+
+    @Test
+    /**
+     *             T0
+     * Issue-1:            T1        +T3
+     * Issue-2:                 T2
+     *
+     * t0 - initial LastEventDate
+     * On first call to {@link com.ontometrics.integrations.jobs.EventListener#checkForNewEvents()} we'll get list of issues
+     * Issue1(T1) and Issue2(T2), however on {@link com.ontometrics.integrations.sources.EditSessionsExtractor#getEdits(com.ontometrics.integrations.events.ProcessEvent)}
+     * for Issue-1 it will return changes with time T1 and T3
+     * On first session of changes Issue-2 will return single event with T2
+     * On completion of first session last issue date will be set to T2
+
+     * On second read for Issue-1 we will got T1 and T3, however as long we reported T3 before it should not be reported again
+     *
+     * Note: T3 is slightly higher than T2, between {@link com.ontometrics.integrations.sources.EditSessionsExtractor#getLatestEvents}
+     * and getting changes to concrete issue (may happen fr longer list of issues to process)
+     */
+    public void testThatIssueEditSessionIsNotPostedOnSecondCallIfPostedOnfFirst() throws Exception {
+        final Issue issue1 = new Issue.Builder().projectPrefix("ISSUE").id(1).build();
+        final Issue issue2 = new Issue.Builder().projectPrefix("ISSUE").id(2).build();
+        MockIssueTracker mockIssueTracker = new MockIssueTracker("/feeds/issues-feed-rss.xml",
+                ImmutableMap.<Issue, String>builder().put(issue1, "/feeds/issue-changes-t1-t3.xml")
+                        .put(issue2, "/feeds/issue-changes-t2.xml")
+                        .build()
+                );
+
+        EventProcessorConfiguration.instance().saveLastProcessedEventDate(new Date(0));   //T0
+
+        final List<ProcessEvent> firstCall = ImmutableList.<ProcessEvent> builder()
+                .add(new ProcessEvent.Builder().issue(issue1).published(new Date(1404927516756L)).build()) //T1
+                .add(new ProcessEvent.Builder().issue(issue2).published(new Date(1405025458837L)).build()) //T3
+                .build();
+        final List<ProcessEvent> secondCall = ImmutableList.<ProcessEvent> builder()
+                .add(new ProcessEvent.Builder().issue(issue1).published(new Date(1406227765001L)).build())  //T2
+                .build();
+
+        final AtomicInteger executionCount = new AtomicInteger(1);
+        //create mocked editSessionsExtractor#getLatestEvents() depending on execution count
+        EditSessionsExtractor editSessionsExtractor = new EditSessionsExtractor(mockIssueTracker,
+                UrlStreamProvider.instance()) {
+            @Override
+            public List<ProcessEvent> getLatestEvents() throws Exception {
+                if (executionCount.get() == 1) {
+                    return firstCall;
+                } else if (executionCount.get() == 2) {
+                    return secondCall;
+                }
+                throw new IllegalStateException("only first and second calls are supported");
+            }
+        };
+
+
+        EventListenerImpl eventListener = new EventListenerImpl(editSessionsExtractor,
+                new CheckDuplicateMessagesChatServer());
+
+        eventListener.checkForNewEvents();
+
+        executionCount.incrementAndGet();
+
+        eventListener.checkForNewEvents();
+    }
+
+
+    public static class MockIssueTracker implements IssueTracker {
+        private String feedUrl;
+        private Map<Issue,String> changesUrlMap;
+
+        public MockIssueTracker(String feedUrl, Map<Issue, String> changesUrlMap) {
+            this.feedUrl = feedUrl;
+            this.changesUrlMap = changesUrlMap;
+        }
+
+        @Override
+        public URL getBaseUrl() {
+            return null;
+        }
+
+        @Override
+        public URL getFeedUrl() {
+            return TestUtil.getFileAsURL(feedUrl);
+        }
+
+        @Override
+        public URL getChangesUrl(Issue issue) {
+            return TestUtil.getFileAsURL(changesUrlMap.get(issue));
+        }
+
+        public void setChangesUrlMap(Map<Issue, String> changesUrlMap) {
+            this.changesUrlMap = changesUrlMap;
+        }
     }
 
 

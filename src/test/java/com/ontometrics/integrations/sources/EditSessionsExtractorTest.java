@@ -40,6 +40,7 @@ public class EditSessionsExtractorTest {
     private static final String YOUTRACK_USER = "slackbot";
     private static final String YOUTRACK_PASSWORD = "X9y-86A-bZN-93h";
     private static final String YOUTRACK_URL = "http://ontometrics.com";
+    public static final UrlStreamProvider URL_STREAM_PROVIDER = UrlStreamProvider.instance();
 
     private MockIssueTracker mockYouTrackInstance;
     private EditSessionsExtractor editsExtractor;
@@ -50,7 +51,7 @@ public class EditSessionsExtractorTest {
         deploymentTime.set(Calendar.YEAR, 2013);
         EventProcessorConfiguration.instance().setDeploymentTime(deploymentTime.getTime());
         mockYouTrackInstance = new MockIssueTracker("/feeds/issues-feed-rss.xml", "/feeds/issue-changes.xml");
-        editsExtractor = new EditSessionsExtractor(mockYouTrackInstance, UrlStreamProvider.instance());
+        editsExtractor = new EditSessionsExtractor(mockYouTrackInstance, URL_STREAM_PROVIDER);
         //editsExtractor.setLastEvent(createProcessEvent());
     }
 
@@ -128,7 +129,7 @@ public class EditSessionsExtractorTest {
     @Test
     public void testThatWeCanGetMostRecentEdits() throws Exception {
         EditSessionsExtractor editSessionsExtractor = new EditSessionsExtractor(mockYouTrackInstance,
-                UrlStreamProvider.instance());
+                URL_STREAM_PROVIDER);
         List<IssueEditSession> recentEdits = editSessionsExtractor.getLatestEdits();
 
         log.info("recent changes: {}", recentEdits);
@@ -143,7 +144,7 @@ public class EditSessionsExtractorTest {
      */
     public void testThatLastEventIsCorrectlyUsedToRetrieveLatestEvents() throws Exception {
         EditSessionsExtractor editSessionsExtractor = new EditSessionsExtractor(mockYouTrackInstance,
-                UrlStreamProvider.instance());
+                URL_STREAM_PROVIDER);
         //14 Jul 2014 16:09:07
         editSessionsExtractor.setLastEvent(new DateBuilder().day(14).month(Calendar.JULY).hour(16)
                 .minutes(9).seconds(7).build());
@@ -155,7 +156,7 @@ public class EditSessionsExtractorTest {
     @SuppressWarnings("unchecked")
     public void testThatEventChangesAreParsed() throws Exception {
         mockYouTrackInstance = new MockIssueTracker("/feeds/issues-feed-rss.xml", "/feeds/issue-changes2.xml");
-        EditSessionsExtractor sessionsExtractor = new EditSessionsExtractor(mockYouTrackInstance, UrlStreamProvider.instance());
+        EditSessionsExtractor sessionsExtractor = new EditSessionsExtractor(mockYouTrackInstance, URL_STREAM_PROVIDER);
         List<IssueEditSession> edits = sessionsExtractor.getEdits(createProcessEvent());
         assertThat(edits, Matchers.not(empty()));
     }
@@ -163,7 +164,7 @@ public class EditSessionsExtractorTest {
     @Test
     public void testThatRSSRawFileCanBeRead() throws Exception {
         mockYouTrackInstance = new MockIssueTracker("/feeds/issues-feed-rss-2.xml", "/feeds/issue-changes.xml");
-        EditSessionsExtractor sourceEventMapper = new EditSessionsExtractor(mockYouTrackInstance, UrlStreamProvider.instance());
+        EditSessionsExtractor sourceEventMapper = new EditSessionsExtractor(mockYouTrackInstance, URL_STREAM_PROVIDER);
         List<ProcessEvent> changes = sourceEventMapper.getLatestEvents();
         assertThat(changes, Matchers.not(empty()));
 
@@ -188,7 +189,7 @@ public class EditSessionsExtractorTest {
      */
     public void testThatOnlyChangesAfterSpecifiedDateAreIncluded() throws Exception {
         EditSessionsExtractor editSessionsExtractor = new EditSessionsExtractor(
-                mockYouTrackInstance, UrlStreamProvider.instance());
+                mockYouTrackInstance, URL_STREAM_PROVIDER);
 
 
         List<IssueEditSession> allEditSessions = editSessionsExtractor.getEdits(createProcessEvent());

@@ -81,6 +81,26 @@ public class Issue {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Issue issue = (Issue) o;
+
+        if (id != issue.id) return false;
+        if (prefix != null ? !prefix.equals(issue.prefix) : issue.prefix != null) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = id;
+        result = 31 * result + (prefix != null ? prefix.hashCode() : 0);
+        return result;
+    }
+
+    @Override
     public String toString() {
         return prefix + "-" + id;
     }
