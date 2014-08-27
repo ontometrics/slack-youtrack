@@ -86,7 +86,6 @@ public class EventListenerImplTest {
         final AtomicInteger issueOrder = new AtomicInteger(0);
         EventProcessorConfiguration.instance().clear();
         EventProcessorConfiguration.instance().saveLastProcessedEventDate(T0);
-        EventProcessorConfiguration.instance().setDeploymentTime(T0);
         MockIssueTracker mockYouTrackInstance = new MockIssueTracker("/feeds/issues-feed-rss.xml", null) {
             @Override
             public URL getChangesUrl(Issue issue) {
@@ -215,7 +214,6 @@ public class EventListenerImplTest {
         IssueTracker mockIssueTracker = new SimpleMockIssueTracker("/feeds/issues-feed-rss.xml",
                 "/feeds/empty-issue-changes.xml");
         clearData();
-        EventProcessorConfiguration.instance().setDeploymentTime(new DateBuilder().year(2013).build());
 
         final AtomicInteger createdIssuePostsCount = new AtomicInteger();
 

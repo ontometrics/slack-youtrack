@@ -209,7 +209,6 @@ public class EditSessionsExtractor {
                 ByteArrayInputStream bas = new ByteArrayInputStream(buf);
                 LinkedList<ProcessEvent> events = new LinkedList<>();
                 try {
-                    Date deploymentDate = EventProcessorConfiguration.instance().getDeploymentTime();
                     XMLInputFactory inputFactory = XMLInputFactory.newInstance();
                     eventReader = inputFactory.createXMLEventReader(bas);
                     DateFormat dateFormat = createEventDateFormat();

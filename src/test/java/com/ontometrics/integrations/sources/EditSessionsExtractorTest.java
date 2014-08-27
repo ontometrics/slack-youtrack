@@ -47,10 +47,7 @@ public class EditSessionsExtractorTest {
 
     @Before
     public void setUp() throws Exception {
-        Calendar deploymentTime = Calendar.getInstance();
-        deploymentTime.set(Calendar.YEAR, 2013);
         EventProcessorConfiguration.instance().clear();
-        EventProcessorConfiguration.instance().setDeploymentTime(deploymentTime.getTime());
         mockYouTrackInstance = new SimpleMockIssueTracker("/feeds/issues-feed-rss.xml", "/feeds/issue-changes.xml");
         editsExtractor = new EditSessionsExtractor(mockYouTrackInstance, URL_STREAM_PROVIDER);
         //editsExtractor.setLastEventDate(createProcessEvent());
