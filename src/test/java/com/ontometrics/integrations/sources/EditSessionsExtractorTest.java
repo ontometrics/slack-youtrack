@@ -148,9 +148,9 @@ public class EditSessionsExtractorTest {
                 URL_STREAM_PROVIDER);
         //14 Jul 2014 16:09:07
         editSessionsExtractor.setLastEventDate(new DateBuilder().day(14).month(Calendar.JULY).hour(16)
-                .minutes(9).seconds(7).build());
+                .minutes(0).build());
         List<ProcessEvent> latestEvents = editSessionsExtractor.getLatestEvents();
-        assertThat(latestEvents.size(), Matchers.is(16));
+        assertThat(latestEvents.size(), is(10));
     }
 
     @Test
@@ -179,7 +179,7 @@ public class EditSessionsExtractorTest {
         );
         EditSessionsExtractor sourceEventMapper = new EditSessionsExtractor(youTrackInstance, streamProvider);
         List<ProcessEvent> changes = sourceEventMapper.getLatestEvents();
-        assertThat(changes, Matchers.not(empty()));
+        assertThat(changes, not(empty()));
     }
 
 

@@ -2,13 +2,14 @@ package com.ontometrics.util;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.TimeZone;
 
 /**
  * Provides a fluent builder interface for constructing Dates and DateTimes.
  */
 public class DateBuilder {
 
-    private Calendar calendar = Calendar.getInstance();
+    private Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
 
     /**
      * Provides means of starting from a given date, then changing some subset
