@@ -4,6 +4,7 @@ import com.ontometrics.integrations.configuration.EventProcessorConfiguration;
 import com.ontometrics.integrations.configuration.IssueTracker;
 import com.ontometrics.integrations.events.*;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 
 import javax.xml.namespace.QName;
@@ -145,9 +146,9 @@ public class EditSessionsExtractor {
                                         ProcessEventChange processEventChange = new ProcessEventChange.Builder()
                                                 .updater(updaterName)
                                                 .updated(updated)
-                                                .field(currentFieldName)
-                                                .priorValue(oldValue)
-                                                .currentValue(newValue)
+                                                .field(StringUtils.trim(currentFieldName))
+                                                .priorValue(StringUtils.trim(oldValue))
+                                                .currentValue(StringUtils.trim(newValue))
                                                 .build();
 
                                         currentChanges.add(processEventChange);
@@ -258,10 +259,10 @@ public class EditSessionsExtractor {
         String t = currentTitle;
         prefix = t.substring(0, t.indexOf("-"));
         issueNumber = Integer.parseInt(t.substring(t.indexOf("-")+1, t.indexOf(":")));
-        Issue issue = new Issue.Builder().id(issueNumber).projectPrefix(prefix)
-                .title(currentTitle)
-                .description(currentDescription)
-                .link(new URL(currentLink))
+        Issue issue = new Issue.Builder().id(issueNumber).projectPrefix(StringUtils.trim(prefix))
+                .title(StringUtils.trim(currentTitle))
+                .description(StringUtils.trim(currentDescription))
+                .link(new URL(StringUtils.trim(currentLink)))
                 .build();
         ProcessEvent event = new ProcessEvent.Builder()
                 .issue(issue)

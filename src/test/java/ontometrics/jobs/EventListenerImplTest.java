@@ -258,7 +258,7 @@ public class EventListenerImplTest {
             }
         }, new EmptyChatServer()).checkForNewEvents();
 
-        // now we emulating situation where we get one of the events we already processed from the feed
+        // now we are emulating situation where we get one of the events we already processed from the feed
         // since it has already been processed before, application must not report issue creation for this event again
         new EventListenerImpl(new EditSessionsExtractor(mockIssueTracker,
                 UrlStreamProvider.instance()) {
@@ -277,7 +277,6 @@ public class EventListenerImplTest {
 
     private void clearData() throws ConfigurationException {
         EventProcessorConfiguration.instance().clear();
-        EventProcessorConfiguration.instance().reload();
     }
 
 

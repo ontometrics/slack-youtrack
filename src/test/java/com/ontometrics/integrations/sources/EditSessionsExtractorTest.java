@@ -49,6 +49,7 @@ public class EditSessionsExtractorTest {
     public void setUp() throws Exception {
         Calendar deploymentTime = Calendar.getInstance();
         deploymentTime.set(Calendar.YEAR, 2013);
+        EventProcessorConfiguration.instance().clear();
         EventProcessorConfiguration.instance().setDeploymentTime(deploymentTime.getTime());
         mockYouTrackInstance = new SimpleMockIssueTracker("/feeds/issues-feed-rss.xml", "/feeds/issue-changes.xml");
         editsExtractor = new EditSessionsExtractor(mockYouTrackInstance, URL_STREAM_PROVIDER);
@@ -204,6 +205,40 @@ public class EditSessionsExtractorTest {
         for (IssueEditSession issueEditSession : changesAfterDate) {
             assertThat(issueEditSession.getUpdated(), OrderingComparison.greaterThan(minDate));
         }
+    }
+
+    @Test
+    public void testThatIssueTitlePrefixAndDescriptionAreTrimmed() throws Exception {
+        EditSessionsExtractor editSessionsExtractor = new EditSessionsExtractor(
+                mockYouTrackInstance, URL_STREAM_PROVIDER);
+        List<ProcessEvent> events = editSessionsExtractor.getLatestEvents();
+
+        assertThat(events, not(empty()));
+        for (ProcessEvent event : events) {
+            assertThatStringNotStartsAndEndsWithBlankSymbols(event.getIssue().getTitle());
+            assertThatStringNotStartsAndEndsWithBlankSymbols(event.getIssue().getDescription());
+            assertThatStringNotStartsAndEndsWithBlankSymbols(event.getIssue().getPrefix());
+            assertThatStringNotStartsAndEndsWithBlankSymbols(event.getIssue().getLink().toExternalForm());
+        }
+        List<IssueEditSession> editSessions = editSessionsExtractor.getEdits(events.get(0), new DateBuilder()
+                .year(2013).build());
+        assertThat(editSessions, not(empty()));
+        for (IssueEditSession editSession : editSessions) {
+            assertThatStringNotStartsAndEndsWithBlankSymbols(editSession.getIssue().getTitle());
+            assertThatStringNotStartsAndEndsWithBlankSymbols(editSession.getIssue().getDescription());
+            assertThatStringNotStartsAndEndsWithBlankSymbols(editSession.getIssue().getPrefix());
+            assertThat(editSession.getChanges(), not(empty()));
+            for (IssueEdit issueEdit : editSession.getChanges()) {
+                assertThatStringNotStartsAndEndsWithBlankSymbols(issueEdit.getCurrentValue());
+                assertThatStringNotStartsAndEndsWithBlankSymbols(issueEdit.getPriorValue());
+                assertThatStringNotStartsAndEndsWithBlankSymbols(issueEdit.getField());
+            }
+        }
+    }
+
+    private void assertThatStringNotStartsAndEndsWithBlankSymbols(String str) {
+        assertThat(str, allOf(not(startsWith("\n")), not(startsWith(" ")),
+                not(endsWith("\n")), not(endsWith(" "))));
     }
 
     private ProcessEvent createProcessEvent() {
