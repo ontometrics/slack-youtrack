@@ -299,9 +299,8 @@ public class EventListenerImplTest {
         clearData();
 
         final int maxHistoryInMinutes = EventProcessorConfiguration.instance().getIssueHistoryWindowInMinutes();
-        final Date expectedMinIssueDate = new DateBuilder().addMinutes(-maxHistoryInMinutes).build();
 
-        assertThatPastHistoryWindowDateIsUsedInLatestEventsCall(expectedMinIssueDate);
+        assertThatPastHistoryWindowDateIsUsedInLatestEventsCall();
 
         final Date now = new Date();
         EventProcessorConfiguration.instance().saveLastProcessedEventDate(now);
@@ -321,15 +320,15 @@ public class EventListenerImplTest {
         }, new EmptyChatServer()).checkForNewEvents();
         assertThat(assertionOccurred.get(), is(true));
 
-
+        EventProcessorConfiguration.instance().clear();
         EventProcessorConfiguration.instance()
                 .saveLastProcessedEventDate(new DateBuilder().addMinutes(-maxHistoryInMinutes * 2).build());
         // now when last event time is less than max history window time, we should assert
         // that past time configured by property ISSUE_HISTORY_WINDOW is used
-        assertThatPastHistoryWindowDateIsUsedInLatestEventsCall(expectedMinIssueDate);
+        assertThatPastHistoryWindowDateIsUsedInLatestEventsCall();
     }
 
-    private void assertThatPastHistoryWindowDateIsUsedInLatestEventsCall(final Date expectedMinIssueDate) throws Exception {
+    private void assertThatPastHistoryWindowDateIsUsedInLatestEventsCall() throws Exception {
         IssueTracker mockIssueTracker = new SimpleMockIssueTracker("/feeds/issues-feed-rss.xml",
                 "/feeds/empty-issue-changes.xml");
         final AtomicBoolean assertionOccurred = new AtomicBoolean(false);
@@ -340,7 +339,8 @@ public class EventListenerImplTest {
                 List<ProcessEvent> processEvents = super.getLatestEvents(minDate);
                 assertThat(minDate, notNullValue());
                 //asserting that past time configured by property ISSUE_HISTORY_WINDOW is used
-                assertThat(Math.abs(expectedMinIssueDate.getTime() - minDate.getTime()), lessThan(100L));
+                assertThat(Math.abs(new DateBuilder().addMinutes(-EventProcessorConfiguration.instance()
+                        .getIssueHistoryWindowInMinutes()).build().getTime() - minDate.getTime()), lessThan(100L));
                 assertionOccurred.set(true);
                 return processEvents;
             }
@@ -362,7 +362,7 @@ public class EventListenerImplTest {
         final int offsetInMinutes = (int)((new Date().getTime() - oldestIssueDate.getTime()) / 1000 / 60) + 5;
         EventProcessorConfiguration.instance().setIssueHistoryWindowInMinutes(offsetInMinutes);
 
-        //now, when the last processed event date is current time, it should be used in calls to getLatestEvents
+        //no changes for any events, that's why past time configured by property ISSUE_HISTORY_WINDOW is used
         int events = new EventListenerImpl(new EditSessionsExtractor(new SimpleMockIssueTracker("/feeds/issues-feed-rss.xml",
                 "/feeds/empty-issue-changes.xml"),
                 UrlStreamProvider.instance()) {
