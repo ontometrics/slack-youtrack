@@ -27,14 +27,6 @@ import static org.junit.Assert.assertThat;
 
  */
 public class EventListenerImplTest {
-    private static final Date T_MINUS_1 = new Date(1404927516756L);
-    private static final Date T_MINUS_2 = new Date(1404927519000L);
-    private static final Date T1 = new Date(1404927529000L);
-    private static final Date T0 = new Date((T_MINUS_2.getTime() + T1.getTime()) / 2);
-    private static final Date T2 = new Date(1404927539000L);
-    private static final Date T3 = new Date(1404927549000L);
-    private static final Date T5 = new Date(1404927559000L);
-
 
     @Test
     public void testThatSourceEventMapperCorrectlyInitializedOnFirstStart() throws ConfigurationException {
@@ -80,6 +72,13 @@ public class EventListenerImplTest {
      * Expected edits for issue 2: (t2) and (t5)
      */
     public void testThatAllNewEditsAreFetched() throws Exception {
+        final Date T_MINUS_2 = new Date(1404927519000L);
+        final Date T1 = new Date(1404927529000L);
+        final Date T0 = new Date((T_MINUS_2.getTime() + T1.getTime()) / 2);
+        final Date T2 = new Date(1404927539000L);
+        final Date T3 = new Date(1404927549000L);
+        final Date T5 = new Date(1404927559000L);
+
         final AtomicInteger issueOrder = new AtomicInteger(0);
         EventProcessorConfiguration.instance().clearLastProcessEvent();
         MockIssueTracker mockYouTrackInstance = new MockIssueTracker("/feeds/issues-feed-rss.xml", null) {
@@ -116,7 +115,7 @@ public class EventListenerImplTest {
 
             @Override
             /**
-             * Emulates getting of only two latest events with publish date more than {@link ontometrics.jobs.EventListenerImplTest#T0}
+             * Emulates getting of only two latest events with publish date more than {@link T0}
              */
             public List<ProcessEvent> getLatestEvents() throws Exception {
                 List<ProcessEvent> events = super.getLatestEvents().subList(0, 2);

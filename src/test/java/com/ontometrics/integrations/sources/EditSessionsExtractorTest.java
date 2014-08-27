@@ -145,7 +145,8 @@ public class EditSessionsExtractorTest {
         EditSessionsExtractor editSessionsExtractor = new EditSessionsExtractor(mockYouTrackInstance,
                 UrlStreamProvider.instance());
         //14 Jul 2014 16:09:07
-        editSessionsExtractor.setLastEvent(new DateBuilder().day(14).month(Calendar.JULY).hour(04).minutes(9).seconds(7).build());
+        editSessionsExtractor.setLastEvent(new DateBuilder().day(14).month(Calendar.JULY).hour(16)
+                .minutes(9).seconds(7).build());
         List<ProcessEvent> latestEvents = editSessionsExtractor.getLatestEvents();
         assertThat(latestEvents.size(), Matchers.is(16));
     }
