@@ -25,6 +25,7 @@ public class EventProcessorConfiguration {
 
     private static final String LAST_EVENT_DATE = "last.event.date";
     public static final String EVENT_CHANGE_DATES = "eventChangeDates";
+    public static final String PROP_ISSUE_HISTORY_WINDOW = "PROP.ISSUE_HISTORY_WINDOW";
 
     private PropertiesConfiguration lastEventConfiguration;
     private DB db;
@@ -103,10 +104,25 @@ public class EventProcessorConfiguration {
     }
 
     /**
+     * "maximum-allowed window" defined/configured by the configuration property PROP.ISSUE_HISTORY_WINDOW
+     * @param date date
+     * @return date if it is after the "maximum-allowed window" or date which define the lower bound of "maximum-allowed window"
+     */
+    public Date resolveMinimumAllowedDate(Date date) {
+        Date oldestDateInThePast = EventProcessorConfiguration.instance().oldestDateInThePast();
+        if (date == null) {
+            return oldestDateInThePast;
+        } else if (date.before(oldestDateInThePast)) {
+            return oldestDateInThePast;
+        }
+        return date;
+    }
+
+    /**
      * @return Date in the past - N minutes before now. Where N - defined by the property "PROP.ISSUE_HISTORY_WINDOW"
      */
     public Date oldestDateInThePast() {
-        int maxMinutesInThePast = ConfigurationFactory.get().getInt("PROP.ISSUE_HISTORY_WINDOW", 10);
+        int maxMinutesInThePast = getIssueHistoryWindowInMinutes();
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.MINUTE, -maxMinutesInThePast);
         return calendar.getTime();
@@ -126,7 +142,7 @@ public class EventProcessorConfiguration {
 
     public int getIssueHistoryWindowInMinutes() {
         //3 days by default
-        return ConfigurationFactory.get().getInt("PROP.ISSUE_HISTORY_WINDOW", 60 * 24 * 3);
+        return ConfigurationFactory.get().getInt(PROP_ISSUE_HISTORY_WINDOW, 60 * 24 * 3);
     }
 
     /**

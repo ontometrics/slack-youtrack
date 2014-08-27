@@ -71,11 +71,12 @@ public class EventListenerImpl implements EventListener {
      *
      * For each issue (@link ProcessEvent}) in this list the list of issue change events {@link ProcessEventChange}
      * is loaded.
-     * Each of loaded event will have an updated date after {@link #resolveMinimumAllowedDate(java.util.Date)} where date passed in is
-     * {@link EventProcessorConfiguration#loadLastProcessedDate()}
+     * Each of loaded event will have an updated date after
+     * {@link EventProcessorConfiguration#resolveMinimumAllowedDate(java.util.Date)}
+     *  where date passed in is {@link EventProcessorConfiguration#loadLastProcessedDate()}
      *
      * This list will only include the list of updates which were created after
-     * {@link #resolveMinimumAllowedDate(java.util.Date)} with date {@link #getLastEventChangeDate(com.ontometrics.integrations.events.ProcessEvent)}
+     * {@link EventProcessorConfiguration#resolveMinimumAllowedDate(java.util.Date)} with date {@link #getLastEventChangeDate(com.ontometrics.integrations.events.ProcessEvent)}
      *
      * The list of updates for each issue will be grouped by {@link com.ontometrics.integrations.events.ProcessEventChange#getUpdater()}
      * and for each group (group of updates by user) app will generate and post message to external system (slack).
@@ -86,7 +87,9 @@ public class EventListenerImpl implements EventListener {
     @Override
     public int checkForNewEvents() throws Exception {
         //get events
-        Date minDateOfEvents = resolveMinimumAllowedDate(EventProcessorConfiguration.instance().loadLastProcessedDate());
+        EventProcessorConfiguration eventProcessorConfiguration = EventProcessorConfiguration.instance();
+        Date minDateOfEvents = eventProcessorConfiguration
+                .resolveMinimumAllowedDate(eventProcessorConfiguration.loadLastProcessedDate());
 
         List<ProcessEvent> events = editSessionsExtractor.getLatestEvents(minDateOfEvents);
 
@@ -101,7 +104,7 @@ public class EventListenerImpl implements EventListener {
             processedSessionsCount.incrementAndGet();
             //load list of updates (using REST service of YouTrack)
             List<IssueEditSession> editSessions;
-            Date minChangeDate = resolveMinimumAllowedDate(getLastEventChangeDate(event));
+            Date minChangeDate = eventProcessorConfiguration.resolveMinimumAllowedDate(getLastEventChangeDate(event));
             try {
                 editSessions = editSessionsExtractor.getEdits(event, minChangeDate);
                 postEditSessionsToChatServer(event, editSessions);
@@ -110,7 +113,7 @@ public class EventListenerImpl implements EventListener {
             } finally {
                 //whatever happens, update save the last event as processed
                 try {
-                    EventProcessorConfiguration.instance().saveLastProcessedEventDate(event.getPublishDate());
+                    eventProcessorConfiguration.saveLastProcessedEventDate(event.getPublishDate());
                 } catch (ConfigurationException e) {
                     log.error("Failed to update last processed event", e);
                 }
@@ -187,19 +190,4 @@ public class EventListenerImpl implements EventListener {
         return EventProcessorConfiguration.instance().getEventChangeDate(event);
     }
 
-
-    /**
-     * "maximum-allowed window" defined/configured by the configuration property PROP.ISSUE_HISTORY_WINDOW
-     * @param date date
-     * @return date if it is after the "maximum-allowed window" or date which define the lower bound of "maximum-allowed window"
-     */
-    public Date resolveMinimumAllowedDate(Date date) {
-        Date oldestDateInThePast = EventProcessorConfiguration.instance().oldestDateInThePast();
-        if (date == null) {
-            return oldestDateInThePast;
-        } else if (date.before(oldestDateInThePast)) {
-            return oldestDateInThePast;
-        }
-        return date;
-    }
 }

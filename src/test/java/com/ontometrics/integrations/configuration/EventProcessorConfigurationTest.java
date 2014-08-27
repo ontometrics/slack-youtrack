@@ -3,6 +3,9 @@ package com.ontometrics.integrations.configuration;
 import com.ontometrics.integrations.events.Issue;
 import com.ontometrics.integrations.events.ProcessEvent;
 import org.apache.commons.configuration.ConfigurationException;
+import org.apache.commons.lang.time.DateUtils;
+import org.hamcrest.number.OrderingComparison;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -100,5 +103,25 @@ public class EventProcessorConfigurationTest {
         assertThat(configuration.loadLastProcessedDate(), is(date_3));
         configuration.reload();
         assertThat(configuration.loadLastProcessedDate(), is(date_3));
+    }
+
+
+    @Test
+    public void testThatMinimumAllowedDateCorrectlyResolved(){
+        EventProcessorConfiguration configuration = EventProcessorConfiguration.instance();
+        ConfigurationFactory.get().setProperty(EventProcessorConfiguration.PROP_ISSUE_HISTORY_WINDOW, "10");
+        Date elevenMinutesBefore = DateUtils.addMinutes(new Date(), -11);
+        Date eightMinutesBefore = DateUtils.addMinutes(new Date(), -8);
+        assertThat(configuration.resolveMinimumAllowedDate(eightMinutesBefore), is(eightMinutesBefore));
+        Date tenMinutesBefore = DateUtils.addMinutes(new Date(), -10);
+        assertDatesAreAlmostEqual(configuration.resolveMinimumAllowedDate(elevenMinutesBefore), tenMinutesBefore, 10);
+
+        assertDatesAreAlmostEqual(configuration.resolveMinimumAllowedDate(null), tenMinutesBefore, 10);
+    }
+
+    private void assertDatesAreAlmostEqual(Date date1, Date date2, int maxDiff) {
+        if (Math.abs(date1.getTime() - date2.getTime()) > maxDiff) {
+            assertThat("Dates are not equals", date1, is(date2));
+        }
     }
 }
