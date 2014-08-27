@@ -1,6 +1,7 @@
 package com.ontometrics.integrations.configuration;
 
 import com.ontometrics.integrations.events.ProcessEvent;
+import com.ontometrics.util.DateBuilder;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.mapdb.BTreeMap;
@@ -10,7 +11,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.util.Calendar;
 import java.util.Date;
 
 /**
@@ -125,10 +125,7 @@ public class EventProcessorConfiguration {
      * @return Date in the past - N minutes before now. Where N - defined by the property "PROP.ISSUE_HISTORY_WINDOW"
      */
     public Date oldestDateInThePast() {
-        int maxMinutesInThePast = getIssueHistoryWindowInMinutes();
-        Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.MINUTE, -maxMinutesInThePast);
-        return calendar.getTime();
+        return new DateBuilder().addMinutes(-getIssueHistoryWindowInMinutes()).build();
     }
 
     public void clearLastProcessEvent() throws ConfigurationException {

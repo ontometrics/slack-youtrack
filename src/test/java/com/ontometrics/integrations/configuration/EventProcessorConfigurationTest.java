@@ -108,9 +108,11 @@ public class EventProcessorConfigurationTest {
     public void testThatMinimumAllowedDateCorrectlyResolved(){
         EventProcessorConfiguration configuration = EventProcessorConfiguration.instance();
         ConfigurationFactory.get().setProperty(EventProcessorConfiguration.PROP_ISSUE_HISTORY_WINDOW, "10");
+
         Date elevenMinutesBefore = DateUtils.addMinutes(new Date(), -11);
         Date eightMinutesBefore = DateUtils.addMinutes(new Date(), -8);
         assertThat(configuration.resolveMinimumAllowedDate(eightMinutesBefore), is(eightMinutesBefore));
+
         Date tenMinutesBefore = DateUtils.addMinutes(new Date(), -10);
         assertDatesAreAlmostEqual(configuration.resolveMinimumAllowedDate(elevenMinutesBefore), tenMinutesBefore, 10);
 
