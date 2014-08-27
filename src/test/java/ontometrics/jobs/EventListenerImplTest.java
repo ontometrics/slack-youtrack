@@ -238,20 +238,20 @@ public class EventListenerImplTest {
      * it is not posted as created issue to Slack again
      */
     public void testThatAfterIssueCreationIsPostedItIsNotPostedAgain() throws Exception {
-//        IssueTracker mockIssueTracker = new SimpleMockIssueTracker("/feeds/issues-feed-rss.xml",
-//                "/feeds/empty-issue-changes.xml");
+
         clearData();
-        EventProcessorConfiguration.instance().setDeploymentTime(new DateBuilder().year(2013).build());
 
         final Issue issue1 = new Issue.Builder().projectPrefix("ISSUE").id(1).build();
-
+        final ProcessEvent processEvent = new ProcessEvent.Builder().issue(issue1).published(new Date(1404927516756L)).build();
+        EventProcessorConfiguration.instance().saveEventChangeDate(processEvent, new Date(0));
         //create mocked editSessionsExtractor#getLatestEvents() depending on execution count
         EditSessionsExtractor editSessionsExtractor = new EditSessionsExtractor(null,
                 UrlStreamProvider.instance()) {
             @Override
             public List<ProcessEvent> getLatestEvents() throws Exception {
+
                 return ImmutableList.<ProcessEvent> builder()
-                                .add(new ProcessEvent.Builder().issue(issue1).published(new Date(1404927516756L)).build())
+                                .add(processEvent)
                         .build();
 
             }
