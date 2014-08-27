@@ -315,9 +315,8 @@ public class EventListenerImplTest {
     }
 
     private void clearData() throws ConfigurationException {
-        EventProcessorConfiguration.instance().deleteDb();
+        EventProcessorConfiguration.instance().clear();
         EventProcessorConfiguration.instance().reload();
-        EventProcessorConfiguration.instance().clearLastProcessEvent();
     }
 
 
