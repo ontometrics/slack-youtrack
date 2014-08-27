@@ -138,11 +138,15 @@ public class EventListenerImpl implements EventListener {
         if (editSessions.isEmpty()) {
             log.info("List of edit sessions for event is empty");
             //report issue creation only if we do not reported about this event before
-            if (EventProcessorConfiguration.instance().getEventChangeDate(event) == null) {
+            Date eventChangeDate = EventProcessorConfiguration.instance().getEventChangeDate(event);
+            if (eventChangeDate == null) {
+                log.info("Going to report about issue creation. Issue: {}", event);
                 chatServer.postIssueCreation(event.getIssue());
                 //record the fact that we already posted info about this issue, so next time we will not report it again
                 EventProcessorConfiguration.instance()
                         .saveEventChangeDate(event, event.getPublishDate());
+            } else {
+                log.info("Do not report about issue creation since issue info has been posted already on {}", eventChangeDate);
             }
         } else {
             log.info("There are {} edit sessions for issue {}", editSessions.size(), event.getIssue().toString());

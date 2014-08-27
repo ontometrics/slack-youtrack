@@ -24,8 +24,9 @@ public class EventProcessorConfigurationTest {
     private EventProcessorConfiguration configuration;
 
     @Before
-    public void setUp() {
+    public void setUp() throws ConfigurationException {
         this.configuration = EventProcessorConfiguration.instance();
+        configuration.clear();
     }
 
     /**
@@ -71,5 +72,33 @@ public class EventProcessorConfigurationTest {
                 .build();
         assertThat(configuration.getEventChangeDate(event2), nullValue());
 
+    }
+
+
+    /**
+     * Verifies that last processed date is stored if it is after current one or current one is not defined
+     */
+    @Test
+    public void testThatOnlyDatesAfterTheCurrentLastProcessedDateAreStored() throws ConfigurationException, MalformedURLException {
+
+        Date date_1 =  new Date(10000);
+        Date date_2 =  new Date(20000);
+        Date date_3 =  new Date(20000);
+
+        assertThat(configuration.loadLastProcessedDate(), nullValue());
+        configuration.saveLastProcessedEventDate(date_1);
+        assertThat(configuration.loadLastProcessedDate(), is(date_1));
+        configuration.reload();
+        assertThat(configuration.loadLastProcessedDate(), is(date_1));
+
+        configuration.saveLastProcessedEventDate(date_3);
+        assertThat(configuration.loadLastProcessedDate(), is(date_3));
+        configuration.reload();
+        assertThat(configuration.loadLastProcessedDate(), is(date_3));
+
+        configuration.saveLastProcessedEventDate(date_2);
+        assertThat(configuration.loadLastProcessedDate(), is(date_3));
+        configuration.reload();
+        assertThat(configuration.loadLastProcessedDate(), is(date_3));
     }
 }
