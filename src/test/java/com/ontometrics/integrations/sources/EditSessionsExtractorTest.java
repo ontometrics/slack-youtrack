@@ -208,7 +208,14 @@ public class EditSessionsExtractorTest {
     }
 
     @Test
-    public void testThatIssueTitlePrefixAndDescriptionAreTrimmed() throws Exception {
+    /**
+     * Tests that parsed {@link com.ontometrics.integrations.events.Issue} object has all fields trimmed:
+     * title, description, prefix and link
+     *
+     * Also tests that parsed {@link com.ontometrics.integrations.events.IssueEdit} object has all fields trimmed:
+     * currentValue, priorValue and field
+     */
+    public void testThatIssueTitlePrefixDescriptionAreTrimmed() throws Exception {
         EditSessionsExtractor editSessionsExtractor = new EditSessionsExtractor(
                 mockYouTrackInstance, URL_STREAM_PROVIDER);
         List<ProcessEvent> events = editSessionsExtractor.getLatestEvents();
