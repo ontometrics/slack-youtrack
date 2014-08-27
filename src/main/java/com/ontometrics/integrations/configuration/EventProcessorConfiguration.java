@@ -1,6 +1,5 @@
 package com.ontometrics.integrations.configuration;
 
-import com.ontometrics.integrations.events.Issue;
 import com.ontometrics.integrations.events.ProcessEvent;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
@@ -11,8 +10,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.Date;
 
 /**
@@ -25,9 +22,7 @@ public class EventProcessorConfiguration {
 
     private static final EventProcessorConfiguration instance = new EventProcessorConfiguration();
 
-    private static final String LAST_EVENT_LINK = "last.event.link";
-    private static final String LAST_EVENT_PUBLISHED = "last.event.published";
-    private static final String LAST_EVENT_TITLE = "last.event.title";
+    private static final String LAST_EVENT_DATE = "last.event.date";
     public static final String EVENT_CHANGE_DATES = "eventChangeDates";
     private static final String DEPLOYMENT_TIME = "deploymentDate";
 
@@ -75,21 +70,10 @@ public class EventProcessorConfiguration {
     /**
      * @return last event processed (issue) or null if not available
      */
-    public ProcessEvent loadLastProcessedEvent() {
-        String lastEventLink = lastEventConfiguration.getString(LAST_EVENT_LINK);
-        String lastEventTitle = lastEventConfiguration.getString(LAST_EVENT_TITLE, null);
-        long published= lastEventConfiguration.getLong(LAST_EVENT_PUBLISHED, 0);
-        if (lastEventLink != null && published > 0) {
-            try {
-                String i = lastEventLink.substring(lastEventLink.lastIndexOf("/") + 1);
-                String[] iParts = i.split("-");
-                String prefix = iParts[0];
-                int id = Integer.parseInt(iParts[1]);
-                Issue issue = new Issue.Builder().projectPrefix(prefix).id(id).title(lastEventTitle).link(new URL(lastEventLink)).build();
-                return new ProcessEvent.Builder().issue(issue).published(new Date(published)).build();
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-            }
+    public Date loadLastProcessedDate() {
+        Long lastEventDate = lastEventConfiguration.getLong(LAST_EVENT_DATE, null);
+        if (lastEventDate != null && lastEventDate > 0) {
+            return new Date(lastEventDate);
         }
         return null;
     }
@@ -114,17 +98,13 @@ public class EventProcessorConfiguration {
         return date == null ? null : new Date(date);
     }
 
-    public void saveLastProcessEvent(ProcessEvent processEvent) throws ConfigurationException {
-        lastEventConfiguration.setProperty(LAST_EVENT_LINK, processEvent.getIssue().getLink().toExternalForm());
-        lastEventConfiguration.setProperty(LAST_EVENT_PUBLISHED, processEvent.getPublishDate().getTime());
-        lastEventConfiguration.setProperty(LAST_EVENT_TITLE, processEvent.getIssue().getTitle());
+    public void saveLastProcessedEventDate(Date lastProcessedEventDate) throws ConfigurationException {
+        lastEventConfiguration.setProperty(LAST_EVENT_DATE, lastProcessedEventDate.getTime());
         lastEventConfiguration.save();
     }
 
     public void clearLastProcessEvent() throws ConfigurationException {
-        lastEventConfiguration.clearProperty(LAST_EVENT_LINK);
-        lastEventConfiguration.clearProperty(LAST_EVENT_PUBLISHED);
-        lastEventConfiguration.clearProperty(LAST_EVENT_TITLE);
+        lastEventConfiguration.clearProperty(LAST_EVENT_DATE);
         lastEventConfiguration.save();
     }
 

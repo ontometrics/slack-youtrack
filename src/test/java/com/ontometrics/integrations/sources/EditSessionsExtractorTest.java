@@ -1,14 +1,13 @@
 package com.ontometrics.integrations.sources;
 
 import com.ontometrics.integrations.configuration.EventProcessorConfiguration;
-import com.ontometrics.integrations.configuration.IssueTracker;
+import com.ontometrics.integrations.configuration.MockIssueTracker;
 import com.ontometrics.integrations.configuration.YouTrackInstance;
 import com.ontometrics.integrations.events.Issue;
 import com.ontometrics.integrations.events.IssueEdit;
 import com.ontometrics.integrations.events.IssueEditSession;
 import com.ontometrics.integrations.events.ProcessEvent;
 import com.ontometrics.util.DateBuilder;
-import ontometrics.test.util.TestUtil;
 import ontometrics.test.util.UrlStreamProvider;
 import org.hamcrest.Matchers;
 import org.hamcrest.number.OrderingComparison;
@@ -218,31 +217,4 @@ public class EditSessionsExtractorTest {
             throw new RuntimeException(e);
         }
     }
-
-
-    private static class MockIssueTracker implements IssueTracker {
-        private String feedUrl;
-        private String changesUrl;
-
-        private MockIssueTracker(String feedUrl, String changesUrl) {
-            this.feedUrl = feedUrl;
-            this.changesUrl = changesUrl;
-        }
-
-        @Override
-        public URL getBaseUrl() {
-            return null;
-        }
-
-        @Override
-        public URL getFeedUrl() {
-            return TestUtil.getFileAsURL(feedUrl);
-        }
-
-        @Override
-        public URL getChangesUrl(Issue issue) {
-            return TestUtil.getFileAsURL(changesUrl);
-        }
-    }
-
 }

@@ -66,7 +66,7 @@ public class EventListenerImpl implements EventListener {
         }
         this.chatServer = chatServer;
         this.editSessionsExtractor = editSessionsExtractor;
-        editSessionsExtractor.setLastEvent(EventProcessorConfiguration.instance().loadLastProcessedEvent().getPublishDate());
+        editSessionsExtractor.setLastEvent(EventProcessorConfiguration.instance().loadLastProcessedDate());
 
     }
 
@@ -116,7 +116,7 @@ public class EventListenerImpl implements EventListener {
                 //whatever happens, update the last event as processed
                 editSessionsExtractor.setLastEvent(event.getPublishDate());
                 try {
-                    EventProcessorConfiguration.instance().saveLastProcessEvent(event);
+                    EventProcessorConfiguration.instance().saveLastProcessedEventDate(event.getPublishDate());
                 } catch (ConfigurationException e) {
                     log.error("Failed to update last processed event", e);
                 }
