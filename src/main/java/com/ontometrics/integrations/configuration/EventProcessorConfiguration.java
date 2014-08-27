@@ -24,7 +24,6 @@ public class EventProcessorConfiguration {
 
     private static final String LAST_EVENT_DATE = "last.event.date";
     public static final String EVENT_CHANGE_DATES = "eventChangeDates";
-    private static final String DEPLOYMENT_TIME = "deploymentDate";
 
     private PropertiesConfiguration lastEventConfiguration;
     private DB db;
@@ -40,10 +39,6 @@ public class EventProcessorConfiguration {
             File file = new File(dataDir, "lastEvent.properties");
             logger.info("Going to load properties from file {}", file.getAbsolutePath());
             lastEventConfiguration = new PropertiesConfiguration(file);
-            if (!lastEventConfiguration.containsKey(DEPLOYMENT_TIME)) {
-                lastEventConfiguration.setProperty(DEPLOYMENT_TIME, System.currentTimeMillis());
-                lastEventConfiguration.save();
-            }
             db = DBMaker.newFileDB(new File(dataDir, "app_db")).closeOnJvmShutdown().make();
             eventChangeDatesCollection = getEventChangeDatesCollection();
             logDatabase();
@@ -116,21 +111,6 @@ public class EventProcessorConfiguration {
         lastEventConfiguration.save();
         eventChangeDatesCollection.clear();
         db.commit();
-    }
-
-    /**
-     * Date when application when first deployed. Only events with date more than deployment date will be reported to
-     * Slack
-     * @return deployment date
-     */
-    public Date getDeploymentTime() {
-        Long deploymentDate = lastEventConfiguration.getLong(DEPLOYMENT_TIME, null);
-        return deploymentDate == null ? new Date() : new Date(deploymentDate);
-    }
-
-    public void setDeploymentTime(Date deploymentDate) throws ConfigurationException {
-        lastEventConfiguration.setProperty(DEPLOYMENT_TIME, deploymentDate.getTime());
-        lastEventConfiguration.save();
     }
 
     /**

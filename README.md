@@ -25,6 +25,7 @@ Installation and configuration
     * APP_DATA_DIR - directory where app will store it's data-files (configuration)
     * YOUTRACK_HOST - YouTrack server host
     * YOUTRACK_PORT - YouTrack server port
+    * ISSUE_HISTORY_WINDOW - Time In minutes - how deep should we look for issues in the past. If set to 10, it means that issues and changes that happened not longer than 10 minutes will be posted to chat server
 2. Run "mvn -DYOUTRACK_USERNAME=user -DYOUTRACK_PASSWORD=pwd ... package" to build war file
 3. Drop war file into servlet container "webapps" directory
 

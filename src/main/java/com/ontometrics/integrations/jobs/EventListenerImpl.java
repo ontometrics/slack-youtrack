@@ -74,8 +74,7 @@ public class EventListenerImpl implements EventListener {
      *
      * For each issue (@link ProcessEvent}) in this list the list of issue change events {@link ProcessEventChange}
      * is loaded. This list will only include the list of updates which were created after {@link #getLastEventChangeDate(com.ontometrics.integrations.events.ProcessEvent)} or after
-     * {@link com.ontometrics.integrations.configuration.EventProcessorConfiguration#getDeploymentTime()} in case if there is
-     * no last change date for this event.
+     * TODO: complete doc
      *
      * The list of updates for each issue will be grouped by {@link com.ontometrics.integrations.events.ProcessEventChange#getUpdater()}
      * and for each group (group of updates by user) app will generate and post message to external system (slack).
@@ -100,11 +99,6 @@ public class EventListenerImpl implements EventListener {
             //load list of updates (using REST service of YouTrack)
             List<IssueEditSession> editSessions;
             Date minChangeDate = getLastEventChangeDate(event);
-            if (minChangeDate == null) {
-                // if there is no last event change date, then minimum issue change date to be retrieved should be
-                // after deployment date
-                minChangeDate = EventProcessorConfiguration.instance().getDeploymentTime();
-            }
             try {
                 editSessions = editSessionsExtractor.getEdits(event, minChangeDate);
                 postEditSessionsToChatServer(event, editSessions);
@@ -165,7 +159,15 @@ public class EventListenerImpl implements EventListener {
     }
 
     private IssueEditSession getMostRecentEvent(List<IssueEditSession> editSessions) {
-        return editSessions.get(editSessions.size() - 1);
+        Date mostRecentEventDate = null;
+        IssueEditSession mostRecentIssueEditSession = null;
+        for (IssueEditSession editSession : editSessions) {
+            if (mostRecentEventDate == null || editSession.getUpdated().after(mostRecentEventDate)) {
+                mostRecentEventDate = editSession.getUpdated();
+                mostRecentIssueEditSession = editSession;
+            }
+        }
+        return mostRecentIssueEditSession;
     }
 
 
