@@ -43,17 +43,31 @@ public class EventListenerImpl implements EventListener {
      * @param chatServer chat server
      */
     public EventListenerImpl(StreamProvider feedStreamProvider, ChatServer chatServer) {
-        if(feedStreamProvider == null || chatServer == null) {
-            throw new IllegalArgumentException("You must provide sourceURL and chatServer.");
+        this(createEditSessionExtractor(feedStreamProvider), chatServer);
+    }
+
+    private static EditSessionsExtractor createEditSessionExtractor(StreamProvider feedStreamProvider) {
+        if(feedStreamProvider == null) {
+            throw new IllegalArgumentException("You must provide feedStreamProvider.");
         }
-
-
         Configuration configuration = ConfigurationFactory.get();
-        editSessionsExtractor = new EditSessionsExtractor(new YouTrackInstance.Builder().baseUrl(
+        return new EditSessionsExtractor(new YouTrackInstance.Builder().baseUrl(
                 configuration.getString("PROP.YOUTRACK_HOST", YT_FEED_URL))
                 .port(configuration.getInt("PROP.YOUTRACK_PORT", YT_PORT)).build(), feedStreamProvider);
-        editSessionsExtractor.setLastEvent(EventProcessorConfiguration.instance().loadLastProcessedEvent().getPublishDate());
+    }
+
+    /**
+     * @param editSessionsExtractor editSessionsExtractor
+     * @param chatServer chat server
+     */
+    public EventListenerImpl(EditSessionsExtractor editSessionsExtractor, ChatServer chatServer) {
+        if(editSessionsExtractor == null || chatServer == null) {
+            throw new IllegalArgumentException("You must provide sourceURL and chatServer.");
+        }
         this.chatServer = chatServer;
+        this.editSessionsExtractor = editSessionsExtractor;
+        editSessionsExtractor.setLastEvent(EventProcessorConfiguration.instance().loadLastProcessedEvent().getPublishDate());
+
     }
 
     /**
