@@ -27,6 +27,13 @@ import static org.junit.Assert.assertThat;
 
  */
 public class EventListenerImplTest {
+    private static final Date T_MINUS_1 = new Date(1404927516756L);
+    private static final Date T_MINUS_2 = new Date(1404927519000L);
+    private static final Date T1 = new Date(1404927529000L);
+    private static final Date T0 = new Date((T_MINUS_2.getTime() + T1.getTime()) / 2);
+    private static final Date T2 = new Date(1404927539000L);
+    private static final Date T3 = new Date(1404927549000L);
+    private static final Date T5 = new Date(1404927559000L);
 
 
     @Test
@@ -62,19 +69,19 @@ public class EventListenerImplTest {
      * Tests that all new issue edits are fetched by {@link com.ontometrics.integrations.jobs.EventListenerImpl#checkForNewEvents()}
      *
      * Current last issue date is <code>t0</code>.
-     * Issue 1 has changes with time line: (t-1), t1, t3
-     * Issue 2 has changes with time line: (t-2), t2, t5
+     * Issue 1 has changes with time line: (T-1), T1, T3
+     * Issue 2 has changes with time line: (T-2), T2, T5
      * Relation between those time stamps are as follows
-     *                        t0
-     * Issue 1: (t-1)              t1        t3
-     * Issue 2:       (t-2)             t2        t5
+     *                        T0
+     * Issue 1: (T-1)              T1        T3
+     * Issue 2:       (T-2)             T2        T5
      *
      * Expected edits for issue 1: (t1) and (t3)
      * Expected edits for issue 2: (t2) and (t5)
      */
     public void testThatAllNewEditsAreFetched() throws Exception {
-        Date t0 = new Date((1404927519000L + 1404927529000L) / 2);
         final AtomicInteger issueOrder = new AtomicInteger(0);
+        EventProcessorConfiguration.instance().clearLastProcessEvent();
         MockIssueTracker mockYouTrackInstance = new MockIssueTracker("/feeds/issues-feed-rss.xml", null) {
             @Override
             public URL getChangesUrl(Issue issue) {
@@ -92,20 +99,38 @@ public class EventListenerImplTest {
             public List<IssueEditSession> getEdits(ProcessEvent e) throws Exception {
                 List<IssueEditSession> sessions = super.getEdits(e);
                 if (issueOrder.get() == 0) {
-                    //asserting that all edits for issue 1 are fetched
+                    //asserting that all edits for issue 1 are fetched (T1 and T3)
                     assertThat(sessions.size(), is(2));
+                    assertThat(sessions.get(0).getUpdated(), is(T1));
+                    assertThat(sessions.get(1).getUpdated(), is(T3));
                 } else {
-                    //asserting that all edits for issue 2 are fetched
+                    //asserting that all edits for issue 2 are fetched (T2 and T5)
                     assertThat(sessions.size(), is(2));
+                    assertThat(sessions.get(0).getUpdated(), is(T2));
+                    assertThat(sessions.get(1).getUpdated(), is(T5));
                 }
+                //issue is processed, edits for it are loaded, increasing issue #
                 issueOrder.incrementAndGet();
                 return sessions;
             }
+
+            @Override
+            /**
+             * Emulates getting of only two latest events with publish date more than {@link ontometrics.jobs.EventListenerImplTest#T0}
+             */
+            public List<ProcessEvent> getLatestEvents() throws Exception {
+                List<ProcessEvent> events = super.getLatestEvents().subList(0, 2);
+                events.get(0).setPublishDate(T3);
+                events.get(1).setPublishDate(T5);
+                this.setLastEvent(T0);
+                return events;
+            }
         };
-        sessionsExtractor.setLastEvent(t0);
         EventListenerImpl eventListener = new EventListenerImpl(sessionsExtractor, new EmptyChatServer());
-        eventListener.checkForNewEvents();
+        int events = eventListener.checkForNewEvents();
+        //asserting that there are 2 issues processed
         assertThat(issueOrder.get(), is(2));
+        assertThat(events, is(2));
     }
 
 

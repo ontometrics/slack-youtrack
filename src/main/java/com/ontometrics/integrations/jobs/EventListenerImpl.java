@@ -110,7 +110,7 @@ public class EventListenerImpl implements EventListener {
             try {
                 editSessions = editSessionsExtractor.getEdits(event);
                 postEditSessionsToChatServer(event, editSessions);
-            } catch (Exception | Error ex) {
+            } catch (Exception ex) {
                 log.error("Failed to process event " + event, ex);
             } finally {
                 //whatever happens, update the last event as processed

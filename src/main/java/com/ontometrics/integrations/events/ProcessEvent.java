@@ -33,7 +33,7 @@ public class ProcessEvent {
     private static final String KEY_FIELD_SEPARATOR = "::";
 
     private final Issue issue;
-    private final Date publishDate;
+    private Date publishDate;
 
     public ProcessEvent(Builder builder) {
         issue = builder.issue;
@@ -66,6 +66,10 @@ public class ProcessEvent {
 
     public Date getPublishDate() {
         return publishDate;
+    }
+
+    public void setPublishDate(Date publishDate) {
+        this.publishDate = publishDate;
     }
 
     /**
