@@ -97,4 +97,27 @@ public class IssueEditSession {
         }
         return b.toString();
     }
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        IssueEditSession that = (IssueEditSession) o;
+
+        if (!issue.equals(that.issue)) return false;
+        if (!updated.equals(that.updated)) return false;
+        if (updater != null ? !updater.equals(that.updater) : that.updater != null) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = issue.hashCode();
+        result = 31 * result + (updater != null ? updater.hashCode() : 0);
+        result = 31 * result + updated.hashCode();
+        return result;
+    }
 }

@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<changes>
+    <issue id="DMAN-584">
+        <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="SingleField" name="projectShortName">
+            <value>DMAN</value>
+        </field>
+        <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="SingleField" name="numberInProject">
+            <value>584</value>
+        </field>
+        <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="SingleField" name="summary">
+            <value>Display major events (Equinox / Solstice)</value>
+        </field>
+        <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="SingleField" name="created">
+            <value>1404394803932</value>
+        </field>
+        <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="SingleField" name="updated">
+            <value>1409073351938</value>
+        </field>
+        <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="SingleField" name="updaterName">
+            <value>nikolay.chorniy@gmail.com</value>
+        </field>
+        <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="SingleField" name="updaterFullName">
+            <value>Nikolay Chorniy</value>
+        </field>
+        <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="SingleField" name="reporterName">
+            <value>noura</value>
+        </field>
+        <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="SingleField" name="reporterFullName">
+            <value>Noura Hassan</value>
+        </field>
+        <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="SingleField" name="commentsCount">
+            <value>0</value>
+        </field>
+        <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="SingleField" name="votes">
+            <value>0</value>
+        </field>
+        <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="LinkField" name="links">
+            <value type="Subtask" role="subtask of">DMAN-573</value>
+        </field>
+        <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="CustomFieldValue" name="Priority">
+            <value>Normal</value>
+        </field>
+        <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="CustomFieldValue" name="Type">
+            <value>Task</value>
+        </field>
+        <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="CustomFieldValue" name="State">
+            <value>Reopened</value>
+        </field>
+        <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="CustomFieldValue" name="Subsystem">
+            <value>No subsystem</value>
+        </field>
+        <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="CustomFieldValue" name="Fix versions">
+            <value>1.0.23</value>
+        </field>
+        <tag>Star</tag>
+    </issue>
+    <!--<change>-->
+        <!--<field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="SingleField" name="updaterName">-->
+            <!--<value>rob</value>-->
+        <!--</field>-->
+        <!--<field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="SingleField" name="updated">-->
+            <!--<value>1404927516756</value>-->
+        <!--</field>-->
+        <!--<field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="ChangeField" name="Fix versions">-->
+            <!--<newValue>0.1.13</newValue>-->
+        <!--</field>-->
+    <!--</change>-->
+    <change>
+        <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="SingleField" name="updaterName">
+            <value>rob</value>
+        </field>
+        <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="SingleField" name="updated">
+            <value>1405025458837</value>
+        </field>
+        <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="ChangeField" name="Fix versions">
+            <oldValue>0.1.13</oldValue>
+            <newValue>0.1.16</newValue>
+        </field>
+    </change>
+    <!--<change>-->
+        <!--<field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="SingleField" name="updaterName">-->
+            <!--<value>rob</value>-->
+        <!--</field>-->
+        <!--<field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="SingleField" name="updated">-->
+            <!--<value>1406227765001</value>-->
+        <!--</field>-->
+        <!--<field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="ChangeField" name="Fix versions">-->
+            <!--<oldValue>0.1.16</oldValue>-->
+            <!--<newValue>0.1.19</newValue>-->
+        <!--</field>-->
+    <!--</change>-->
+</changes>
