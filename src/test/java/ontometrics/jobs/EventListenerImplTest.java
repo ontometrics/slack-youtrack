@@ -223,7 +223,7 @@ public class EventListenerImplTest {
         EditSessionsExtractor editSessionsExtractor = new EditSessionsExtractor(null,
                 UrlStreamProvider.instance()) {
             @Override
-            public List<ProcessEvent> getLatestEvents() throws Exception {
+            public List<ProcessEvent> getLatestEvents(Date date) throws Exception {
 
                 return ImmutableList.<ProcessEvent> builder()
                                 .add(processEvent)
