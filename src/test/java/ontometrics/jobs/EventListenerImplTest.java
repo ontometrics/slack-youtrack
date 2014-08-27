@@ -37,7 +37,7 @@ public class EventListenerImplTest {
         configuration.clearLastProcessEvent();
         EventListenerImpl eventListener = createEventListener();
         assertThat(eventListener.getEditSessionsExtractor(), notNullValue());
-        assertThat(eventListener.getEditSessionsExtractor().getLastEvent(), nullValue());
+        assertThat(eventListener.getEditSessionsExtractor().getLastEventDate(), nullValue());
     }
 
     @Test
@@ -53,9 +53,9 @@ public class EventListenerImplTest {
 
         EventListenerImpl eventListener = createEventListener();
         assertThat(eventListener.getEditSessionsExtractor(), notNullValue());
-        assertThat(eventListener.getEditSessionsExtractor().getLastEvent(), notNullValue());
-//        assertThat(eventListener.getEditSessionsExtractor().getLastEvent().getIssue().getLink(), is(processEvent.getIssue().getLink()));
-//        assertThat(eventListener.getEditSessionsExtractor().getLastEvent().getPublishDate(), is(processEvent.getPublishDate()));
+        assertThat(eventListener.getEditSessionsExtractor().getLastEventDate(), notNullValue());
+//        assertThat(eventListener.getEditSessionsExtractor().getLastEventDate().getIssue().getLink(), is(processEvent.getIssue().getLink()));
+//        assertThat(eventListener.getEditSessionsExtractor().getLastEventDate().getPublishDate(), is(processEvent.getPublishDate()));
 
     }
 
@@ -84,7 +84,9 @@ public class EventListenerImplTest {
         final Date T5 = new Date(1404927559000L);
 
         final AtomicInteger issueOrder = new AtomicInteger(0);
-        EventProcessorConfiguration.instance().clearLastProcessEvent();
+        EventProcessorConfiguration.instance().clear();
+        EventProcessorConfiguration.instance().saveLastProcessedEventDate(T0);
+        EventProcessorConfiguration.instance().setDeploymentTime(T0);
         MockIssueTracker mockYouTrackInstance = new MockIssueTracker("/feeds/issues-feed-rss.xml", null) {
             @Override
             public URL getChangesUrl(Issue issue) {
@@ -99,8 +101,8 @@ public class EventListenerImplTest {
         EditSessionsExtractor sessionsExtractor = new EditSessionsExtractor(mockYouTrackInstance,
                 UrlStreamProvider.instance()) {
             @Override
-            public List<IssueEditSession> getEdits(ProcessEvent e) throws Exception {
-                List<IssueEditSession> sessions = super.getEdits(e);
+            public List<IssueEditSession> getEdits(ProcessEvent e, Date upToDate) throws Exception {
+                List<IssueEditSession> sessions = super.getEdits(e, upToDate);
                 if (issueOrder.get() == 0) {
                     //asserting that all edits for issue 1 are fetched (T1 and T3)
                     assertThat(sessions.size(), is(2));
@@ -125,7 +127,7 @@ public class EventListenerImplTest {
                 List<ProcessEvent> events = super.getLatestEvents().subList(0, 2);
                 events.get(0).setPublishDate(T3);
                 events.get(1).setPublishDate(T5);
-                this.setLastEvent(T0);
+                this.setLastEventDate(T0);
                 return events;
             }
         };
@@ -158,6 +160,7 @@ public class EventListenerImplTest {
      * T0 < T1 < T2 < T3
      */
     public void testThatIssueEditSessionIsNotPostedOnSecondCallIfPostedOnfFirst() throws Exception {
+
         final Issue issue1 = new Issue.Builder().projectPrefix("ISSUE").id(1).build();
         final Issue issue2 = new Issue.Builder().projectPrefix("ISSUE").id(2).build();
         MockIssueTracker mockIssueTracker = new MockIssueTracker("/feeds/issues-feed-rss.xml",
@@ -165,8 +168,8 @@ public class EventListenerImplTest {
                         .put(issue2, "/feeds/issue-changes-t2.xml")
                         .build()
                 );
-
-        EventProcessorConfiguration.instance().saveLastProcessedEventDate(new Date(0));   //T0
+        EventProcessorConfiguration.instance().clear();
+        EventProcessorConfiguration.instance().saveLastProcessedEventDate(new Date(0)); //set it to 1970, to not depend on it
         //Issue-1 with T1 and Issue-2 with T2 will be returned on first call  to getLatestEvents()
         final List<ProcessEvent> firstCall = ImmutableList.<ProcessEvent> builder()
                 .add(new ProcessEvent.Builder().issue(issue1).published(new Date(1404927516756L)).build()) //T1

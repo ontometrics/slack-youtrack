@@ -108,6 +108,13 @@ public class EventProcessorConfiguration {
         lastEventConfiguration.save();
     }
 
+    public void clear() throws ConfigurationException {
+        lastEventConfiguration.clear();
+        lastEventConfiguration.save();
+        eventChangeDatesCollection.clear();
+        db.commit();
+    }
+
     /**
      * Date when application when first deployed. Only events with date more than deployment date will be reported to
      * Slack

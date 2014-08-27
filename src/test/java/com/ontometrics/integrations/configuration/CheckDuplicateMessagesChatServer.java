@@ -18,7 +18,7 @@ public class CheckDuplicateMessagesChatServer implements ChatServer {
 
     @Override
     public void postIssueCreation(Issue issue) {
-        if (createdIssues.contains(issue)) {
+        if (!createdIssues.contains(issue)) {
             createdIssues.add(issue);
         } else {
             Assert.fail("Issue "+issue+" has been reported as created before");
@@ -27,7 +27,7 @@ public class CheckDuplicateMessagesChatServer implements ChatServer {
 
     @Override
     public void post(IssueEditSession issueEditSession) {
-        if (postedIssueEditSessions.contains(issueEditSession)) {
+        if (!postedIssueEditSessions.contains(issueEditSession)) {
             postedIssueEditSessions.add(issueEditSession);
         } else {
             Assert.fail("IssueEditSession "+issueEditSession+" has been reported before");

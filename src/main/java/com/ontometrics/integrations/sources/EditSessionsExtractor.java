@@ -47,7 +47,7 @@ public class EditSessionsExtractor {
     private Logger log = getLogger(EditSessionsExtractor.class);
     private final IssueTracker issueTracker;
     private XMLEventReader eventReader;
-    private Date lastEvent;
+    private Date lastEventDate;
     private StreamProvider streamProvider;
 
     /**
@@ -74,12 +74,12 @@ public class EditSessionsExtractor {
         List<IssueEditSession> sessions = new ArrayList<>();
         List<ProcessEvent> events = getLatestEvents();
         for (ProcessEvent event : events){
-            sessions.addAll(getEdits(event));
+            sessions.addAll(getEdits(event, lastEventDate));
         }
         return sessions;
     }
 
-    public List<IssueEditSession> getEdits(final ProcessEvent e) throws Exception {
+    public List<IssueEditSession> getEdits(final ProcessEvent e, final Date upToDate) throws Exception {
         return streamProvider.openResourceStream(issueTracker.getChangesUrl(e.getIssue()), new InputStreamHandler<List<IssueEditSession>>() {
             @Override
             public List<IssueEditSession> handleStream(InputStream is) throws Exception {
@@ -137,30 +137,32 @@ public class EditSessionsExtractor {
                             String tagName = endElement.getName().getLocalPart();
                             if (tagName.equals("field")) {
                                 if (newValue.length() > 0) {
-                                    if (currentFieldName.equals("resolved")){
-                                        newValue = new Date(Long.parseLong(newValue)).toString();
-                                    }
-                                    ProcessEventChange processEventChange = new ProcessEventChange.Builder()
-                                            .updater(updaterName)
-                                            .updated(updated)
-                                            .field(currentFieldName)
-                                            .priorValue(oldValue)
-                                            .currentValue(newValue)
-                                            .build();
-
                                     //include only non-processed changes
-                                    if (lastEvent == null || processEventChange.getUpdated().after(lastEvent)) {
+                                    if (upToDate == null || updated.after(upToDate)) {
+                                        if (currentFieldName.equals("resolved")){
+                                            newValue = new Date(Long.parseLong(newValue)).toString();
+                                        }
+                                        ProcessEventChange processEventChange = new ProcessEventChange.Builder()
+                                                .updater(updaterName)
+                                                .updated(updated)
+                                                .field(currentFieldName)
+                                                .priorValue(oldValue)
+                                                .currentValue(newValue)
+                                                .build();
+
                                         currentChanges.add(processEventChange);
+                                        log.info("process event change: {}", processEventChange);
+                                    } else {
+                                        log.info("process event change skipped due to event-date {} upToDate={}", updated, upToDate);
                                     }
                                     currentFieldName = "";
                                     oldValue = "";
                                     newValue = "";
 
-                                    log.info("process event change: {}", processEventChange);
                                 }
                             } else if (tagName.equals("change")) {
-                                List<IssueEdit> edits = buildIssueEdits(currentChanges);
-                                if (lastEvent == null || updated.after(lastEvent)) {
+                                if (upToDate == null || updated.after(upToDate)) {
+                                    List<IssueEdit> edits = buildIssueEdits(currentChanges);
                                     IssueEditSession session = new IssueEditSession.Builder()
                                             .updater(updaterName)
                                             .updated(updated)
@@ -220,8 +222,8 @@ public class EditSessionsExtractor {
                                     //todo: decide if we have to swallow exception thrown by attempt of single event extraction.
                                     //If we swallow it, we have at least report the problem
                                     ProcessEvent event = extractEventFromStream(dateFormat);
-                                    log.info("last event: {} publish date: {}", lastEvent, event.getPublishDate());
-                                    if (lastEvent==null || event.getPublishDate().after(lastEvent)) {
+                                    log.info("last event: {} publish date: {}", lastEventDate, event.getPublishDate());
+                                    if (lastEventDate ==null || event.getPublishDate().after(lastEventDate)) {
                                         //we are adding only events with date after deployment date
                                         events.addFirst(event);
                                     }
@@ -283,11 +285,11 @@ public class EditSessionsExtractor {
         return date;
     }
 
-    public void setLastEvent(Date lastEvent) {
-        this.lastEvent = lastEvent;
+    public void setLastEventDate(Date lastEventDate) {
+        this.lastEventDate = lastEventDate;
     }
 
-    public Date getLastEvent() {
-        return lastEvent;
+    public Date getLastEventDate() {
+        return lastEventDate;
     }
 }

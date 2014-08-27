@@ -52,7 +52,7 @@ public class EditSessionsExtractorTest {
         EventProcessorConfiguration.instance().setDeploymentTime(deploymentTime.getTime());
         mockYouTrackInstance = new MockIssueTracker("/feeds/issues-feed-rss.xml", "/feeds/issue-changes.xml");
         editsExtractor = new EditSessionsExtractor(mockYouTrackInstance, URL_STREAM_PROVIDER);
-        //editsExtractor.setLastEvent(createProcessEvent());
+        //editsExtractor.setLastEventDate(createProcessEvent());
     }
 
     @Test
@@ -146,7 +146,7 @@ public class EditSessionsExtractorTest {
         EditSessionsExtractor editSessionsExtractor = new EditSessionsExtractor(mockYouTrackInstance,
                 URL_STREAM_PROVIDER);
         //14 Jul 2014 16:09:07
-        editSessionsExtractor.setLastEvent(new DateBuilder().day(14).month(Calendar.JULY).hour(16)
+        editSessionsExtractor.setLastEventDate(new DateBuilder().day(14).month(Calendar.JULY).hour(16)
                 .minutes(9).seconds(7).build());
         List<ProcessEvent> latestEvents = editSessionsExtractor.getLatestEvents();
         assertThat(latestEvents.size(), Matchers.is(16));
@@ -157,8 +157,8 @@ public class EditSessionsExtractorTest {
     public void testThatEventChangesAreParsed() throws Exception {
         mockYouTrackInstance = new MockIssueTracker("/feeds/issues-feed-rss.xml", "/feeds/issue-changes2.xml");
         EditSessionsExtractor sessionsExtractor = new EditSessionsExtractor(mockYouTrackInstance, URL_STREAM_PROVIDER);
-        List<IssueEditSession> edits = sessionsExtractor.getEdits(createProcessEvent());
-        assertThat(edits, Matchers.not(empty()));
+        List<IssueEditSession> edits = sessionsExtractor.getEdits(createProcessEvent(), null);
+        assertThat(edits, not(empty()));
     }
 
     @Test
@@ -166,7 +166,7 @@ public class EditSessionsExtractorTest {
         mockYouTrackInstance = new MockIssueTracker("/feeds/issues-feed-rss-2.xml", "/feeds/issue-changes.xml");
         EditSessionsExtractor sourceEventMapper = new EditSessionsExtractor(mockYouTrackInstance, URL_STREAM_PROVIDER);
         List<ProcessEvent> changes = sourceEventMapper.getLatestEvents();
-        assertThat(changes, Matchers.not(empty()));
+        assertThat(changes, not(empty()));
 
     }
 
@@ -192,14 +192,14 @@ public class EditSessionsExtractorTest {
                 mockYouTrackInstance, URL_STREAM_PROVIDER);
 
 
-        List<IssueEditSession> allEditSessions = editSessionsExtractor.getEdits(createProcessEvent());
+        List<IssueEditSession> allEditSessions = editSessionsExtractor.getEdits(createProcessEvent(), null);
         //all changes should be included if no date is specified
         assertThat(allEditSessions, hasSize(9));
 
 
         Date minDate = new Date(1407626732316L);
-        editSessionsExtractor.setLastEvent(minDate);
-        List<IssueEditSession> changesAfterDate = editSessionsExtractor.getEdits(createProcessEvent());
+        editSessionsExtractor.setLastEventDate(minDate);
+        List<IssueEditSession> changesAfterDate = editSessionsExtractor.getEdits(createProcessEvent(), minDate);
         assertThat(changesAfterDate, hasSize(4));
         for (IssueEditSession issueEditSession : changesAfterDate) {
             assertThat(issueEditSession.getUpdated(), OrderingComparison.greaterThan(minDate));
