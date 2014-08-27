@@ -17,10 +17,7 @@ import org.junit.Test;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.hamcrest.CoreMatchers.*;
@@ -241,10 +238,52 @@ public class EventListenerImplTest {
      * it is not posted as created issue to Slack again
      */
     public void testThatAfterIssueCreationIsPostedItIsNotPostedAgain() throws Exception {
+//        IssueTracker mockIssueTracker = new SimpleMockIssueTracker("/feeds/issues-feed-rss.xml",
+//                "/feeds/empty-issue-changes.xml");
+        clearData();
+        EventProcessorConfiguration.instance().setDeploymentTime(new DateBuilder().year(2013).build());
+
+        final Issue issue1 = new Issue.Builder().projectPrefix("ISSUE").id(1).build();
+
+        //create mocked editSessionsExtractor#getLatestEvents() depending on execution count
+        EditSessionsExtractor editSessionsExtractor = new EditSessionsExtractor(null,
+                UrlStreamProvider.instance()) {
+            @Override
+            public List<ProcessEvent> getLatestEvents() throws Exception {
+                return ImmutableList.<ProcessEvent> builder()
+                                .add(new ProcessEvent.Builder().issue(issue1).published(new Date(1404927516756L)).build())
+                        .build();
+
+            }
+
+            @Override
+            public List<IssueEditSession> getEdits(ProcessEvent e, Date upToDate) throws Exception {
+                return Collections.emptyList();
+            }
+        };
+        EventListenerImpl eventListener = new EventListenerImpl(editSessionsExtractor,
+                new EmptyChatServer(){
+                    @Override
+                    public void postIssueCreation(Issue issue) {
+                        fail("Issue creation should not be reported since this event has information in DB");
+                    }
+                });
+
+        eventListener.checkForNewEvents();
+    }
+
+
+
+    @Test
+    /**
+     * Tests the case that new issue creation is not reported if DB contains ANY date about this event
+     * In that case there is no sense to post event about issue creation
+     */
+    public void testThatIssueCreationIsNotPostedForEventsWhichWerePreviouslyReported() throws Exception {
         IssueTracker mockIssueTracker = new SimpleMockIssueTracker("/feeds/issues-feed-rss.xml",
                 "/feeds/empty-issue-changes.xml");
         clearData();
-        EventProcessorConfiguration.instance().setDeploymentTime(new DateBuilder().year(2013).build());
+
 
         //just processing feed with the list of events, storing the reference to one of the events
         final ObjectWrapper<ProcessEvent> event = new ObjectWrapper<>();
