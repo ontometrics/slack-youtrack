@@ -168,7 +168,15 @@ public class EventListenerImpl implements EventListener {
     }
 
     private IssueEditSession getMostRecentEvent(List<IssueEditSession> editSessions) {
-        return editSessions.get(editSessions.size() - 1);
+        Date mostRecentEventDate = null;
+        IssueEditSession mostRecentIssueEditSession = null;
+        for (IssueEditSession editSession : editSessions) {
+            if (mostRecentEventDate == null || editSession.getUpdated().after(mostRecentEventDate)) {
+                mostRecentEventDate = editSession.getUpdated();
+                mostRecentIssueEditSession = editSession;
+            }
+        }
+        return mostRecentIssueEditSession;
     }
 
 

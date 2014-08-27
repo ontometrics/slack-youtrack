@@ -150,7 +150,7 @@ public class EditSessionsExtractorTest {
         editSessionsExtractor.setLastEventDate(new DateBuilder().day(14).month(Calendar.JULY).hour(16)
                 .minutes(0).build());
         List<ProcessEvent> latestEvents = editSessionsExtractor.getLatestEvents();
-        assertThat(latestEvents.size(), is(10));
+        assertThat(latestEvents, hasSize(10));
     }
 
     @Test
