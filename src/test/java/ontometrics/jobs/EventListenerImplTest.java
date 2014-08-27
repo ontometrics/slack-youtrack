@@ -23,7 +23,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
 
 
 /**
@@ -154,7 +153,8 @@ public class EventListenerImplTest {
      * On second read for Issue-1 we will got T1 and T3, however as long we reported T3 before it should not be reported again
      *
      * Note: T3 is slightly higher than T2, between {@link com.ontometrics.integrations.sources.EditSessionsExtractor#getLatestEvents}
-     * and getting changes to concrete issue (may happen fr longer list of issues to process)
+     * and getting changes to concrete issue (may happen for longer list of issues to process)
+     * T0 < T1 < T2 < T3
      */
     public void testThatIssueEditSessionIsNotPostedOnSecondCallIfPostedOnfFirst() throws Exception {
         final Issue issue1 = new Issue.Builder().projectPrefix("ISSUE").id(1).build();
@@ -166,13 +166,14 @@ public class EventListenerImplTest {
                 );
 
         EventProcessorConfiguration.instance().saveLastProcessedEventDate(new Date(0));   //T0
-
+        //Issue-1 with T1 and Issue-2 with T2 will be returned on first call  to getLatestEvents()
         final List<ProcessEvent> firstCall = ImmutableList.<ProcessEvent> builder()
                 .add(new ProcessEvent.Builder().issue(issue1).published(new Date(1404927516756L)).build()) //T1
-                .add(new ProcessEvent.Builder().issue(issue2).published(new Date(1405025458837L)).build()) //T3
+                .add(new ProcessEvent.Builder().issue(issue2).published(new Date(1405025458837L)).build()) //T2
                 .build();
+        //Issue-1 with T1 and Issue-2 with T3 will be returned on second call to getLatestEvents()
         final List<ProcessEvent> secondCall = ImmutableList.<ProcessEvent> builder()
-                .add(new ProcessEvent.Builder().issue(issue1).published(new Date(1406227765001L)).build())  //T2
+                .add(new ProcessEvent.Builder().issue(issue1).published(new Date(1406227765001L)).build())  //T3
                 .build();
 
         final AtomicInteger executionCount = new AtomicInteger(1);
@@ -190,7 +191,7 @@ public class EventListenerImplTest {
             }
         };
 
-
+        //create EventListenerImpl with CheckDuplicateMessagesChatServer to check there are no duplicates
         EventListenerImpl eventListener = new EventListenerImpl(editSessionsExtractor,
                 new CheckDuplicateMessagesChatServer());
 
