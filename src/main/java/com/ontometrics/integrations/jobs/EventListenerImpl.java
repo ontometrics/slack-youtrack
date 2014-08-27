@@ -134,9 +134,16 @@ public class EventListenerImpl implements EventListener {
      * @param editSessions list of edit sessions for particular issue
      */
     private void postEditSessionsToChatServer(ProcessEvent event, List<IssueEditSession> editSessions) {
+
         if (editSessions.isEmpty()) {
             log.info("List of edit sessions for event is empty");
-            chatServer.postIssueCreation(event.getIssue());
+            //report issue creation only if we do not reported about this event before
+            if (EventProcessorConfiguration.instance().getEventChangeDate(event) == null) {
+                chatServer.postIssueCreation(event.getIssue());
+                //record the fact that we already posted info about this issue, so next time we will not report it again
+                EventProcessorConfiguration.instance()
+                        .saveEventChangeDate(event, event.getPublishDate());
+            }
         } else {
             log.info("There are {} edit sessions for issue {}", editSessions.size(), event.getIssue().toString());
 
@@ -151,9 +158,13 @@ public class EventListenerImpl implements EventListener {
             } finally {
                 //whatever happens, update the last change date
                 EventProcessorConfiguration.instance()
-                        .saveEventChangeDate(event, editSessions.get(editSessions.size() - 1).getUpdated());
+                        .saveEventChangeDate(event, getMostRecentEvent(editSessions).getUpdated());
             }
         }
+    }
+
+    private IssueEditSession getMostRecentEvent(List<IssueEditSession> editSessions) {
+        return editSessions.get(editSessions.size() - 1);
     }
 
 
