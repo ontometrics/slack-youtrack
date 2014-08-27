@@ -4,8 +4,6 @@ import com.ontometrics.integrations.events.Issue;
 import com.ontometrics.integrations.events.ProcessEvent;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.lang.time.DateUtils;
-import org.hamcrest.number.OrderingComparison;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 

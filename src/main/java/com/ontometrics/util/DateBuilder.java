@@ -131,8 +131,4 @@ public class DateBuilder {
     public Date build() {
         return calendar.getTime();
     }
-
-    public Calendar buildCalendar() {
-        return calendar;
-    }
 }

@@ -31,6 +31,9 @@ public class EventProcessorConfiguration {
     private DB db;
     private BTreeMap<String, Long> eventChangeDatesCollection;
 
+    //being used in tests to override value from properties
+    private Integer issueHistoryWindowInMinutes;
+
     private EventProcessorConfiguration() {
         initialize();
     }
@@ -142,7 +145,10 @@ public class EventProcessorConfiguration {
 
     public int getIssueHistoryWindowInMinutes() {
         //3 days by default
-        return ConfigurationFactory.get().getInt(PROP_ISSUE_HISTORY_WINDOW, 60 * 24 * 3);
+        if (issueHistoryWindowInMinutes == null) {
+            return ConfigurationFactory.get().getInt(PROP_ISSUE_HISTORY_WINDOW, 60 * 24 * 3);
+        }
+        return issueHistoryWindowInMinutes;
     }
 
     /**
@@ -159,5 +165,9 @@ public class EventProcessorConfiguration {
     public void reload() {
         dispose();
         initialize();
+    }
+
+    public void setIssueHistoryWindowInMinutes(int issueHistoryWindowInMinutes) {
+        this.issueHistoryWindowInMinutes = issueHistoryWindowInMinutes;
     }
 }

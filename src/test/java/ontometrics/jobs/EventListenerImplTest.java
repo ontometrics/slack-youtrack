@@ -13,11 +13,11 @@ import com.ontometrics.util.DateBuilder;
 import ontometrics.test.util.TestUtil;
 import ontometrics.test.util.UrlStreamProvider;
 import org.apache.commons.configuration.ConfigurationException;
-import org.hamcrest.Matchers;
 import org.junit.Test;
 
 import java.net.URL;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -299,7 +299,7 @@ public class EventListenerImplTest {
         clearData();
 
         final int maxHistoryInMinutes = EventProcessorConfiguration.instance().getIssueHistoryWindowInMinutes();
-        final Calendar expectedMinIssueDate = new DateBuilder().addMinutes(-maxHistoryInMinutes).buildCalendar();
+        final Date expectedMinIssueDate = new DateBuilder().addMinutes(-maxHistoryInMinutes).build();
 
         assertThatPastHistoryWindowDateIsUsedInLatestEventsCall(expectedMinIssueDate);
 
@@ -307,17 +307,19 @@ public class EventListenerImplTest {
         EventProcessorConfiguration.instance().saveLastProcessedEventDate(now);
 
         //now, when the last processed date is current time, it should be used in calls to getLatestEvents
-        int events = new EventListenerImpl(new EditSessionsExtractor(new SimpleMockIssueTracker("/feeds/issues-feed-rss.xml",
+        final AtomicBoolean assertionOccurred = new AtomicBoolean(false);
+        new EventListenerImpl(new EditSessionsExtractor(new SimpleMockIssueTracker("/feeds/issues-feed-rss.xml",
                 "/feeds/empty-issue-changes.xml"),
                 UrlStreamProvider.instance()) {
             @Override
             public List<ProcessEvent> getLatestEvents(Date minDate) throws Exception {
                 List<ProcessEvent> processEvents = super.getLatestEvents(minDate);
                 assertThat(minDate, is(now));
+                assertionOccurred.set(true);
                 return processEvents;
             }
         }, new EmptyChatServer()).checkForNewEvents();
-        assertThat(events, is(not(0)));
+        assertThat(assertionOccurred.get(), is(true));
 
 
         EventProcessorConfiguration.instance()
@@ -327,22 +329,55 @@ public class EventListenerImplTest {
         assertThatPastHistoryWindowDateIsUsedInLatestEventsCall(expectedMinIssueDate);
     }
 
-    private void assertThatPastHistoryWindowDateIsUsedInLatestEventsCall(final Calendar expectedMinIssueDate) throws Exception {
+    private void assertThatPastHistoryWindowDateIsUsedInLatestEventsCall(final Date expectedMinIssueDate) throws Exception {
         IssueTracker mockIssueTracker = new SimpleMockIssueTracker("/feeds/issues-feed-rss.xml",
                 "/feeds/empty-issue-changes.xml");
-        int events = new EventListenerImpl(new EditSessionsExtractor(mockIssueTracker,
+        final AtomicBoolean assertionOccurred = new AtomicBoolean(false);
+        new EventListenerImpl(new EditSessionsExtractor(mockIssueTracker,
                 UrlStreamProvider.instance()) {
             @Override
             public List<ProcessEvent> getLatestEvents(Date minDate) throws Exception {
                 List<ProcessEvent> processEvents = super.getLatestEvents(minDate);
                 assertThat(minDate, notNullValue());
                 //asserting that past time configured by property ISSUE_HISTORY_WINDOW is used
-                assertThat(Math.abs(expectedMinIssueDate.getTime().getTime() - minDate.getTime()), lessThan(100L));
+                assertThat(Math.abs(expectedMinIssueDate.getTime() - minDate.getTime()), lessThan(100L));
+                assertionOccurred.set(true);
                 return processEvents;
+            }
+        }, new EmptyChatServer()).checkForNewEvents();
+        assertThat(assertionOccurred.get(), is(true));
+    }
+
+    @Test
+    /**
+     * Tests that correct min date is passed to {@link com.ontometrics.integrations.sources.EditSessionsExtractor#getEdits(com.ontometrics.integrations.events.ProcessEvent, java.util.Date)}
+     * If there is no last event change date, it should be taken from property
+     * {@link com.ontometrics.integrations.configuration.EventProcessorConfiguration#getIssueHistoryWindowInMinutes()}
+     *
+     * Otherwise it should be equal to last event change time
+     */
+    public void testThatCorrectDateIsPassedToGetEditsCall() throws Exception {
+        clearData();
+        Date oldestIssueDate = new DateBuilder().year(2013).build();
+        final int offsetInMinutes = (int)((new Date().getTime() - oldestIssueDate.getTime()) / 1000 / 60) + 5;
+        EventProcessorConfiguration.instance().setIssueHistoryWindowInMinutes(offsetInMinutes);
+
+        //now, when the last processed event date is current time, it should be used in calls to getLatestEvents
+        int events = new EventListenerImpl(new EditSessionsExtractor(new SimpleMockIssueTracker("/feeds/issues-feed-rss.xml",
+                "/feeds/empty-issue-changes.xml"),
+                UrlStreamProvider.instance()) {
+            @Override
+            public List<IssueEditSession> getEdits(ProcessEvent e, Date upToDate) throws Exception {
+                List<IssueEditSession> editSessions = super.getEdits(e, upToDate);
+                final Date expectedMinIssueChangeDate = new DateBuilder().addMinutes(-offsetInMinutes).build();
+                assertThat(upToDate, notNullValue());
+                assertThat(Math.abs(expectedMinIssueChangeDate.getTime() - upToDate.getTime()), lessThan(100L));
+                return editSessions;
             }
         }, new EmptyChatServer()).checkForNewEvents();
         assertThat(events, is(not(0)));
     }
+
 
     private void clearData() throws ConfigurationException {
         EventProcessorConfiguration.instance().clear();
@@ -363,24 +398,4 @@ public class EventListenerImplTest {
         }
 
     }
-
-
-    private EventListenerImpl createEventListener() {
-        return new EventListenerImpl(UrlStreamProvider.instance(), new SlackInstance.Builder()
-                .channelMapper(createChannelMapper()).build());
-    }
-
-
-    /**
-     * @return channel mapper with default projects: ASOC, Job Spider and Dminder
-     */
-    private static ChannelMapper createChannelMapper() {
-        return new ChannelMapper.Builder()
-                .defaultChannel("process")
-                .addMapping("ASOC", "vixlet")
-                .addMapping("HA", "jobspider")
-                .addMapping("DMAN", "dminder")
-                .build();
-    }
-
 }
