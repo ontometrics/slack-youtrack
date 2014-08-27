@@ -63,16 +63,17 @@ public class EventListenerImplTest {
     /**
      * Tests that all new issue edits are fetched by {@link com.ontometrics.integrations.jobs.EventListenerImpl#checkForNewEvents()}
      *
-     * Current last issue date is <code>t0</code>.
+     * Current last issue date is <code>T0</code>.
      * Issue 1 has changes with time line: (T-1), T1, T3
      * Issue 2 has changes with time line: (T-2), T2, T5
-     * Relation between those time stamps are as follows
+     * Relation between those timestamps are as follows
      *                        T0
      * Issue 1: (T-1)              T1        T3
      * Issue 2:       (T-2)             T2        T5
+     *  (T-1) < (T-2) < T0 < T1 < T2 < T3 < T5
      *
-     * Expected edits for issue 1: (t1) and (t3)
-     * Expected edits for issue 2: (t2) and (t5)
+     * Expected edits for issue 1: (T1) and (T3)
+     * Expected edits for issue 2: (T2) and (T5)
      */
     public void testThatAllNewEditsAreFetched() throws Exception {
         final Date T_MINUS_2 = new Date(1404927519000L);
