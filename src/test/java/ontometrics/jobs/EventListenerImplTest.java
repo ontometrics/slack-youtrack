@@ -190,6 +190,7 @@ public class EventListenerImplTest {
         IssueTracker mockIssueTracker = new SimpleMockIssueTracker("/feeds/issues-feed-rss.xml",
                 "/feeds/empty-issue-changes.xml");
         clearData();
+        TestUtil.setIssueHistoryWindowSettingToCoverAllIssues();
 
         final AtomicInteger createdIssuePostsCount = new AtomicInteger();
 
@@ -358,10 +359,7 @@ public class EventListenerImplTest {
      */
     public void testThatCorrectDateIsPassedToGetEditsCall() throws Exception {
         clearData();
-        Date oldestIssueDate = new DateBuilder().year(2013).build();
-        final int offsetInMinutes = (int)((new Date().getTime() - oldestIssueDate.getTime()) / 1000 / 60) + 5;
-        EventProcessorConfiguration.instance().setIssueHistoryWindowInMinutes(offsetInMinutes);
-
+        TestUtil.setIssueHistoryWindowSettingToCoverAllIssues();
         //no changes for any events, that's why past time configured by property ISSUE_HISTORY_WINDOW is used
         int events = new EventListenerImpl(new EditSessionsExtractor(new SimpleMockIssueTracker("/feeds/issues-feed-rss.xml",
                 "/feeds/empty-issue-changes.xml"),
@@ -369,7 +367,8 @@ public class EventListenerImplTest {
             @Override
             public List<IssueEditSession> getEdits(ProcessEvent e, Date upToDate) throws Exception {
                 List<IssueEditSession> editSessions = super.getEdits(e, upToDate);
-                final Date expectedMinIssueChangeDate = new DateBuilder().addMinutes(-offsetInMinutes).build();
+                final Date expectedMinIssueChangeDate = new DateBuilder().addMinutes(-EventProcessorConfiguration
+                        .instance().getIssueHistoryWindowInMinutes()).build();
                 assertThat(upToDate, notNullValue());
                 assertThat(Math.abs(expectedMinIssueChangeDate.getTime() - upToDate.getTime()), lessThan(100L));
                 return editSessions;
