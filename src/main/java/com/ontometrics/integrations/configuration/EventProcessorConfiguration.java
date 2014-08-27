@@ -99,8 +99,11 @@ public class EventProcessorConfiguration {
     }
 
     public void saveLastProcessedEventDate(Date lastProcessedEventDate) throws ConfigurationException {
-        lastEventConfiguration.setProperty(LAST_EVENT_DATE, lastProcessedEventDate.getTime());
-        lastEventConfiguration.save();
+        Date currentLastProcessedDate = loadLastProcessedDate();
+        if (currentLastProcessedDate  == null || currentLastProcessedDate.before(lastProcessedEventDate)) {
+            lastEventConfiguration.setProperty(LAST_EVENT_DATE, lastProcessedEventDate.getTime());
+            lastEventConfiguration.save();
+        }
     }
 
     public void clearLastProcessEvent() throws ConfigurationException {
