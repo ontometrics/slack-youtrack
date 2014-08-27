@@ -7,7 +7,6 @@ import com.ontometrics.integrations.events.Issue;
 import com.ontometrics.integrations.events.IssueEditSession;
 import com.ontometrics.integrations.events.ProcessEvent;
 import com.ontometrics.integrations.jobs.EventListenerImpl;
-import com.ontometrics.integrations.sources.ChannelMapper;
 import com.ontometrics.integrations.sources.EditSessionsExtractor;
 import com.ontometrics.util.DateBuilder;
 import ontometrics.test.util.TestUtil;
@@ -361,17 +360,30 @@ public class EventListenerImplTest {
         clearData();
         TestUtil.setIssueHistoryWindowSettingToCoverAllIssues();
         //no changes for any events, that's why past time configured by property ISSUE_HISTORY_WINDOW is used
+        final ObjectWrapper<ProcessEvent> event = new ObjectWrapper<>();
         int events = new EventListenerImpl(new EditSessionsExtractor(new SimpleMockIssueTracker("/feeds/issues-feed-rss.xml",
                 "/feeds/empty-issue-changes.xml"),
                 UrlStreamProvider.instance()) {
             @Override
             public List<IssueEditSession> getEdits(ProcessEvent e, Date upToDate) throws Exception {
-                List<IssueEditSession> editSessions = super.getEdits(e, upToDate);
+                event.set(e);
                 final Date expectedMinIssueChangeDate = new DateBuilder().addMinutes(-EventProcessorConfiguration
                         .instance().getIssueHistoryWindowInMinutes()).build();
                 assertThat(upToDate, notNullValue());
                 assertThat(Math.abs(expectedMinIssueChangeDate.getTime() - upToDate.getTime()), lessThan(100L));
-                return editSessions;
+                return super.getEdits(e, upToDate);
+            }
+        }, new EmptyChatServer()).checkForNewEvents();
+
+        // during the second run of changes check, each call to fetch issue edits should use last issue change date
+        // (or issue publish date)
+        new EventListenerImpl(new EditSessionsExtractor(new SimpleMockIssueTracker("/feeds/issues-feed-rss.xml",
+                "/feeds/empty-issue-changes.xml"),
+                UrlStreamProvider.instance()) {
+            @Override
+            public List<IssueEditSession> getEdits(ProcessEvent e, Date upToDate) throws Exception {
+                assertThat(e.getPublishDate(), is(upToDate));
+                return super.getEdits(e, upToDate);
             }
         }, new EmptyChatServer()).checkForNewEvents();
         assertThat(events, is(not(0)));
