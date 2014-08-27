@@ -9,6 +9,7 @@ import com.ontometrics.integrations.events.ProcessEvent;
 import com.ontometrics.integrations.jobs.EventListenerImpl;
 import com.ontometrics.integrations.sources.ChannelMapper;
 import com.ontometrics.integrations.sources.EditSessionsExtractor;
+import com.ontometrics.util.DateBuilder;
 import ontometrics.test.util.TestUtil;
 import ontometrics.test.util.UrlStreamProvider;
 import org.apache.commons.configuration.ConfigurationException;
@@ -16,6 +17,7 @@ import org.junit.Test;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -23,6 +25,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 
 
 /**
@@ -206,24 +209,85 @@ public class EventListenerImplTest {
         eventListener.checkForNewEvents();
     }
 
+    @Test
+    /**
+     * Tests that when a new issue (issue which was not reported in the RSS before) is posted to the chat server
+     * as a new issue, e.g. {@link com.ontometrics.integrations.configuration.ChatServer#postIssueCreation(com.ontometrics.integrations.events.Issue)} is called
+     */
+    public void testThatIssueWithNoChangesWhichWasNotReportedBeforeCausesPostingOfIssueCreation() throws Exception {
+        IssueTracker mockIssueTracker = new SimpleMockIssueTracker("/feeds/issues-feed-rss.xml",
+                "/feeds/empty-issue-changes.xml");
+        clearData();
+        EventProcessorConfiguration.instance().setDeploymentTime(new DateBuilder().year(2013).build());
 
-    public static class MockIssueTracker implements IssueTracker {
-        private String feedUrl;
+        final AtomicInteger createdIssuePostsCount = new AtomicInteger();
+
+        EventListenerImpl eventListener = new EventListenerImpl(new EditSessionsExtractor(mockIssueTracker,
+                UrlStreamProvider.instance()), new EmptyChatServer() {
+            @Override
+            public void postIssueCreation(Issue issue) {
+                createdIssuePostsCount.incrementAndGet();
+            }
+        });
+        int events = eventListener.checkForNewEvents();
+        assertThat(events, not(is(0)));
+        assertThat(events, is(createdIssuePostsCount.get()));
+    }
+
+    @Test
+    /**
+     * Tests that when a new issue (issue which was not reported in the RSS before) is posted to the chat server,
+     * then after it's detected in the feed next time with no changes (for example comment has been added),
+     * it is not posted as created issue to Slack again
+     */
+    public void testThatAfterIssueCreationIsPostedItIsNotPostedAgain() throws Exception {
+        IssueTracker mockIssueTracker = new SimpleMockIssueTracker("/feeds/issues-feed-rss.xml",
+                "/feeds/empty-issue-changes.xml");
+        clearData();
+        EventProcessorConfiguration.instance().setDeploymentTime(new DateBuilder().year(2013).build());
+
+        //just processing feed with the list of events, storing the reference to one of the events
+        final ObjectWrapper<ProcessEvent> event = new ObjectWrapper<>();
+        new EventListenerImpl(new EditSessionsExtractor(mockIssueTracker,
+                UrlStreamProvider.instance()) {
+            @Override
+            public List<ProcessEvent> getLatestEvents() throws Exception {
+                List<ProcessEvent> events = super.getLatestEvents();
+                event.set(events.get(0));
+                return events;
+            }
+        }, new EmptyChatServer()).checkForNewEvents();
+
+        // now we emulating situation where we get one of the events we already processed from the feed
+        // since it has already been processed before, application must not report issue creation for this event again
+        new EventListenerImpl(new EditSessionsExtractor(mockIssueTracker,
+                UrlStreamProvider.instance()) {
+            @Override
+            public List<ProcessEvent> getLatestEvents() throws Exception {
+                return Arrays.asList(event.get());
+            }
+        }, new EmptyChatServer() {
+            @Override
+            public void postIssueCreation(Issue issue) {
+                fail("Issue creation has already been posted");
+            }
+        }).checkForNewEvents();
+
+    }
+
+    private void clearData() throws ConfigurationException {
+        EventProcessorConfiguration.instance().deleteDb();
+        EventProcessorConfiguration.instance().reload();
+        EventProcessorConfiguration.instance().clearLastProcessEvent();
+    }
+
+
+    public static class MockIssueTracker extends SimpleMockIssueTracker {
         private Map<Issue,String> changesUrlMap;
 
         public MockIssueTracker(String feedUrl, Map<Issue, String> changesUrlMap) {
-            this.feedUrl = feedUrl;
+            super(feedUrl, null);
             this.changesUrlMap = changesUrlMap;
-        }
-
-        @Override
-        public URL getBaseUrl() {
-            return null;
-        }
-
-        @Override
-        public URL getFeedUrl() {
-            return TestUtil.getFileAsURL(feedUrl);
         }
 
         @Override
@@ -231,9 +295,6 @@ public class EventListenerImplTest {
             return TestUtil.getFileAsURL(changesUrlMap.get(issue));
         }
 
-        public void setChangesUrlMap(Map<Issue, String> changesUrlMap) {
-            this.changesUrlMap = changesUrlMap;
-        }
     }
 
 

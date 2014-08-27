@@ -139,6 +139,14 @@ public class EventProcessorConfiguration {
     }
 
     /**
+     * Deletes db event change dates collection
+     */
+    public void deleteDb() {
+        logger.info("Deleting database");
+        db.delete(EVENT_CHANGE_DATES);
+    }
+
+    /**
      * Disposes itself closing the {@link #db} and re-initializes
      */
     public void reload() {

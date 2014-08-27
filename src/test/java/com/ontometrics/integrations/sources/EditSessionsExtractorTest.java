@@ -1,7 +1,7 @@
 package com.ontometrics.integrations.sources;
 
 import com.ontometrics.integrations.configuration.EventProcessorConfiguration;
-import com.ontometrics.integrations.configuration.MockIssueTracker;
+import com.ontometrics.integrations.configuration.SimpleMockIssueTracker;
 import com.ontometrics.integrations.configuration.YouTrackInstance;
 import com.ontometrics.integrations.events.Issue;
 import com.ontometrics.integrations.events.IssueEdit;
@@ -42,7 +42,7 @@ public class EditSessionsExtractorTest {
     private static final String YOUTRACK_URL = "http://ontometrics.com";
     public static final UrlStreamProvider URL_STREAM_PROVIDER = UrlStreamProvider.instance();
 
-    private MockIssueTracker mockYouTrackInstance;
+    private SimpleMockIssueTracker mockYouTrackInstance;
     private EditSessionsExtractor editsExtractor;
 
     @Before
@@ -50,7 +50,7 @@ public class EditSessionsExtractorTest {
         Calendar deploymentTime = Calendar.getInstance();
         deploymentTime.set(Calendar.YEAR, 2013);
         EventProcessorConfiguration.instance().setDeploymentTime(deploymentTime.getTime());
-        mockYouTrackInstance = new MockIssueTracker("/feeds/issues-feed-rss.xml", "/feeds/issue-changes.xml");
+        mockYouTrackInstance = new SimpleMockIssueTracker("/feeds/issues-feed-rss.xml", "/feeds/issue-changes.xml");
         editsExtractor = new EditSessionsExtractor(mockYouTrackInstance, URL_STREAM_PROVIDER);
         //editsExtractor.setLastEventDate(createProcessEvent());
     }
@@ -155,7 +155,7 @@ public class EditSessionsExtractorTest {
     @Test
     @SuppressWarnings("unchecked")
     public void testThatEventChangesAreParsed() throws Exception {
-        mockYouTrackInstance = new MockIssueTracker("/feeds/issues-feed-rss.xml", "/feeds/issue-changes2.xml");
+        mockYouTrackInstance = new SimpleMockIssueTracker("/feeds/issues-feed-rss.xml", "/feeds/issue-changes2.xml");
         EditSessionsExtractor sessionsExtractor = new EditSessionsExtractor(mockYouTrackInstance, URL_STREAM_PROVIDER);
         List<IssueEditSession> edits = sessionsExtractor.getEdits(createProcessEvent(), null);
         assertThat(edits, not(empty()));
@@ -163,7 +163,7 @@ public class EditSessionsExtractorTest {
 
     @Test
     public void testThatRSSRawFileCanBeRead() throws Exception {
-        mockYouTrackInstance = new MockIssueTracker("/feeds/issues-feed-rss-2.xml", "/feeds/issue-changes.xml");
+        mockYouTrackInstance = new SimpleMockIssueTracker("/feeds/issues-feed-rss-2.xml", "/feeds/issue-changes.xml");
         EditSessionsExtractor sourceEventMapper = new EditSessionsExtractor(mockYouTrackInstance, URL_STREAM_PROVIDER);
         List<ProcessEvent> changes = sourceEventMapper.getLatestEvents();
         assertThat(changes, not(empty()));

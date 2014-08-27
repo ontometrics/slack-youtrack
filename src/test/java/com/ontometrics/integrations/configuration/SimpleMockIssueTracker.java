@@ -10,11 +10,11 @@ import java.net.URL;
  *
  * MockIssueTracker.java
  */
-public class MockIssueTracker implements IssueTracker {
+public class SimpleMockIssueTracker implements IssueTracker {
     private String feedUrl;
     private String changesUrl;
 
-    public MockIssueTracker(String feedUrl, String changesUrl) {
+    public SimpleMockIssueTracker(String feedUrl, String changesUrl) {
         this.feedUrl = feedUrl;
         this.changesUrl = changesUrl;
     }
