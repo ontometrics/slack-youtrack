@@ -19,9 +19,7 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.not;
-import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.Matchers.lessThan;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
@@ -42,15 +40,16 @@ public class EventListenerImplTest {
      * Issue 1 has changes with time line: (T-1), T1, T3
      * Issue 2 has changes with time line: (T-2), T2, T5
      * Relation between those timestamps are as follows
-     *                        T0
-     * Issue 1: (T-1)              T1        T3
-     * Issue 2:       (T-2)             T2        T5
-     *  (T-1) < (T-2) < T0 < T1 < T2 < T3 < T5
+     *                 T0
+     * Issue 1:               T1        T3
+     * Issue 2:                    T2        T5
+     *  T0 < T1 < T2 < T3 < T5
      *
      * Expected edits for issue 1: (T1) and (T3)
      * Expected edits for issue 2: (T2) and (T5)
      */
     public void testThatAllNewEditsAreFetched() throws Exception {
+
         final Date T_MINUS_2 = new Date(1404927519000L);
         final Date T1 = new Date(1404927529000L);
         final Date T0 = new Date((T_MINUS_2.getTime() + T1.getTime()) / 2);
@@ -61,6 +60,8 @@ public class EventListenerImplTest {
         final AtomicInteger issueOrder = new AtomicInteger(0);
         EventProcessorConfiguration.instance().clear();
         EventProcessorConfiguration.instance().saveLastProcessedEventDate(T0);
+        TestUtil.setIssueHistoryWindowSettingToCoverAllIssues();
+
         MockIssueTracker mockYouTrackInstance = new MockIssueTracker("/feeds/issues-feed-rss.xml", null) {
             @Override
             public URL getChangesUrl(Issue issue) {
@@ -76,6 +77,7 @@ public class EventListenerImplTest {
                 UrlStreamProvider.instance()) {
             @Override
             public List<IssueEditSession> getEdits(ProcessEvent e, Date upToDate) throws Exception {
+
                 List<IssueEditSession> sessions = super.getEdits(e, upToDate);
                 if (issueOrder.get() == 0) {
                     //asserting that all edits for issue 1 are fetched (T1 and T3)
@@ -97,11 +99,10 @@ public class EventListenerImplTest {
             /**
              * Emulates getting of only two latest events with publish date more than {@link T0}
              */
-            public List<ProcessEvent> getLatestEvents() throws Exception {
-                List<ProcessEvent> events = super.getLatestEvents().subList(0, 2);
+            public List<ProcessEvent> getLatestEvents(Date date) throws Exception {
+                List<ProcessEvent> events = super.getLatestEvents(date).subList(0, 2);
                 events.get(0).setPublishDate(T3);
                 events.get(1).setPublishDate(T5);
-//                this.setLastEventDate(T0);
                 return events;
             }
         };

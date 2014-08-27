@@ -54,18 +54,18 @@
         </field>
         <tag>Star</tag>
     </issue>
-    <change>
-        <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="SingleField" name="updaterName">
-            <value>rob</value>
-        </field>
-        <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="SingleField" name="updated">
-            <!--(t-2)-->
-            <value>1404927519000</value>
-        </field>
-        <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="ChangeField" name="Fix versions">
-            <newValue>0.1.13</newValue>
-        </field>
-    </change>
+    <!--<change>-->
+        <!--<field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="SingleField" name="updaterName">-->
+            <!--<value>rob</value>-->
+        <!--</field>-->
+        <!--<field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="SingleField" name="updated">-->
+            <!--&lt;!&ndash;(t-2)&ndash;&gt;-->
+            <!--<value>1404927519000</value>-->
+        <!--</field>-->
+        <!--<field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="ChangeField" name="Fix versions">-->
+            <!--<newValue>0.1.13</newValue>-->
+        <!--</field>-->
+    <!--</change>-->
     <change>
         <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="SingleField" name="updaterName">
             <value>rob</value>
