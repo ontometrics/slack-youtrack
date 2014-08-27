@@ -198,6 +198,11 @@ public class EditSessionsExtractor {
         return edits;
     }
 
+    /**
+     *
+     * @return all ProcessEvents available in the feed (not limited by date)
+     * @throws Exception
+     */
     public List<ProcessEvent> getLatestEvents() throws Exception {
         return getLatestEvents(null);
     }
