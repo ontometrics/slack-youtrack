@@ -101,6 +101,29 @@ public class DateBuilder {
     }
 
     /**
+     * Adds specified amount of minutes to the built date
+     * @param minutes minutes
+     *
+     * @return this, for chaining
+     */
+    public DateBuilder addMinutes(int minutes) {
+        calendar.add(Calendar.MINUTE, minutes);
+        return this;
+    }
+
+
+    /**
+     * Sets specified timestamp
+     * @param time timestamp
+     *
+     * @return this, for chaining
+     */
+    public DateBuilder time(Date time) {
+        calendar.setTime(time);
+        return this;
+    }
+
+    /**
      * Provides access to the final product.
      *
      * @return the constructed date with all the desired values
@@ -109,4 +132,7 @@ public class DateBuilder {
         return calendar.getTime();
     }
 
+    public Calendar buildCalendar() {
+        return calendar;
+    }
 }

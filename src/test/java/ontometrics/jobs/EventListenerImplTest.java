@@ -13,6 +13,7 @@ import com.ontometrics.util.DateBuilder;
 import ontometrics.test.util.TestUtil;
 import ontometrics.test.util.UrlStreamProvider;
 import org.apache.commons.configuration.ConfigurationException;
+import org.hamcrest.Matchers;
 import org.junit.Test;
 
 import java.net.URL;
@@ -21,6 +22,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.Matchers.lessThan;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
@@ -255,7 +258,6 @@ public class EventListenerImplTest {
                 "/feeds/empty-issue-changes.xml");
         clearData();
 
-
         //just processing feed with the list of events, storing the reference to one of the events
         final ObjectWrapper<ProcessEvent> event = new ObjectWrapper<>();
         new EventListenerImpl(new EditSessionsExtractor(mockIssueTracker,
@@ -283,6 +285,63 @@ public class EventListenerImplTest {
             }
         }).checkForNewEvents();
 
+    }
+
+    @Test
+    /**
+     * Tests that correct min date is passed to {@link com.ontometrics.integrations.sources.EditSessionsExtractor#getLatestEvents(java.util.Date)}
+     * If there is no last event date in the system, it should be taken from property
+     * {@link com.ontometrics.integrations.configuration.EventProcessorConfiguration#getIssueHistoryWindowInMinutes()}
+     *
+     * Otherwise it should be equal to last event time
+     */
+    public void testThatCorrectDateIsPassedToGetLatestEventsCall() throws Exception {
+        clearData();
+
+        final int maxHistoryInMinutes = EventProcessorConfiguration.instance().getIssueHistoryWindowInMinutes();
+        final Calendar expectedMinIssueDate = new DateBuilder().addMinutes(-maxHistoryInMinutes).buildCalendar();
+
+        assertThatPastHistoryWindowDateIsUsedInLatestEventsCall(expectedMinIssueDate);
+
+        final Date now = new Date();
+        EventProcessorConfiguration.instance().saveLastProcessedEventDate(now);
+
+        //now, when the last processed date is current time, it should be used in calls to getLatestEvents
+        int events = new EventListenerImpl(new EditSessionsExtractor(new SimpleMockIssueTracker("/feeds/issues-feed-rss.xml",
+                "/feeds/empty-issue-changes.xml"),
+                UrlStreamProvider.instance()) {
+            @Override
+            public List<ProcessEvent> getLatestEvents(Date minDate) throws Exception {
+                List<ProcessEvent> processEvents = super.getLatestEvents(minDate);
+                assertThat(minDate, is(now));
+                return processEvents;
+            }
+        }, new EmptyChatServer()).checkForNewEvents();
+        assertThat(events, is(not(0)));
+
+
+        EventProcessorConfiguration.instance()
+                .saveLastProcessedEventDate(new DateBuilder().addMinutes(-maxHistoryInMinutes * 2).build());
+        // now when last event time is less than max history window time, we should assert
+        // that past time configured by property ISSUE_HISTORY_WINDOW is used
+        assertThatPastHistoryWindowDateIsUsedInLatestEventsCall(expectedMinIssueDate);
+    }
+
+    private void assertThatPastHistoryWindowDateIsUsedInLatestEventsCall(final Calendar expectedMinIssueDate) throws Exception {
+        IssueTracker mockIssueTracker = new SimpleMockIssueTracker("/feeds/issues-feed-rss.xml",
+                "/feeds/empty-issue-changes.xml");
+        int events = new EventListenerImpl(new EditSessionsExtractor(mockIssueTracker,
+                UrlStreamProvider.instance()) {
+            @Override
+            public List<ProcessEvent> getLatestEvents(Date minDate) throws Exception {
+                List<ProcessEvent> processEvents = super.getLatestEvents(minDate);
+                assertThat(minDate, notNullValue());
+                //asserting that past time configured by property ISSUE_HISTORY_WINDOW is used
+                assertThat(Math.abs(expectedMinIssueDate.getTime().getTime() - minDate.getTime()), lessThan(100L));
+                return processEvents;
+            }
+        }, new EmptyChatServer()).checkForNewEvents();
+        assertThat(events, is(not(0)));
     }
 
     private void clearData() throws ConfigurationException {

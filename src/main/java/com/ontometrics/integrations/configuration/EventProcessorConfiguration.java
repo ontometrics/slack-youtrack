@@ -113,6 +113,11 @@ public class EventProcessorConfiguration {
         db.commit();
     }
 
+    public int getIssueHistoryWindowInMinutes() {
+        //3 days by default
+        return ConfigurationFactory.get().getInt("PROP.ISSUE_HISTORY_WINDOW", 60 * 24 * 3);
+    }
+
     /**
      * Releases resource: closes database
      */
