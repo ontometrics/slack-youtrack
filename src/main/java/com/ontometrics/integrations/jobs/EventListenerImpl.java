@@ -52,7 +52,7 @@ public class EventListenerImpl implements EventListener {
         editSessionsExtractor = new EditSessionsExtractor(new YouTrackInstance.Builder().baseUrl(
                 configuration.getString("PROP.YOUTRACK_HOST", YT_FEED_URL))
                 .port(configuration.getInt("PROP.YOUTRACK_PORT", YT_PORT)).build(), feedStreamProvider);
-        editSessionsExtractor.setLastEvent(EventProcessorConfiguration.instance().loadLastProcessedEvent());
+        editSessionsExtractor.setLastEvent(EventProcessorConfiguration.instance().loadLastProcessedEvent().getPublishDate());
         this.chatServer = chatServer;
     }
 
@@ -94,13 +94,13 @@ public class EventListenerImpl implements EventListener {
                 minChangeDate = EventProcessorConfiguration.instance().getDeploymentTime();
             }
             try {
-                editSessions = editSessionsExtractor.getEdits(event, minChangeDate);
+                editSessions = editSessionsExtractor.getEdits(event);
                 postEditSessionsToChatServer(event, editSessions);
             } catch (Exception | Error ex) {
                 log.error("Failed to process event " + event, ex);
             } finally {
                 //whatever happens, update the last event as processed
-                editSessionsExtractor.setLastEvent(event);
+                editSessionsExtractor.setLastEvent(event.getPublishDate());
                 try {
                     EventProcessorConfiguration.instance().saveLastProcessEvent(event);
                 } catch (ConfigurationException e) {

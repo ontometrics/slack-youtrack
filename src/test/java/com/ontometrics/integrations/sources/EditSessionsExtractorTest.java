@@ -52,7 +52,7 @@ public class EditSessionsExtractorTest {
         EventProcessorConfiguration.instance().setDeploymentTime(deploymentTime.getTime());
         mockYouTrackInstance = new MockIssueTracker("/feeds/issues-feed-rss.xml", "/feeds/issue-changes.xml");
         editsExtractor = new EditSessionsExtractor(mockYouTrackInstance, UrlStreamProvider.instance());
-        editsExtractor.setLastEvent(createProcessEvent());
+        //editsExtractor.setLastEvent(createProcessEvent());
     }
 
     @Test
@@ -145,9 +145,10 @@ public class EditSessionsExtractorTest {
     public void testThatLastEventIsCorrectlyUsedToRetrieveLatestEvents() throws Exception {
         EditSessionsExtractor editSessionsExtractor = new EditSessionsExtractor(mockYouTrackInstance,
                 UrlStreamProvider.instance());
-        editSessionsExtractor.setLastEvent(createProcessEvent());
+        //14 Jul 2014 16:09:07
+        editSessionsExtractor.setLastEvent(new DateBuilder().day(14).month(Calendar.JULY).hour(04).minutes(9).seconds(7).build());
         List<ProcessEvent> latestEvents = editSessionsExtractor.getLatestEvents();
-        assertThat(latestEvents.size(), Matchers.is(9));
+        assertThat(latestEvents.size(), Matchers.is(16));
     }
 
     @Test
@@ -155,7 +156,7 @@ public class EditSessionsExtractorTest {
     public void testThatEventChangesAreParsed() throws Exception {
         mockYouTrackInstance = new MockIssueTracker("/feeds/issues-feed-rss.xml", "/feeds/issue-changes2.xml");
         EditSessionsExtractor sessionsExtractor = new EditSessionsExtractor(mockYouTrackInstance, UrlStreamProvider.instance());
-        List<IssueEditSession> edits = sessionsExtractor.getEdits(createProcessEvent(), null);
+        List<IssueEditSession> edits = sessionsExtractor.getEdits(createProcessEvent());
         assertThat(edits, Matchers.not(empty()));
     }
 
@@ -190,13 +191,14 @@ public class EditSessionsExtractorTest {
                 mockYouTrackInstance, UrlStreamProvider.instance());
 
 
-        List<IssueEditSession> allEditSessions = editSessionsExtractor.getEdits(createProcessEvent(), null);
+        List<IssueEditSession> allEditSessions = editSessionsExtractor.getEdits(createProcessEvent());
         //all changes should be included if no date is specified
         assertThat(allEditSessions, hasSize(9));
 
 
         Date minDate = new Date(1407626732316L);
-        List<IssueEditSession> changesAfterDate = editSessionsExtractor.getEdits(createProcessEvent(), minDate);
+        editSessionsExtractor.setLastEvent(minDate);
+        List<IssueEditSession> changesAfterDate = editSessionsExtractor.getEdits(createProcessEvent());
         assertThat(changesAfterDate, hasSize(4));
         for (IssueEditSession issueEditSession : changesAfterDate) {
             assertThat(issueEditSession.getUpdated(), OrderingComparison.greaterThan(minDate));

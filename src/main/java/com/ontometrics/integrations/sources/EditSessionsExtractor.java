@@ -47,7 +47,7 @@ public class EditSessionsExtractor {
     private Logger log = getLogger(EditSessionsExtractor.class);
     private final IssueTracker issueTracker;
     private XMLEventReader eventReader;
-    private ProcessEvent lastEvent;
+    private Date lastEvent;
     private StreamProvider streamProvider;
 
     /**
@@ -74,12 +74,12 @@ public class EditSessionsExtractor {
         List<IssueEditSession> sessions = new ArrayList<>();
         List<ProcessEvent> events = getLatestEvents();
         for (ProcessEvent event : events){
-            sessions.addAll(getEdits(event, lastEvent == null ? null : lastEvent.getPublishDate()));
+            sessions.addAll(getEdits(event));
         }
         return sessions;
     }
 
-    public List<IssueEditSession> getEdits(final ProcessEvent e, final Date upToDate) throws Exception {
+    public List<IssueEditSession> getEdits(final ProcessEvent e) throws Exception {
         return streamProvider.openResourceStream(issueTracker.getChangesUrl(e.getIssue()), new InputStreamHandler<List<IssueEditSession>>() {
             @Override
             public List<IssueEditSession> handleStream(InputStream is) throws Exception {
@@ -149,7 +149,7 @@ public class EditSessionsExtractor {
                                             .build();
 
                                     //include only non-processed changes
-                                    if (upToDate == null || processEventChange.getUpdated().after(upToDate)) {
+                                    if (lastEvent == null || processEventChange.getUpdated().after(lastEvent)) {
                                         currentChanges.add(processEventChange);
                                     }
                                     currentFieldName = "";
@@ -160,7 +160,7 @@ public class EditSessionsExtractor {
                                 }
                             } else if (tagName.equals("change")) {
                                 List<IssueEdit> edits = buildIssueEdits(currentChanges);
-                                if (upToDate == null || updated.after(upToDate)) {
+                                if (lastEvent == null || updated.after(lastEvent)) {
                                     IssueEditSession session = new IssueEditSession.Builder()
                                             .updater(updaterName)
                                             .updated(updated)
@@ -220,12 +220,8 @@ public class EditSessionsExtractor {
                                     //todo: decide if we have to swallow exception thrown by attempt of single event extraction.
                                     //If we swallow it, we have at least report the problem
                                     ProcessEvent event = extractEventFromStream(dateFormat);
-
-                                    if (lastEvent != null && lastEvent.getKey().equals(event.getKey())) {
-                                        //we already processed this event before, stopping iteration
-                                        return events;
-                                    }
-                                    if (event.getPublishDate().after(deploymentDate)) {
+                                    log.info("last event: {} publish date: {}", lastEvent, event.getPublishDate());
+                                    if (lastEvent==null || event.getPublishDate().after(lastEvent)) {
                                         //we are adding only events with date after deployment date
                                         events.addFirst(event);
                                     }
@@ -287,11 +283,11 @@ public class EditSessionsExtractor {
         return date;
     }
 
-    public void setLastEvent(ProcessEvent lastEvent) {
+    public void setLastEvent(Date lastEvent) {
         this.lastEvent = lastEvent;
     }
 
-    public ProcessEvent getLastEvent() {
+    public Date getLastEvent() {
         return lastEvent;
     }
 }
