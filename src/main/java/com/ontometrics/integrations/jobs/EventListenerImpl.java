@@ -66,8 +66,6 @@ public class EventListenerImpl implements EventListener {
         }
         this.chatServer = chatServer;
         this.editSessionsExtractor = editSessionsExtractor;
-        editSessionsExtractor.setLastEventDate(EventProcessorConfiguration.instance().loadLastProcessedDate());
-
     }
 
     /**
@@ -113,8 +111,7 @@ public class EventListenerImpl implements EventListener {
             } catch (Exception ex) {
                 log.error("Failed to process event " + event, ex);
             } finally {
-                //whatever happens, update the last event as processed
-                editSessionsExtractor.setLastEventDate(event.getPublishDate());
+                //whatever happens, update save the last event as processed
                 try {
                     EventProcessorConfiguration.instance().saveLastProcessedEventDate(event.getPublishDate());
                 } catch (ConfigurationException e) {

@@ -15,12 +15,12 @@ import ontometrics.test.util.UrlStreamProvider;
 import org.apache.commons.configuration.ConfigurationException;
 import org.junit.Test;
 
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
@@ -31,33 +31,6 @@ import static org.junit.Assert.fail;
  */
 public class EventListenerImplTest {
 
-    @Test
-    public void testThatSourceEventMapperCorrectlyInitializedOnFirstStart() throws ConfigurationException {
-        EventProcessorConfiguration configuration = EventProcessorConfiguration.instance();
-        configuration.clearLastProcessEvent();
-        EventListenerImpl eventListener = createEventListener();
-        assertThat(eventListener.getEditSessionsExtractor(), notNullValue());
-        assertThat(eventListener.getEditSessionsExtractor().getLastEventDate(), nullValue());
-    }
-
-    @Test
-    public void testThatSourceEventMapperCorrectlyInitializedWithExistingConfiguration() throws ConfigurationException, MalformedURLException {
-
-        EventProcessorConfiguration configuration = EventProcessorConfiguration.instance();
-        Issue issue = new Issue.Builder().projectPrefix("ASOC").id(28)
-                .title("ASOC-28: title")
-                .link(new URL("http://ontometrics.com:8085/issue/ASOC-28"))
-                .build();
-        ProcessEvent processEvent = new ProcessEvent.Builder().issue(issue).published(new Date()).build();
-        configuration.saveLastProcessedEventDate(processEvent.getPublishDate());
-
-        EventListenerImpl eventListener = createEventListener();
-        assertThat(eventListener.getEditSessionsExtractor(), notNullValue());
-        assertThat(eventListener.getEditSessionsExtractor().getLastEventDate(), notNullValue());
-//        assertThat(eventListener.getEditSessionsExtractor().getLastEventDate().getIssue().getLink(), is(processEvent.getIssue().getLink()));
-//        assertThat(eventListener.getEditSessionsExtractor().getLastEventDate().getPublishDate(), is(processEvent.getPublishDate()));
-
-    }
 
     @Test
     /**
@@ -127,7 +100,7 @@ public class EventListenerImplTest {
                 List<ProcessEvent> events = super.getLatestEvents().subList(0, 2);
                 events.get(0).setPublishDate(T3);
                 events.get(1).setPublishDate(T5);
-                this.setLastEventDate(T0);
+//                this.setLastEventDate(T0);
                 return events;
             }
         };
@@ -185,7 +158,7 @@ public class EventListenerImplTest {
         EditSessionsExtractor editSessionsExtractor = new EditSessionsExtractor(mockIssueTracker,
                 UrlStreamProvider.instance()) {
             @Override
-            public List<ProcessEvent> getLatestEvents() throws Exception {
+            public List<ProcessEvent> getLatestEvents(Date minDate) throws Exception {
                 if (executionCount.get() == 1) {
                     return firstCall;
                 } else if (executionCount.get() == 2) {

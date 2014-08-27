@@ -48,7 +48,6 @@ public class EditSessionsExtractor {
     private Logger log = getLogger(EditSessionsExtractor.class);
     private final IssueTracker issueTracker;
     private XMLEventReader eventReader;
-    private Date lastEventDate;
     private StreamProvider streamProvider;
 
     /**
@@ -63,6 +62,9 @@ public class EditSessionsExtractor {
         this.streamProvider = streamProvider;
     }
 
+    public List<IssueEditSession> getLatestEdits() throws Exception {
+        return getLatestEdits(null);
+    }
     /**
      * Provides a means of seeing what things were changed on an {@link com.ontometrics.integrations.events.Issue} and by whom.
      * Gets a list of IssueEditSessions, being sure to only include edits that were made since we last
@@ -71,11 +73,11 @@ public class EditSessionsExtractor {
      * @return all sessions found that occurred after the last edit
      * @throws Exception
      */
-    public List<IssueEditSession> getLatestEdits() throws Exception {
+    public List<IssueEditSession> getLatestEdits(Date minDate) throws Exception {
         List<IssueEditSession> sessions = new ArrayList<>();
-        List<ProcessEvent> events = getLatestEvents();
+        List<ProcessEvent> events = getLatestEvents(minDate);
         for (ProcessEvent event : events){
-            sessions.addAll(getEdits(event, lastEventDate));
+            sessions.addAll(getEdits(event, minDate));
         }
         return sessions;
     }
@@ -196,12 +198,16 @@ public class EditSessionsExtractor {
         return edits;
     }
 
+    public List<ProcessEvent> getLatestEvents() throws Exception {
+        return getLatestEvents(null);
+    }
+
     /**
      * Once we have this open, we should make sure that we are not resending events we have already seen.
      *
      * @return the last event that was returned to the user of this class
      */
-    public List<ProcessEvent> getLatestEvents() throws Exception {
+    public List<ProcessEvent> getLatestEvents(final Date minDate) throws Exception {
         return streamProvider.openResourceStream(issueTracker.getFeedUrl(), new InputStreamHandler<List<ProcessEvent>>() {
             @Override
             public List<ProcessEvent> handleStream(InputStream is) throws Exception {
@@ -223,8 +229,8 @@ public class EditSessionsExtractor {
                                     //todo: decide if we have to swallow exception thrown by attempt of single event extraction.
                                     //If we swallow it, we have at least report the problem
                                     ProcessEvent event = extractEventFromStream(dateFormat);
-                                    log.info("last event: {} publish date: {}", lastEventDate, event.getPublishDate());
-                                    if (lastEventDate ==null || event.getPublishDate().after(lastEventDate)) {
+                                    log.info("min date: {} publish date: {}", minDate, event.getPublishDate());
+                                    if (minDate ==null || event.getPublishDate().after(minDate)) {
                                         //we are adding only events with date after deployment date
                                         events.addFirst(event);
                                     }
@@ -286,11 +292,4 @@ public class EditSessionsExtractor {
         return date;
     }
 
-    public void setLastEventDate(Date lastEventDate) {
-        this.lastEventDate = lastEventDate;
-    }
-
-    public Date getLastEventDate() {
-        return lastEventDate;
-    }
 }

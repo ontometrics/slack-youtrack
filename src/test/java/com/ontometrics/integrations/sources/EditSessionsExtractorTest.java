@@ -61,7 +61,7 @@ public class EditSessionsExtractorTest {
         List<IssueEditSession> sessions = editsExtractor.getLatestEdits();
 
         log.info("latest edits: {}", sessions);
-        assertThat(sessions.size(), is(not(0)));
+        assertThat(sessions, not(empty()));
 
         int editCount = 0;
         for (IssueEdit edit : sessions.get(0).getChanges()){
@@ -128,13 +128,13 @@ public class EditSessionsExtractorTest {
     }
 
     @Test
-    public void testThatWeCanGetMostRecentEdits() throws Exception {
+    public void testThatWeCanGetAllMostRecentEdits() throws Exception {
         EditSessionsExtractor editSessionsExtractor = new EditSessionsExtractor(mockYouTrackInstance,
                 URL_STREAM_PROVIDER);
         List<IssueEditSession> recentEdits = editSessionsExtractor.getLatestEdits();
 
         log.info("recent changes: {}", recentEdits);
-        assertThat(recentEdits.size(), Matchers.is(450));
+        assertThat(recentEdits, hasSize(450));
 
     }
 
@@ -147,9 +147,10 @@ public class EditSessionsExtractorTest {
         EditSessionsExtractor editSessionsExtractor = new EditSessionsExtractor(mockYouTrackInstance,
                 URL_STREAM_PROVIDER);
         //14 Jul 2014 16:09:07
-        editSessionsExtractor.setLastEventDate(new DateBuilder().day(14).month(Calendar.JULY).hour(16)
-                .minutes(0).build());
-        List<ProcessEvent> latestEvents = editSessionsExtractor.getLatestEvents();
+        Date minDate = new DateBuilder().day(14).month(Calendar.JULY).hour(16)
+                .minutes(0).build();
+
+        List<ProcessEvent> latestEvents = editSessionsExtractor.getLatestEvents(minDate);
         assertThat(latestEvents.size(), is(10));
     }
 
@@ -199,7 +200,7 @@ public class EditSessionsExtractorTest {
 
 
         Date minDate = new Date(1407626732316L);
-        editSessionsExtractor.setLastEventDate(minDate);
+
         List<IssueEditSession> changesAfterDate = editSessionsExtractor.getEdits(createProcessEvent(), minDate);
         assertThat(changesAfterDate, hasSize(4));
         for (IssueEditSession issueEditSession : changesAfterDate) {
