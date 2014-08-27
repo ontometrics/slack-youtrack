@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.util.Calendar;
 import java.util.Date;
 
 /**
@@ -99,6 +100,16 @@ public class EventProcessorConfiguration {
             lastEventConfiguration.setProperty(LAST_EVENT_DATE, lastProcessedEventDate.getTime());
             lastEventConfiguration.save();
         }
+    }
+
+    /**
+     * @return Date in the past - N minutes before now. Where N - defined by the property "PROP.ISSUE_HISTORY_WINDOW"
+     */
+    public Date oldestDateInThePast() {
+        int maxMinutesInThePast = ConfigurationFactory.get().getInt("PROP.ISSUE_HISTORY_WINDOW", 10);
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.MINUTE, -maxMinutesInThePast);
+        return calendar.getTime();
     }
 
     public void clearLastProcessEvent() throws ConfigurationException {
