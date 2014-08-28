@@ -1,6 +1,7 @@
 package com.ontometrics.integrations.events;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -37,8 +38,8 @@ public class IssueEditSession {
 
         private Issue issue;
         private String updater;
-        private List<IssueEdit> changes;
-        private List<Comment> comments;
+        private List<IssueEdit> changes = Collections.emptyList();
+        private List<Comment> comments = Collections.emptyList();
         private Date updated;
 
         public Builder issue(Issue issue){

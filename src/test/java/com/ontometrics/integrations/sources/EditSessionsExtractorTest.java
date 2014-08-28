@@ -197,6 +197,23 @@ public class EditSessionsExtractorTest {
 
     }
 
+    /**
+     * When a new issue appears, there are no changes. We should get more information about the {@link com.ontometrics.integrations.events.Issue}
+     * in this case.
+     */
+    @Test
+    public void testThatOnlyANewIssueWillBeExtracted() throws Exception {
+        mockYouTrackInstance = new SimpleMockIssueTracker("/feeds/issue-feed-with-new-issue.xml", "/feeds/issue-changes-no-changes.xml");
+        EditSessionsExtractor sourceEventMapper = new EditSessionsExtractor(mockYouTrackInstance, URL_STREAM_PROVIDER);
+        Date editDate = new DateBuilder().year(2014).day(28).month(Calendar.AUGUST).hour(22).minutes(22).seconds(0).build();
+        List<IssueEditSession> edits = sourceEventMapper.getLatestEdits(editDate);
+
+        log.info("edits: {}", edits);
+
+        assertThat(edits, hasSize(1));
+
+    }
+
 
     @Test
     /**

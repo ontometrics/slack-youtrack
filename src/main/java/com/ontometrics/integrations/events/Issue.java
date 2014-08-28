@@ -1,6 +1,7 @@
 package com.ontometrics.integrations.events;
 
 import java.net.URL;
+import java.util.Date;
 
 /**
  * Created by Rob on 8/19/14.
@@ -13,10 +14,14 @@ public class Issue {
     private final String title;
     private final String description;
     private final URL link;
+    private final String creator;
+    private final Date created;
 
     public Issue(Builder builder) {
         id = builder.id;
         prefix = builder.prefix;
+        creator = builder.creator;
+        created = builder.created;
         title = builder.title;
         description = builder.description;
         link = builder.link;
@@ -29,6 +34,8 @@ public class Issue {
         private String title;
         private String description;
         private URL link;
+        private String creator;
+        private Date created;
 
         public Builder id(int id){
             this.id = id;
@@ -37,6 +44,16 @@ public class Issue {
 
         public Builder projectPrefix(String prefix){
             this.prefix = prefix;
+            return this;
+            }
+
+        public Builder creator(String creator){
+            this.creator = creator;
+            return this;
+            }
+
+        public Builder created(Date created){
+            this.created = created;
             return this;
             }
 
@@ -66,6 +83,14 @@ public class Issue {
 
     public String getPrefix() {
         return prefix;
+    }
+
+    public String getCreator() {
+        return creator;
+    }
+
+    public Date getCreated() {
+        return created;
     }
 
     public String getTitle() {

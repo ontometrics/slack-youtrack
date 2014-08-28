@@ -74,6 +74,7 @@ public class EditSessionsExtractor {
      * @throws Exception
      */
     public List<IssueEditSession> getLatestEdits(Date minDate) throws Exception {
+        log.debug("edits since: {}", minDate);
         List<IssueEditSession> sessions = new ArrayList<>();
         List<ProcessEvent> events = getLatestEvents(minDate);
         for (ProcessEvent event : events){
@@ -93,6 +94,8 @@ public class EditSessionsExtractor {
                 String oldValue = "", newValue = "";
                 String updaterName = "";
                 Date updated = null;
+                String creator = "";
+                Date created = null;
                 boolean insideChangesTag = false;
                 List<IssueEditSession> extractedEdits = new ArrayList<>();
                 List<ProcessEventChange> currentChanges = new ArrayList<>();
@@ -121,6 +124,12 @@ public class EditSessionsExtractor {
                                         }
                                     }
                                     break;
+                                case "created":
+                                    currentFieldName = "created";
+                                    break;
+                                case "updaterFullName":
+                                    currentFieldName = "creator";
+                                    break;
                                 default:
                                     String elementText;
                                     try {
@@ -137,6 +146,10 @@ public class EditSessionsExtractor {
                                                     updaterName = elementText;
                                                 } else if (currentFieldName.equals("updated")) {
                                                     updated = new Date(Long.parseLong(elementText));
+                                                } else if (currentFieldName.equals("creator")){
+                                                    creator = elementText;
+                                                } else if (currentFieldName.equals("created")){
+                                                    created = new Date(Long.parseLong(elementText));
                                                 }
                                         }
                                     } catch (Exception e) {
@@ -173,6 +186,7 @@ public class EditSessionsExtractor {
                                 }
                             } else if (tagName.equals("change")) {
                                 if (upToDate == null || updated.after(upToDate) || newComments.size() > 0) {
+                                    log.debug("upToDate: {} updated: {}", upToDate, updated);
                                     List<IssueEdit> edits = buildIssueEdits(currentChanges);
                                     IssueEditSession session = new IssueEditSession.Builder()
                                             .updater(updaterName)
@@ -188,6 +202,25 @@ public class EditSessionsExtractor {
                             }
                             break;
 
+                    }
+                }
+                if (extractedEdits.isEmpty()){
+                    if (upToDate == null || updated.after(upToDate)){
+                        Issue newIssue = new Issue.Builder()
+                                .projectPrefix(e.getIssue().getPrefix())
+                                .id(e.getIssue().getId())
+                                .created(created)
+                                .creator(creator)
+                                .description(e.getIssue().getDescription())
+                                .title(e.getIssue().getTitle())
+                                .link(e.getIssue().getLink())
+                                .build();
+                        IssueEditSession session = new IssueEditSession.Builder()
+                                .updater(updaterName)
+                                .updated(updated)
+                                .issue(newIssue)
+                                .build();
+                        extractedEdits.add(session);
                     }
                 }
                 return extractedEdits;
