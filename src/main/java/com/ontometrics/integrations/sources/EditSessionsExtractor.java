@@ -93,6 +93,7 @@ public class EditSessionsExtractor {
                 String oldValue = "", newValue = "";
                 String updaterName = "";
                 Date updated = null;
+                boolean insideChangesTag = false;
                 List<IssueEditSession> extractedEdits = new ArrayList<>();
                 List<ProcessEventChange> currentChanges = new ArrayList<>();
                 List<Comment> newComments = new ArrayList<>();
@@ -105,6 +106,7 @@ public class EditSessionsExtractor {
                             String elementName = startElement.getName().getLocalPart();
                             switch (elementName) {
                                 case "change":
+                                    insideChangesTag = true;
                                     break;
                                 case "field":
                                     currentFieldName = nextEvent.asStartElement().getAttributeByName(new QName("", "name")).getValue();
@@ -112,9 +114,11 @@ public class EditSessionsExtractor {
                                     //log.info("found field named: {}: change type: {}", currentFieldName, currentChangeType);
                                     break;
                                 case "comment":
-                                    Comment newComment = extractCommentFromStream(nextEvent.asStartElement());
-                                    if (upToDate==null || newComment.getCreated().after(upToDate)) {
-                                        newComments.add(newComment);
+                                    if (!insideChangesTag) { // sadly, comment tags can appear in changes, want to ignore
+                                        Comment newComment = extractCommentFromStream(nextEvent.asStartElement());
+                                        if (upToDate == null || newComment.getCreated().after(upToDate)) {
+                                            newComments.add(newComment);
+                                        }
                                     }
                                     break;
                                 default:
@@ -180,6 +184,7 @@ public class EditSessionsExtractor {
                                     extractedEdits.add(session);
                                 }
                                 currentChanges.clear();
+                                insideChangesTag = false;
                             }
                             break;
 
