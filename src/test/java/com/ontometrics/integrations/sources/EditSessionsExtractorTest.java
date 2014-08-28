@@ -191,9 +191,9 @@ public class EditSessionsExtractorTest {
 
         assertThat(edits.get(0).getComments(), hasSize(12));
 
-        edits = sourceEventMapper.getLatestEdits(new DateBuilder().day(25).month(Calendar.AUGUST).year(2014).build());
+        edits = sourceEventMapper.getLatestEdits(new DateBuilder().day(27).month(Calendar.AUGUST).year(2014).build());
 
-        assertThat(edits.get(0).getComments(), hasSize(12));
+        assertThat(edits.get(0).getComments(), hasSize(1));
 
     }
 

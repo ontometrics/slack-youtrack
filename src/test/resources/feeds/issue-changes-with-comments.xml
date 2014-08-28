@@ -96,49 +96,49 @@
 <comment id="76-1808" author="nikolay.chorniy@gmail.com" authorFullName="Nikolay Chorniy" issueId="HA-668" deleted="false" text="Dru, we have successfully deployed a web application on this new instance. It's running on behalf of 'jobspider' user." shownForIssueAuthor="false" created="1408566448214">
 <replies/>
 </comment>
-<comment id="76-1878" author="dru" authorFullName="Dru Grote" issueId="HA-668" deleted="false" text="Imaged as ami-0c449e64 " shownForIssueAuthor="false" created="1409237824867">
-<replies/>
+    <comment id="76-1878" author="dru" authorFullName="Dru Grote" issueId="HA-668" deleted="false" text="Imaged as ami-0c449e64 " shownForIssueAuthor="false" created="1409237824867">
+        <replies/>
 </comment>
 <tag>Star</tag>
         </issue>
 <change>
-<field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="SingleField" name="updaterName">
-    <value>andrey.chorniy</value>
-</field>
-<field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="SingleField" name="updated">
-    <value>1408384068536</value>
-</field>
-<field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="LinkChangeField" name="links">
-    <newValue type="Subtask" role="subtask of">HA-657</newValue>
-</field>
-</change>
-<change>
-<field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="SingleField" name="updaterName">
-    <value>andrey.chorniy</value>
-</field>
-<field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="SingleField" name="updated">
-    <value>1408566342858</value>
-</field>
-<field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="LinkChangeField" name="links">
-    <newValue type="Relates" role="relates to">HA-659</newValue>
-</field>
-</change>
-<change>
-<field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="SingleField" name="updaterName">
-    <value>nikolay.chorniy@gmail.com</value>
-</field>
-<field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="SingleField" name="updated">
-    <value>1408566451810</value>
-</field>
-<field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="ChangeField" name="resolved">
-    <newValue>1408566451802</newValue>
-</field>
-<field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="ChangeField" name="State">
-    <oldValue>Open</oldValue>
-    <newValue>Fixed</newValue>
-</field>
-<comment id="76-1808" author="nikolay.chorniy@gmail.com" authorFullName="Nikolay Chorniy" issueId="HA-668" deleted="false" text="Dru, we have successfully deployed a web application on this new instance. It's running on behalf of 'jobspider' user." shownForIssueAuthor="false" created="1408566448214">
-    <replies/>
-</comment>
+    <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="SingleField" name="updaterName">
+        <value>andrey.chorniy</value>
+    </field>
+    <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="SingleField" name="updated">
+        <value>1408384068536</value>
+    </field>
+    <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="LinkChangeField" name="links">
+        <newValue type="Subtask" role="subtask of">HA-657</newValue>
+    </field>
+    </change>
+    <change>
+    <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="SingleField" name="updaterName">
+        <value>andrey.chorniy</value>
+    </field>
+    <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="SingleField" name="updated">
+        <value>1408566342858</value>
+    </field>
+    <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="LinkChangeField" name="links">
+        <newValue type="Relates" role="relates to">HA-659</newValue>
+    </field>
+    </change>
+    <change>
+    <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="SingleField" name="updaterName">
+        <value>nikolay.chorniy@gmail.com</value>
+    </field>
+    <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="SingleField" name="updated">
+        <value>1408566451810</value>
+    </field>
+    <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="ChangeField" name="resolved">
+        <newValue>1408566451802</newValue>
+    </field>
+    <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="ChangeField" name="State">
+        <oldValue>Open</oldValue>
+        <newValue>Fixed</newValue>
+    </field>
+    <comment id="76-1808" author="nikolay.chorniy@gmail.com" authorFullName="Nikolay Chorniy" issueId="HA-668" deleted="false" text="Dru, we have successfully deployed a web application on this new instance. It's running on behalf of 'jobspider' user." shownForIssueAuthor="false" created="1408566448214">
+        <replies/>
+    </comment>
 </change>
 </changes>

@@ -97,24 +97,6 @@ public class IssueEditSession {
     }
 
     @Override
-    public String toString() {
-        StringBuilder b = new StringBuilder(issue.toString());
-        b.append(String.format(" %s ", updater));
-        int changeCounter = 0;
-        for (IssueEdit edit : changes){
-            b.append(edit.toString());
-            if (changeCounter++ < changes.size()-1){
-                b.append(", ");
-            }
-        }
-        for (Comment comment : comments){
-            b.append(comment.toString());
-        }
-        return b.toString();
-    }
-
-
-    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
@@ -135,4 +117,22 @@ public class IssueEditSession {
         result = 31 * result + updated.hashCode();
         return result;
     }
+
+    @Override
+    public String toString() {
+        StringBuilder b = new StringBuilder(issue.toString());
+        b.append(String.format(" %s ", updater));
+        int changeCounter = 0;
+        for (IssueEdit edit : changes){
+            b.append(edit.toString());
+            if (changeCounter++ < changes.size()-1){
+                b.append(", ");
+            }
+        }
+        for (Comment comment : comments){
+            b.append(comment.toString());
+        }
+        return b.toString();
+    }
+
 }

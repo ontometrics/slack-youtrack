@@ -168,7 +168,7 @@ public class EditSessionsExtractor {
 
                                 }
                             } else if (tagName.equals("change")) {
-                                if (upToDate == null || updated.after(upToDate)) {
+                                if (upToDate == null || updated.after(upToDate) || newComments.size() > 0) {
                                     List<IssueEdit> edits = buildIssueEdits(currentChanges);
                                     IssueEditSession session = new IssueEditSession.Builder()
                                             .updater(updaterName)
