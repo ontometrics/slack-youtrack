@@ -94,8 +94,6 @@ public class EditSessionsExtractor {
                 String oldValue = "", newValue = "";
                 String updaterName = "";
                 Date updated = null;
-                String creator = "";
-                Date created = null;
                 boolean insideChangesTag = false;
                 List<IssueEditSession> extractedEdits = new ArrayList<>();
                 List<ProcessEventChange> currentChanges = new ArrayList<>();
@@ -146,10 +144,6 @@ public class EditSessionsExtractor {
                                                     updaterName = elementText;
                                                 } else if (currentFieldName.equals("updated")) {
                                                     updated = new Date(Long.parseLong(elementText));
-                                                } else if (currentFieldName.equals("creator")){
-                                                    creator = elementText;
-                                                } else if (currentFieldName.equals("created")){
-                                                    created = new Date(Long.parseLong(elementText));
                                                 }
                                         }
                                     } catch (Exception e) {
@@ -209,8 +203,8 @@ public class EditSessionsExtractor {
                         Issue newIssue = new Issue.Builder()
                                 .projectPrefix(e.getIssue().getPrefix())
                                 .id(e.getIssue().getId())
-                                .created(created)
-                                .creator(creator)
+                                .created(updated)
+                                .creator(updaterName)
                                 .description(e.getIssue().getDescription())
                                 .title(e.getIssue().getTitle())
                                 .link(e.getIssue().getLink())

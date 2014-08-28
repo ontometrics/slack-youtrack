@@ -212,6 +212,9 @@ public class EditSessionsExtractorTest {
 
         assertThat(edits, hasSize(1));
 
+        assertThat(edits.get(0).getIssue().getCreator(), is("nikolay.chorniy@gmail.com"));
+        assertThat(edits.get(0).getIssue().getCreated().toString(), is("Thu Aug 28 15:22:21 PDT 2014"));
+
     }
 
 
