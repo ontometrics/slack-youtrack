@@ -179,6 +179,24 @@ public class EditSessionsExtractorTest {
         assertThat(changes, not(empty()));
     }
 
+    @Test
+    public void testCanExtractNewComment() throws Exception {
+        mockYouTrackInstance = new SimpleMockIssueTracker("/feeds/issue-feed-with-comments.xml", "/feeds/issue-changes-with-comments.xml");
+        EditSessionsExtractor sourceEventMapper = new EditSessionsExtractor(mockYouTrackInstance, URL_STREAM_PROVIDER);
+        List<IssueEditSession> edits = sourceEventMapper.getLatestEdits();
+
+        log.info("number of comments found: {}", edits.get(0).getComments().size());
+
+        log.info("edits: {}", edits);
+
+        assertThat(edits.get(0).getComments(), hasSize(12));
+
+        edits = sourceEventMapper.getLatestEdits(new DateBuilder().day(25).month(Calendar.AUGUST).year(2014).build());
+
+        assertThat(edits.get(0).getComments(), hasSize(12));
+
+    }
+
 
     @Test
     /**

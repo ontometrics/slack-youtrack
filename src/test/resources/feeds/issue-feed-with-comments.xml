@@ -1,0 +1,558 @@
+<rss xmlns:dc="http://purl.org/dc/elements/1.1/" version="2.0">
+    <channel>
+        <title>YouTrack</title>
+        <link>http://ontometrics.com:8085/_rss/issues</link>
+        <description/>
+        <item>
+            <title>
+                HA-663: Detect lead duplication across different sources
+            </title>
+            <link>http://ontometrics.com:8085/issue/HA-663</link>
+            <description>...</description>
+            <pubDate>Thu, 28 Aug 2014 16:03:02 UT</pubDate>
+        </item>
+        <item>
+            <title>
+                HA-683: LinkedIn scraper is not able to access job-details
+            </title>
+            <link>http://ontometrics.com:8085/issue/HA-683</link>
+            <description>...</description>
+            <pubDate>Thu, 28 Aug 2014 16:01:35 UT</pubDate>
+        </item>
+        <item>
+            <title>AIA-30: Add support for extracting new comments</title>
+            <link>http://ontometrics.com:8085/issue/AIA-30</link>
+            <description>
+                <![CDATA[
+<table> <tr> <th>Reporter</th> <td> <img src="http://www.gravatar.com/avatar/2543fe7b34482922746d3aaf4aa86652.jpg?s=60&amp;d=monsterid" width="56" height="59" alt="Rob Williams (rob)" title="Rob Williams (rob)"/> Rob Williams (rob) </td> </tr> <tr> <th>Created</th> <td>Aug 28, 2014 8:20:58 AM</td> </tr> <tr> <th>Updated</th> <td>Aug 28, 2014 8:22:55 AM</td> </tr> <tr> <th>Priority</th> <td>Normal</td> </tr> <tr> <th>Type</th> <td>Bug</td> </tr> <tr> <th>State</th> <td>Submitted</td> </tr> <tr> <th>Assignee</th> <td>Unassigned</td> </tr> <tr> <th>Subsystem</th> <td>No subsystem</td> </tr> <tr> <th>Fix versions</th> <td>Unscheduled</td> </tr> <tr> <th>Affected versions</th> <td>Unknown</td> </tr> <tr> <th>Fixed in build</th> <td>Next Build</td> </tr> </table> <div class="wiki text">We want to see the comments that are added immediately in the channel. </div>
+]]>
+            </description>
+            <pubDate>Thu, 28 Aug 2014 15:22:55 UT</pubDate>
+        </item>
+        <item>
+            <title>
+                HA-668: New instance request: backend application server
+            </title>
+            <link>http://ontometrics.com:8085/issue/HA-668</link>
+            <description>
+                <![CDATA[
+<table> <tr> <th>Reporter</th> <td> <img src="http://www.gravatar.com/avatar/0a18770794a74b222730b640455662d9.jpg?s=60&amp;d=monsterid" width="56" height="59" alt="Nikolay Chorniy (nikolay.chorniy@gmail.com)" title="Nikolay Chorniy (nikolay.chorniy@gmail.com)"/> Nikolay Chorniy (nikolay.chorniy@gmail.com) </td> </tr> <tr> <th>Created</th> <td>Aug 18, 2014 10:44:23 AM</td> </tr> <tr> <th>Updated</th> <td>Aug 28, 2014 7:57:04 AM</td> </tr> <tr> <th>Resolved</th> <td>Aug 20, 2014 1:27:31 PM</td> </tr> <tr> <th>Priority</th> <td>Normal</td> </tr> <tr> <th>Type</th> <td>Task</td> </tr> <tr> <th>State</th> <td>Fixed</td> </tr> <tr> <th>Assignee</th> <td>Dru Grote (dru)</td> </tr> <tr> <th>Subsystem</th> <td>No subsystem</td> </tr> <tr> <th>Fix versions</th> <td>2.1</td> </tr> <tr> <th>Affected versions</th> <td>Unknown</td> </tr> <tr> <th>Fixed in build</th> <td>Next Build</td> </tr> <tr> <th>aggregatetimespent</th> <td>No aggregatetimespent</td> </tr> <tr> <th>aggregatetimeestimate</th> <td>No aggregatetimeestimate</td> </tr> <tr> <th>resolution</th> <td>No resolution</td> </tr> <tr> <th>timespent</th> <td>No timespent</td> </tr> <tr> <th>timeestimate</th> <td>No timeestimate</td> </tr> </table> <div class="wiki text">We need a new instance for deploying a backend for Job Spider. It will be responsible for performing address geocoding and job posting scraping. None of these tasks requires storing data on disk, so the new instance does not have to have a lot of disk capacity. It has to run many processes in parallel though, so instance needs at least 2 CPUs.<br/><br/>We reviewed EC2 instance types with their pricing and think that &#39;c3.large&#39; instance with 3.75 GiB of memory and 2 virtual CPUs will be a good fit.</div>
+]]>
+            </description>
+            <pubDate>Thu, 28 Aug 2014 14:57:04 UT</pubDate>
+        </item>
+        <item>
+            <title>DMAN-658: add weekly target item to drawer</title>
+            <link>http://ontometrics.com:8085/issue/DMAN-658</link>
+            <description>
+                <![CDATA[
+<table> <tr> <th>Reporter</th> <td> <img src="http://ontometrics.com:8085/_classpath/smartui/img/youPicture.gif" width="56" height="59" alt="Noura Hassan (noura)" title="Noura Hassan (noura)"/> Noura Hassan (noura) </td> </tr> <tr> <th>Created</th> <td>Aug 28, 2014 7:34:16 AM</td> </tr> <tr> <th>Updated</th> <td>Aug 28, 2014 7:34:22 AM</td> </tr> <tr> <th>Priority</th> <td>Normal</td> </tr> <tr> <th>Type</th> <td>Task</td> </tr> <tr> <th>State</th> <td>In Progress</td> </tr> <tr> <th>Assignee</th> <td>Unassigned</td> </tr> <tr> <th>Subsystem</th> <td>No subsystem</td> </tr> <tr> <th>Fix versions</th> <td>1.0.23</td> </tr> <tr> <th>Affected versions</th> <td>Unknown</td> </tr> <tr> <th>Fixed in build</th> <td>Next Build</td> </tr> <tr> <th>resolution</th> <td>No resolution</td> </tr> </table>
+]]>
+            </description>
+            <pubDate>Thu, 28 Aug 2014 14:34:22 UT</pubDate>
+        </item>
+        <item>
+            <title>DMAN-105: Allow user to set a weekly target for D</title>
+            <link>http://ontometrics.com:8085/issue/DMAN-105</link>
+            <description>
+                <![CDATA[
+<table> <tr> <th>Reporter</th> <td> <img src="http://ontometrics.com:8085/_classpath/smartui/img/youPicture.gif" width="56" height="59" alt="Noura Hassan (noura)" title="Noura Hassan (noura)"/> Noura Hassan (noura) </td> </tr> <tr> <th>Created</th> <td>Feb 24, 2014 11:10:45 AM</td> </tr> <tr> <th>Updated</th> <td>Aug 28, 2014 7:33:49 AM</td> </tr> <tr> <th>Priority</th> <td>Normal</td> </tr> <tr> <th>Type</th> <td>Feature</td> </tr> <tr> <th>State</th> <td>In Progress</td> </tr> <tr> <th>Assignee</th> <td>Noura Hassan (noura)</td> </tr> <tr> <th>Subsystem</th> <td>No subsystem</td> </tr> <tr> <th>Fix versions</th> <td>1.0.23</td> </tr> <tr> <th>Affected versions</th> <td>Unknown</td> </tr> <tr> <th>Fixed in build</th> <td>Next Build</td> </tr> <tr> <th>resolution</th> <td>No resolution</td> </tr> </table>
+]]>
+            </description>
+            <pubDate>Thu, 28 Aug 2014 14:33:49 UT</pubDate>
+        </item>
+        <item>
+            <title>
+                DMAN-657: Use weekly target in gauges and progress chart
+            </title>
+            <link>http://ontometrics.com:8085/issue/DMAN-657</link>
+            <description>
+                <![CDATA[
+<table> <tr> <th>Reporter</th> <td> <img src="http://ontometrics.com:8085/_classpath/smartui/img/youPicture.gif" width="56" height="59" alt="Noura Hassan (noura)" title="Noura Hassan (noura)"/> Noura Hassan (noura) </td> </tr> <tr> <th>Created</th> <td>Aug 28, 2014 7:28:21 AM</td> </tr> <tr> <th>Updated</th> <td>Aug 28, 2014 7:28:21 AM</td> </tr> <tr> <th>Priority</th> <td>Normal</td> </tr> <tr> <th>Type</th> <td>Task</td> </tr> <tr> <th>State</th> <td>Open</td> </tr> <tr> <th>Assignee</th> <td>Unassigned</td> </tr> <tr> <th>Subsystem</th> <td>No subsystem</td> </tr> <tr> <th>Fix versions</th> <td>1.0.23</td> </tr> <tr> <th>Affected versions</th> <td>Unknown</td> </tr> <tr> <th>Fixed in build</th> <td>Next Build</td> </tr> <tr> <th>resolution</th> <td>No resolution</td> </tr> </table>
+]]>
+            </description>
+            <pubDate>Thu, 28 Aug 2014 14:28:21 UT</pubDate>
+        </item>
+        <item>
+            <title>DMAN-656: Create a view to set weekly target</title>
+            <link>http://ontometrics.com:8085/issue/DMAN-656</link>
+            <description>
+                <![CDATA[
+<table> <tr> <th>Reporter</th> <td> <img src="http://ontometrics.com:8085/_classpath/smartui/img/youPicture.gif" width="56" height="59" alt="Noura Hassan (noura)" title="Noura Hassan (noura)"/> Noura Hassan (noura) </td> </tr> <tr> <th>Created</th> <td>Aug 28, 2014 7:27:31 AM</td> </tr> <tr> <th>Updated</th> <td>Aug 28, 2014 7:27:31 AM</td> </tr> <tr> <th>Priority</th> <td>Normal</td> </tr> <tr> <th>Type</th> <td>Task</td> </tr> <tr> <th>State</th> <td>In Progress</td> </tr> <tr> <th>Assignee</th> <td>Noura Hassan (noura)</td> </tr> <tr> <th>Subsystem</th> <td>No subsystem</td> </tr> <tr> <th>Fix versions</th> <td>1.0.23</td> </tr> <tr> <th>Affected versions</th> <td>Unknown</td> </tr> <tr> <th>Fixed in build</th> <td>Next Build</td> </tr> <tr> <th>resolution</th> <td>No resolution</td> </tr> </table>
+]]>
+            </description>
+            <pubDate>Thu, 28 Aug 2014 14:27:31 UT</pubDate>
+        </item>
+        <item>
+            <title>HA-665: Scraper does not fetch Glassdoor urls</title>
+            <link>http://ontometrics.com:8085/issue/HA-665</link>
+            <description>
+                <![CDATA[
+<table> <tr> <th>Reporter</th> <td> <img src="http://www.gravatar.com/avatar/0a18770794a74b222730b640455662d9.jpg?s=60&amp;d=monsterid" width="56" height="59" alt="Nikolay Chorniy (nikolay.chorniy@gmail.com)" title="Nikolay Chorniy (nikolay.chorniy@gmail.com)"/> Nikolay Chorniy (nikolay.chorniy@gmail.com) </td> </tr> <tr> <th>Created</th> <td>Aug 15, 2014 5:39:13 AM</td> </tr> <tr> <th>Updated</th> <td>Aug 28, 2014 6:16:22 AM</td> </tr> <tr> <th>Resolved</th> <td>Aug 28, 2014 6:16:22 AM</td> </tr> <tr> <th>Priority</th> <td>Major</td> </tr> <tr> <th>Type</th> <td>Bug</td> </tr> <tr> <th>State</th> <td>Fixed</td> </tr> <tr> <th>Assignee</th> <td>Unassigned</td> </tr> <tr> <th>Subsystem</th> <td>No subsystem</td> </tr> <tr> <th>Fix versions</th> <td>2.2</td> </tr> <tr> <th>Affected versions</th> <td>Unknown</td> </tr> <tr> <th>Fixed in build</th> <td>Next Build</td> </tr> <tr> <th>aggregatetimespent</th> <td>No aggregatetimespent</td> </tr> <tr> <th>aggregatetimeestimate</th> <td>No aggregatetimeestimate</td> </tr> <tr> <th>resolution</th> <td>No resolution</td> </tr> <tr> <th>timespent</th> <td>No timespent</td> </tr> <tr> <th>timeestimate</th> <td>No timeestimate</td> </tr> </table> <div class="wiki text">When scraper tries to fetch contents of Glassdoor job listing url, it gets HTTP status 403 response<br/><br/><pre class="wikicode">java.io.IOException: Server returned HTTP response code: 403 for URL: <br/><a href="http://www.glassdoor.com/Job/california-java-developer-jobs-SRCH_IL.0,10_IS2280_KO11,25_IP6.htm">http://www.glassdoor.com/Job/california-java-developer-jobs-SRCH_IL.0,10_IS2280_KO11,25_IP6.htm</a><br/></pre></div>
+]]>
+            </description>
+            <pubDate>Thu, 28 Aug 2014 13:16:22 UT</pubDate>
+        </item>
+        <item>
+            <title>AIA-8: Need to parse different change types</title>
+            <link>http://ontometrics.com:8085/issue/AIA-8</link>
+            <description>
+                <![CDATA[
+<table> <tr> <th>Reporter</th> <td> <img src="http://www.gravatar.com/avatar/2543fe7b34482922746d3aaf4aa86652.jpg?s=60&amp;d=monsterid" width="56" height="59" alt="Rob Williams (rob)" title="Rob Williams (rob)"/> Rob Williams (rob) </td> </tr> <tr> <th>Created</th> <td>Jul 30, 2014 12:00:41 PM</td> </tr> <tr> <th>Updated</th> <td>Aug 27, 2014 4:19:00 PM</td> </tr> <tr> <th>Priority</th> <td>Normal</td> </tr> <tr> <th>Type</th> <td>Bug</td> </tr> <tr> <th>State</th> <td>Submitted</td> </tr> <tr> <th>Assignee</th> <td>Rob Williams (rob)</td> </tr> <tr> <th>Subsystem</th> <td>No subsystem</td> </tr> <tr> <th>Fix versions</th> <td>0.0.2</td> </tr> <tr> <th>Affected versions</th> <td>Unknown</td> </tr> <tr> <th>Fixed in build</th> <td>Next Build</td> </tr> </table> <div class="wiki text">There are different types of changes. Most of them are of the simple form: <br/><br/><pre class="wikicode"> &lt;user&gt; changed &lt;field&gt; from &lt;prior value&gt; to &lt;new value&gt;</pre><br/>but relations are different and are triggered by different types.</div>
+]]>
+            </description>
+            <pubDate>Wed, 27 Aug 2014 23:19:00 UT</pubDate>
+        </item>
+        <item>
+            <title>AIA-27: simplify date filtering</title>
+            <link>http://ontometrics.com:8085/issue/AIA-27</link>
+            <description>
+                <![CDATA[
+<table> <tr> <th>Reporter</th> <td> <img src="http://www.gravatar.com/avatar/2543fe7b34482922746d3aaf4aa86652.jpg?s=60&amp;d=monsterid" width="56" height="59" alt="Rob Williams (rob)" title="Rob Williams (rob)"/> Rob Williams (rob) </td> </tr> <tr> <th>Created</th> <td>Aug 26, 2014 8:29:12 PM</td> </tr> <tr> <th>Updated</th> <td>Aug 27, 2014 4:19:00 PM</td> </tr> <tr> <th>Priority</th> <td>Normal</td> </tr> <tr> <th>Type</th> <td>Bug</td> </tr> <tr> <th>State</th> <td>Submitted</td> </tr> <tr> <th>Assignee</th> <td>Unassigned</td> </tr> <tr> <th>Subsystem</th> <td>No subsystem</td> </tr> <tr> <th>Fix versions</th> <td>0.0.2</td> </tr> <tr> <th>Affected versions</th> <td>Unknown</td> </tr> <tr> <th>Fixed in build</th> <td>Next Build</td> </tr> </table> <div class="wiki text">Make sure we only get events that happened since the last event we posted. Convert to just dates.</div>
+]]>
+            </description>
+            <pubDate>Wed, 27 Aug 2014 23:19:00 UT</pubDate>
+        </item>
+        <item>
+            <title>AIA-26: Got too many extra updates on issues</title>
+            <link>http://ontometrics.com:8085/issue/AIA-26</link>
+            <description>
+                <![CDATA[
+<table> <tr> <th>Reporter</th> <td> <img src="http://www.gravatar.com/avatar/75c2bdacfd2d62abcbfe7beda3d9c613.jpg?s=60&amp;d=monsterid" width="56" height="59" alt="Andrey Chorniy (andrey.chorniy)" title="Andrey Chorniy (andrey.chorniy)"/> Andrey Chorniy (andrey.chorniy) </td> </tr> <tr> <th>Created</th> <td>Aug 26, 2014 1:17:48 PM</td> </tr> <tr> <th>Updated</th> <td>Aug 27, 2014 4:19:00 PM</td> </tr> <tr> <th>Priority</th> <td>Normal</td> </tr> <tr> <th>Type</th> <td>Bug</td> </tr> <tr> <th>State</th> <td>Open</td> </tr> <tr> <th>Assignee</th> <td>Unassigned</td> </tr> <tr> <th>Subsystem</th> <td>No subsystem</td> </tr> <tr> <th>Fix versions</th> <td>0.0.2</td> </tr> <tr> <th>Affected versions</th> <td>Unknown</td> </tr> <tr> <th>Fixed in build</th> <td>Next Build</td> </tr> </table> <div class="wiki text">After version has been changed we got a lot of updates in the slack channel. Most of them are repeating each other (text). It looks like a lot of them was not reported before, but after version update they appear in tha channel with extra changes which should not be reported<br/><br/>For example here only last message should appear<br/><pre class="wikicode">nikolay.chorniy@gmail.com* updated HA-650: Add ability to search by candidate name<br/><br/>bot [9:22 PM]<br/>*nikolay.chorniy@gmail.com* updated HA-650: Add ability to search by candidate name<br/><br/>bot [9:22 PM]<br/>*nikolay.chorniy@gmail.com* updated HA-650: Add ability to search by candidate name<br/><br/>bot [9:22 PM]<br/>*andrey.chorniy* updated HA-650: Add ability to search by candidate name<br/><br/>bot [9:22 PM]<br/>*andrey.chorniy* updated HA-650: Add ability to search by candidate name<br/><br/>bot [9:22 PM]<br/>*andrey.chorniy* updated HA-650: Add ability to search by candidate name<br/><br/>bot [9:22 PM]9:22<br/>*dmabashov* updated HA-650: Add ability to search by candidate name<br/><br/>bot [9:22 PM]<br/>*dmabashov* updated HA-650: Add ability to search by candidate name<br/><br/>bot [9:22 PM]<br/>*rob* updated HA-650: Add ability to search by candidate name<br/>Fix versions: 2.1 -&gt; 2.2</pre></div>
+]]>
+            </description>
+            <pubDate>Wed, 27 Aug 2014 23:19:00 UT</pubDate>
+        </item>
+        <item>
+            <title>
+                AIA-21: Include issue creation event into the list of changes for the issue
+            </title>
+            <link>http://ontometrics.com:8085/issue/AIA-21</link>
+            <description>
+                <![CDATA[
+<table> <tr> <th>Reporter</th> <td> <img src="http://www.gravatar.com/avatar/0a18770794a74b222730b640455662d9.jpg?s=60&amp;d=monsterid" width="56" height="59" alt="Nikolay Chorniy (nikolay.chorniy@gmail.com)" title="Nikolay Chorniy (nikolay.chorniy@gmail.com)"/> Nikolay Chorniy (nikolay.chorniy@gmail.com) </td> </tr> <tr> <th>Created</th> <td>Aug 25, 2014 4:15:59 AM</td> </tr> <tr> <th>Updated</th> <td>Aug 27, 2014 4:19:00 PM</td> </tr> <tr> <th>Priority</th> <td>Normal</td> </tr> <tr> <th>Type</th> <td>Task</td> </tr> <tr> <th>State</th> <td>Open</td> </tr> <tr> <th>Assignee</th> <td>Unassigned</td> </tr> <tr> <th>Subsystem</th> <td>No subsystem</td> </tr> <tr> <th>Fix versions</th> <td>0.0.2</td> </tr> <tr> <th>Affected versions</th> <td>Unknown</td> </tr> <tr> <th>Fixed in build</th> <td>Next Build</td> </tr> </table> <div class="wiki text">Except all items represented by a &lt;change&gt; tag which represent issue edit we should include &quot;issue creation event&quot; as initial event for the issue. In order to do that we can parse &lt;issue&gt; tag contents of the &quot;issue changes&quot; API response:<br/><br/><pre class="wikicode">&lt;changes&gt;<br/> &lt;issue id=&quot;ASOC-185&quot;&gt;<br/> &lt;field xmlns:xsi=&quot;<a href="http://www.w3.org/2001/XMLSchema-instance">http://www.w3.org/2001/XMLSchema-instance</a>&quot; xsi:type=&quot;SingleField&quot; name=&quot;projectShortName&quot;&gt;<br/> &lt;value&gt;ASOC&lt;/value&gt;<br/> &lt;/field&gt;<br/> &lt;field xmlns:xsi=&quot;<a href="http://www.w3.org/2001/XMLSchema-instance">http://www.w3.org/2001/XMLSchema-instance</a>&quot; xsi:type=&quot;SingleField&quot; name=&quot;numberInProject&quot;&gt;<br/> &lt;value&gt;185&lt;/value&gt;<br/> &lt;/field&gt;<br/> &lt;field xmlns:xsi=&quot;<a href="http://www.w3.org/2001/XMLSchema-instance">http://www.w3.org/2001/XMLSchema-instance</a>&quot; xsi:type=&quot;SingleField&quot; name=&quot;summary&quot;&gt;<br/> &lt;value&gt;User&#39;s name appears incorrectly in profile page&lt;/value&gt;<br/> &lt;/field&gt;<br/> &lt;field xmlns:xsi=&quot;<a href="http://www.w3.org/2001/XMLSchema-instance">http://www.w3.org/2001/XMLSchema-instance</a>&quot; xsi:type=&quot;SingleField&quot; name=&quot;description&quot;&gt;<br/> &lt;value&gt;<br/> Name needs to appear as {first name} {last name}. It currently appears {last name} {first name}.<br/> &lt;/value&gt;<br/> &lt;/field&gt;<br/> &lt;field xmlns:xsi=&quot;<a href="http://www.w3.org/2001/XMLSchema-instance">http://www.w3.org/2001/XMLSchema-instance</a>&quot; xsi:type=&quot;SingleField&quot; name=&quot;created&quot;&gt;<br/> &lt;value&gt;1405378306815&lt;/value&gt;<br/> &lt;/field&gt;<br/> &lt;field xmlns:xsi=&quot;<a href="http://www.w3.org/2001/XMLSchema-instance">http://www.w3.org/2001/XMLSchema-instance</a>&quot; xsi:type=&quot;SingleField&quot; name=&quot;updated&quot;&gt;<br/> &lt;value&gt;1405970255876&lt;/value&gt;<br/> &lt;/field&gt;<br/> &lt;field xmlns:xsi=&quot;<a href="http://www.w3.org/2001/XMLSchema-instance">http://www.w3.org/2001/XMLSchema-instance</a>&quot; xsi:type=&quot;SingleField&quot; name=&quot;updaterName&quot;&gt;<br/> &lt;value&gt;blincoln&lt;/value&gt;<br/> &lt;/field&gt;<br/> &lt;field xmlns:xsi=&quot;<a href="http://www.w3.org/2001/XMLSchema-instance">http://www.w3.org/2001/XMLSchema-instance</a>&quot; xsi:type=&quot;SingleField&quot; name=&quot;updaterFullName&quot;&gt;<br/> &lt;value&gt;Bobby Lincoln&lt;/value&gt;<br/> &lt;/field&gt;<br/> &lt;field xmlns:xsi=&quot;<a href="http://www.w3.org/2001/XMLSchema-instance">http://www.w3.org/2001/XMLSchema-instance</a>&quot; xsi:type=&quot;SingleField&quot; name=&quot;resolved&quot;&gt;<br/> &lt;value&gt;1405954413121&lt;/value&gt;<br/> &lt;/field&gt;<br/> &lt;field xmlns:xsi=&quot;<a href="http://www.w3.org/2001/XMLSchema-instance">http://www.w3.org/2001/XMLSchema-instance</a>&quot; xsi:type=&quot;SingleField&quot; name=&quot;reporterName&quot;&gt;<br/> &lt;value&gt;justinbrooks&lt;/value&gt;<br/> &lt;/field&gt;<br/> &lt;field xmlns:xsi=&quot;<a href="http://www.w3.org/2001/XMLSchema-instance">http://www.w3.org/2001/XMLSchema-instance</a>&quot; xsi:type=&quot;SingleField&quot; name=&quot;reporterFullName&quot;&gt;<br/> &lt;value&gt;Justin Brooks&lt;/value&gt;<br/> &lt;/field&gt;<br/> &lt;field xmlns:xsi=&quot;<a href="http://www.w3.org/2001/XMLSchema-instance">http://www.w3.org/2001/XMLSchema-instance</a>&quot; xsi:type=&quot;SingleField&quot; name=&quot;commentsCount&quot;&gt;<br/> &lt;value&gt;1&lt;/value&gt;<br/> &lt;/field&gt;<br/> &lt;field xmlns:xsi=&quot;<a href="http://www.w3.org/2001/XMLSchema-instance">http://www.w3.org/2001/XMLSchema-instance</a>&quot; xsi:type=&quot;SingleField&quot; name=&quot;votes&quot;&gt;<br/> &lt;value&gt;0&lt;/value&gt;<br/> &lt;/field&gt;<br/> &lt;field xmlns:xsi=&quot;<a href="http://www.w3.org/2001/XMLSchema-instance">http://www.w3.org/2001/XMLSchema-instance</a>&quot; xsi:type=&quot;LinkField&quot; name=&quot;links&quot;&gt;<br/> &lt;value type=&quot;Relates&quot; role=&quot;relates to&quot;&gt;ASOC-134&lt;/value&gt;<br/> &lt;/field&gt;<br/> &lt;field xmlns:xsi=&quot;<a href="http://www.w3.org/2001/XMLSchema-instance">http://www.w3.org/2001/XMLSchema-instance</a>&quot; xsi:type=&quot;CustomFieldValue&quot; name=&quot;Priority&quot;&gt;<br/> &lt;value&gt;Normal&lt;/value&gt;<br/> &lt;/field&gt;<br/> &lt;field xmlns:xsi=&quot;<a href="http://www.w3.org/2001/XMLSchema-instance">http://www.w3.org/2001/XMLSchema-instance</a>&quot; xsi:type=&quot;CustomFieldValue&quot; name=&quot;Type&quot;&gt;<br/> &lt;value&gt;Bug&lt;/value&gt;<br/> &lt;/field&gt;<br/> &lt;field xmlns:xsi=&quot;<a href="http://www.w3.org/2001/XMLSchema-instance">http://www.w3.org/2001/XMLSchema-instance</a>&quot; xsi:type=&quot;CustomFieldValue&quot; name=&quot;State&quot;&gt;<br/> &lt;value&gt;Fixed&lt;/value&gt;<br/> &lt;/field&gt;<br/> &lt;field xmlns:xsi=&quot;<a href="http://www.w3.org/2001/XMLSchema-instance">http://www.w3.org/2001/XMLSchema-instance</a>&quot; xsi:type=&quot;MultiUserField&quot; name=&quot;Assignee&quot;&gt;<br/> &lt;value fullName=&quot;Noura Hassan&quot;&gt;noura&lt;/value&gt;<br/> &lt;/field&gt;<br/> &lt;field xmlns:xsi=&quot;<a href="http://www.w3.org/2001/XMLSchema-instance">http://www.w3.org/2001/XMLSchema-instance</a>&quot; xsi:type=&quot;CustomFieldValue&quot; name=&quot;Subsystem&quot;&gt;<br/> &lt;value&gt;No subsystem&lt;/value&gt;<br/> &lt;/field&gt;<br/> &lt;field xmlns:xsi=&quot;<a href="http://www.w3.org/2001/XMLSchema-instance">http://www.w3.org/2001/XMLSchema-instance</a>&quot; xsi:type=&quot;CustomFieldValue&quot; name=&quot;Fix versions&quot;&gt;<br/> &lt;value&gt;0.8.0&lt;/value&gt;<br/> &lt;/field&gt;<br/> &lt;comment id=&quot;76-1490&quot; author=&quot;rob&quot; authorFullName=&quot;Rob Williams&quot; issueId=&quot;ASOC-185&quot; deleted=&quot;false&quot; text=&quot;Is the profile page even marked as done yet? I think we can probably hold fire on that until it is done. I am pretty sure we got held up waiting for something on it.&quot; shownForIssueAuthor=&quot;false&quot; created=&quot;1405380835499&quot;&gt;<br/> &lt;replies/&gt;<br/> &lt;/comment&gt;<br/> &lt;/issue&gt;<br/>&lt;/changes&gt;</pre></div>
+]]>
+            </description>
+            <pubDate>Wed, 27 Aug 2014 23:19:00 UT</pubDate>
+        </item>
+        <item>
+            <title>AIA-19: Need to make a monitor Agent</title>
+            <link>http://ontometrics.com:8085/issue/AIA-19</link>
+            <description>
+                <![CDATA[
+<table> <tr> <th>Reporter</th> <td> <img src="http://www.gravatar.com/avatar/2543fe7b34482922746d3aaf4aa86652.jpg?s=60&amp;d=monsterid" width="56" height="59" alt="Rob Williams (rob)" title="Rob Williams (rob)"/> Rob Williams (rob) </td> </tr> <tr> <th>Created</th> <td>Aug 23, 2014 7:34:43 AM</td> </tr> <tr> <th>Updated</th> <td>Aug 27, 2014 4:19:00 PM</td> </tr> <tr> <th>Priority</th> <td>Normal</td> </tr> <tr> <th>Type</th> <td>Task</td> </tr> <tr> <th>State</th> <td>Open</td> </tr> <tr> <th>Assignee</th> <td>Unassigned</td> </tr> <tr> <th>Subsystem</th> <td>No subsystem</td> </tr> <tr> <th>Fix versions</th> <td>0.0.2</td> </tr> <tr> <th>Affected versions</th> <td>Unknown</td> </tr> <tr> <th>Fixed in build</th> <td>Next Build</td> </tr> </table> <div class="wiki text">So on JobSpider, we are constantly deploying builds only to have the Customer tell us later that no data is coming through. <br/><br/>We need to write a simple monitor that counts the # of items found, imported, geocoded, etc., and then posts a message into the channel from time-to-time.<br/><br/>This agent should also have the ability to detect idle periods that are too long, so for example post a message if we have not seen any new items in 5 hours.</div>
+]]>
+            </description>
+            <pubDate>Wed, 27 Aug 2014 23:19:00 UT</pubDate>
+        </item>
+        <item>
+            <title>AIA-17: Need to externalize properties</title>
+            <link>http://ontometrics.com:8085/issue/AIA-17</link>
+            <description>
+                <![CDATA[
+<table> <tr> <th>Reporter</th> <td> <img src="http://www.gravatar.com/avatar/2543fe7b34482922746d3aaf4aa86652.jpg?s=60&amp;d=monsterid" width="56" height="59" alt="Rob Williams (rob)" title="Rob Williams (rob)"/> Rob Williams (rob) </td> </tr> <tr> <th>Created</th> <td>Aug 22, 2014 1:10:39 PM</td> </tr> <tr> <th>Updated</th> <td>Aug 27, 2014 4:19:00 PM</td> </tr> <tr> <th>Priority</th> <td>Normal</td> </tr> <tr> <th>Type</th> <td>Task</td> </tr> <tr> <th>State</th> <td>Open</td> </tr> <tr> <th>Assignee</th> <td>Unassigned</td> </tr> <tr> <th>Subsystem</th> <td>No subsystem</td> </tr> <tr> <th>Fix versions</th> <td>0.0.2</td> </tr> <tr> <th>Affected versions</th> <td>Unknown</td> </tr> <tr> <th>Fixed in build</th> <td>Next Build</td> </tr> </table> <div class="wiki text">For example, the polling interval. Could make a simple web interface. Or just put them in a properties file and add logic to detect changes.</div>
+]]>
+            </description>
+            <pubDate>Wed, 27 Aug 2014 23:19:00 UT</pubDate>
+        </item>
+        <item>
+            <title>
+                AIA-16: System needs to have a generalized facility for converting extracted events to messages for posting
+            </title>
+            <link>http://ontometrics.com:8085/issue/AIA-16</link>
+            <description>
+                <![CDATA[
+<table> <tr> <th>Reporter</th> <td> <img src="http://www.gravatar.com/avatar/2543fe7b34482922746d3aaf4aa86652.jpg?s=60&amp;d=monsterid" width="56" height="59" alt="Rob Williams (rob)" title="Rob Williams (rob)"/> Rob Williams (rob) </td> </tr> <tr> <th>Created</th> <td>Aug 22, 2014 1:07:49 PM</td> </tr> <tr> <th>Updated</th> <td>Aug 27, 2014 4:19:00 PM</td> </tr> <tr> <th>Priority</th> <td>Normal</td> </tr> <tr> <th>Type</th> <td>Task</td> </tr> <tr> <th>State</th> <td>Open</td> </tr> <tr> <th>Assignee</th> <td>Unassigned</td> </tr> <tr> <th>Subsystem</th> <td>No subsystem</td> </tr> <tr> <th>Fix versions</th> <td>0.0.2</td> </tr> <tr> <th>Affected versions</th> <td>Unknown</td> </tr> <tr> <th>Fixed in build</th> <td>Next Build</td> </tr> </table> <div class="wiki text">Right now, we are converting all messages in the same way. We should make a simple converter, and then have the ability to have different converters for different event types.</div>
+]]>
+            </description>
+            <pubDate>Wed, 27 Aug 2014 23:19:00 UT</pubDate>
+        </item>
+        <item>
+            <title>
+                AIA-15: System needs to skip over Events that cannot be parsed
+            </title>
+            <link>http://ontometrics.com:8085/issue/AIA-15</link>
+            <description>
+                <![CDATA[
+<table> <tr> <th>Reporter</th> <td> <img src="http://www.gravatar.com/avatar/2543fe7b34482922746d3aaf4aa86652.jpg?s=60&amp;d=monsterid" width="56" height="59" alt="Rob Williams (rob)" title="Rob Williams (rob)"/> Rob Williams (rob) </td> </tr> <tr> <th>Created</th> <td>Aug 22, 2014 12:30:41 PM</td> </tr> <tr> <th>Updated</th> <td>Aug 27, 2014 4:19:00 PM</td> </tr> <tr> <th>Priority</th> <td>Normal</td> </tr> <tr> <th>Type</th> <td>Task</td> </tr> <tr> <th>State</th> <td>Open</td> </tr> <tr> <th>Assignee</th> <td>Unassigned</td> </tr> <tr> <th>Subsystem</th> <td>No subsystem</td> </tr> <tr> <th>Fix versions</th> <td>0.0.2</td> </tr> <tr> <th>Affected versions</th> <td>Unknown</td> </tr> <tr> <th>Fixed in build</th> <td>Next Build</td> </tr> </table> <div class="wiki text">There are two keys aspects to this behavior:<br/><br/><ul class="wiki-list0"><li> make sure the rest of the events in the current fetch are processed<br/></li><li> make sure that if we fail on an event that happens to be the last one, we don&#39;t resume with it next time and just fail again</li></ul><br/>Something simple here, a supervisor with a try block.</div>
+]]>
+            </description>
+            <pubDate>Wed, 27 Aug 2014 23:19:00 UT</pubDate>
+        </item>
+        <item>
+            <title>
+                AIA-6: Extract comment and post it to the appropriate feed like any other change
+            </title>
+            <link>http://ontometrics.com:8085/issue/AIA-6</link>
+            <description>
+                <![CDATA[
+<table> <tr> <th>Reporter</th> <td> <img src="http://www.gravatar.com/avatar/2543fe7b34482922746d3aaf4aa86652.jpg?s=60&amp;d=monsterid" width="56" height="59" alt="Rob Williams (rob)" title="Rob Williams (rob)"/> Rob Williams (rob) </td> </tr> <tr> <th>Created</th> <td>Jul 30, 2014 12:22:45 PM</td> </tr> <tr> <th>Updated</th> <td>Aug 27, 2014 4:19:00 PM</td> </tr> <tr> <th>Priority</th> <td>Normal</td> </tr> <tr> <th>Type</th> <td>Bug</td> </tr> <tr> <th>State</th> <td>Submitted</td> </tr> <tr> <th>Assignee</th> <td>Unassigned</td> </tr> <tr> <th>Subsystem</th> <td>No subsystem</td> </tr> <tr> <th>Fix versions</th> <td>0.0.2</td> </tr> <tr> <th>Affected versions</th> <td>Unknown</td> </tr> <tr> <th>Fixed in build</th> <td>Next Build</td> </tr> </table>
+]]>
+            </description>
+            <pubDate>Wed, 27 Aug 2014 23:19:00 UT</pubDate>
+        </item>
+        <item>
+            <title>AIA-5: make sample data and put it into a test</title>
+            <link>http://ontometrics.com:8085/issue/AIA-5</link>
+            <description>
+                <![CDATA[
+<table> <tr> <th>Reporter</th> <td> <img src="http://www.gravatar.com/avatar/2543fe7b34482922746d3aaf4aa86652.jpg?s=60&amp;d=monsterid" width="56" height="59" alt="Rob Williams (rob)" title="Rob Williams (rob)"/> Rob Williams (rob) </td> </tr> <tr> <th>Created</th> <td>Jul 30, 2014 12:22:21 PM</td> </tr> <tr> <th>Updated</th> <td>Aug 27, 2014 4:19:00 PM</td> </tr> <tr> <th>Priority</th> <td>Normal</td> </tr> <tr> <th>Type</th> <td>Bug</td> </tr> <tr> <th>State</th> <td>Submitted</td> </tr> <tr> <th>Assignee</th> <td>Unassigned</td> </tr> <tr> <th>Subsystem</th> <td>No subsystem</td> </tr> <tr> <th>Fix versions</th> <td>0.0.2</td> </tr> <tr> <th>Affected versions</th> <td>Unknown</td> </tr> <tr> <th>Fixed in build</th> <td>Next Build</td> </tr> </table> <div class="wiki text">Make a change of just adding a comment to a ticket then go to the RSS and get the result and put it into the project as a file.</div>
+]]>
+            </description>
+            <pubDate>Wed, 27 Aug 2014 23:19:00 UT</pubDate>
+        </item>
+        <item>
+            <title>
+                AIA-4: System must pick up comments that are added to Tickets
+            </title>
+            <link>http://ontometrics.com:8085/issue/AIA-4</link>
+            <description>
+                <![CDATA[
+<table> <tr> <th>Reporter</th> <td> <img src="http://www.gravatar.com/avatar/2543fe7b34482922746d3aaf4aa86652.jpg?s=60&amp;d=monsterid" width="56" height="59" alt="Rob Williams (rob)" title="Rob Williams (rob)"/> Rob Williams (rob) </td> </tr> <tr> <th>Created</th> <td>Jul 30, 2014 12:21:09 PM</td> </tr> <tr> <th>Updated</th> <td>Aug 27, 2014 4:19:00 PM</td> </tr> <tr> <th>Priority</th> <td>Normal</td> </tr> <tr> <th>Type</th> <td>Task</td> </tr> <tr> <th>State</th> <td>Open</td> </tr> <tr> <th>Assignee</th> <td>Unassigned</td> </tr> <tr> <th>Subsystem</th> <td>No subsystem</td> </tr> <tr> <th>Fix versions</th> <td>0.0.2</td> </tr> <tr> <th>Affected versions</th> <td>Unknown</td> </tr> <tr> <th>Fixed in build</th> <td>Next Build</td> </tr> </table> <div class="wiki text">Assuming that this will just appear as another &#39;change,&#39; but we will have to verify. Might not because the feed has the comment already. We might have to just assume that it&#39;s in the feed because something changed then compare it to what we had and post the differences.</div>
+]]>
+            </description>
+            <pubDate>Wed, 27 Aug 2014 23:19:00 UT</pubDate>
+        </item>
+        <item>
+            <title>
+                AIA-3: agent for mapping an event to a chat channel
+            </title>
+            <link>http://ontometrics.com:8085/issue/AIA-3</link>
+            <description>
+                <![CDATA[
+<table> <tr> <th>Reporter</th> <td> <img src="http://www.gravatar.com/avatar/2543fe7b34482922746d3aaf4aa86652.jpg?s=60&amp;d=monsterid" width="56" height="59" alt="Rob Williams (rob)" title="Rob Williams (rob)"/> Rob Williams (rob) </td> </tr> <tr> <th>Created</th> <td>Jul 11, 2014 11:33:31 AM</td> </tr> <tr> <th>Updated</th> <td>Aug 27, 2014 4:19:00 PM</td> </tr> <tr> <th>Priority</th> <td>Normal</td> </tr> <tr> <th>Type</th> <td>Task</td> </tr> <tr> <th>State</th> <td>Open</td> </tr> <tr> <th>Assignee</th> <td>Nikolay Chorniy (nikolay.chorniy@gmail.com)</td> </tr> <tr> <th>Subsystem</th> <td>No subsystem</td> </tr> <tr> <th>Fix versions</th> <td>0.0.2</td> </tr> <tr> <th>Affected versions</th> <td>Unknown</td> </tr> <tr> <th>Fixed in build</th> <td>Next Build</td> </tr> </table> <div class="wiki text">The RSS feed will have events that have happened on every active project</div>
+]]>
+            </description>
+            <pubDate>Wed, 27 Aug 2014 23:19:00 UT</pubDate>
+        </item>
+        <item>
+            <title>
+                AIA-1: System needs to get new Events as they happen and post them to the channel
+            </title>
+            <link>http://ontometrics.com:8085/issue/AIA-1</link>
+            <description>
+                <![CDATA[
+<table> <tr> <th>Reporter</th> <td> <img src="http://www.gravatar.com/avatar/2543fe7b34482922746d3aaf4aa86652.jpg?s=60&amp;d=monsterid" width="56" height="59" alt="Rob Williams (rob)" title="Rob Williams (rob)"/> Rob Williams (rob) </td> </tr> <tr> <th>Created</th> <td>Jul 11, 2014 9:37:41 AM</td> </tr> <tr> <th>Updated</th> <td>Aug 27, 2014 4:19:00 PM</td> </tr> <tr> <th>Priority</th> <td>Normal</td> </tr> <tr> <th>Type</th> <td>Task</td> </tr> <tr> <th>State</th> <td>Open</td> </tr> <tr> <th>Assignee</th> <td>Rob Williams (rob)</td> </tr> <tr> <th>Subsystem</th> <td>No subsystem</td> </tr> <tr> <th>Fix versions</th> <td>0.0.2</td> </tr> <tr> <th>Affected versions</th> <td>Unknown</td> </tr> <tr> <th>Fixed in build</th> <td>Next Build</td> </tr> </table> <div class="wiki text">As each thing is changed, we have to get an event, that will be processed and turned into an update message.</div>
+]]>
+            </description>
+            <pubDate>Wed, 27 Aug 2014 23:19:00 UT</pubDate>
+        </item>
+        <item>
+            <title>
+                AIA-29: Issue creation messages should say who created the new issue
+            </title>
+            <link>http://ontometrics.com:8085/issue/AIA-29</link>
+            <description>
+                <![CDATA[
+<table> <tr> <th>Reporter</th> <td> <img src="http://www.gravatar.com/avatar/2543fe7b34482922746d3aaf4aa86652.jpg?s=60&amp;d=monsterid" width="56" height="59" alt="Rob Williams (rob)" title="Rob Williams (rob)"/> Rob Williams (rob) </td> </tr> <tr> <th>Created</th> <td>Aug 27, 2014 4:18:37 PM</td> </tr> <tr> <th>Updated</th> <td>Aug 27, 2014 4:18:37 PM</td> </tr> <tr> <th>Priority</th> <td>Normal</td> </tr> <tr> <th>Type</th> <td>Bug</td> </tr> <tr> <th>State</th> <td>Submitted</td> </tr> <tr> <th>Assignee</th> <td>Unassigned</td> </tr> <tr> <th>Subsystem</th> <td>No subsystem</td> </tr> <tr> <th>Fix versions</th> <td>Unscheduled</td> </tr> <tr> <th>Affected versions</th> <td>Unknown</td> </tr> <tr> <th>Fixed in build</th> <td>Next Build</td> </tr> </table>
+]]>
+            </description>
+            <pubDate>Wed, 27 Aug 2014 23:18:37 UT</pubDate>
+        </item>
+        <item>
+            <title>
+                AIA-28: Other occurrences of issue IDs should also be linkified
+            </title>
+            <link>http://ontometrics.com:8085/issue/AIA-28</link>
+            <description>
+                <![CDATA[
+<table> <tr> <th>Reporter</th> <td> <img src="http://www.gravatar.com/avatar/2543fe7b34482922746d3aaf4aa86652.jpg?s=60&amp;d=monsterid" width="56" height="59" alt="Rob Williams (rob)" title="Rob Williams (rob)"/> Rob Williams (rob) </td> </tr> <tr> <th>Created</th> <td>Aug 27, 2014 4:16:30 PM</td> </tr> <tr> <th>Updated</th> <td>Aug 27, 2014 4:16:30 PM</td> </tr> <tr> <th>Priority</th> <td>Normal</td> </tr> <tr> <th>Type</th> <td>Bug</td> </tr> <tr> <th>State</th> <td>Submitted</td> </tr> <tr> <th>Assignee</th> <td>Unassigned</td> </tr> <tr> <th>Subsystem</th> <td>No subsystem</td> </tr> <tr> <th>Fix versions</th> <td>Unscheduled</td> </tr> <tr> <th>Affected versions</th> <td>Unknown</td> </tr> <tr> <th>Fixed in build</th> <td>Next Build</td> </tr> </table> <div class="wiki text">Of course when links are added, we should make a link out of the other issue that is being linked to. See attached.</div>
+]]>
+            </description>
+            <pubDate>Wed, 27 Aug 2014 23:16:30 UT</pubDate>
+        </item>
+        <item>
+            <title>HA-685: we want to relabel "Trash" into "Archive"</title>
+            <link>http://ontometrics.com:8085/issue/HA-685</link>
+            <description>
+                <![CDATA[
+<table> <tr> <th>Reporter</th> <td> <img src="http://ontometrics.com:8085/_classpath/smartui/img/youPicture.gif" width="56" height="59" alt="Darren Mabashov (dmabashov)" title="Darren Mabashov (dmabashov)"/> Darren Mabashov (dmabashov) </td> </tr> <tr> <th>Created</th> <td>Aug 27, 2014 3:04:22 PM</td> </tr> <tr> <th>Updated</th> <td>Aug 27, 2014 3:36:16 PM</td> </tr> <tr> <th>Priority</th> <td>Normal</td> </tr> <tr> <th>Type</th> <td>Story</td> </tr> <tr> <th>State</th> <td>Submitted</td> </tr> <tr> <th>Assignee</th> <td>Unassigned</td> </tr> <tr> <th>Subsystem</th> <td>No subsystem</td> </tr> <tr> <th>Fix versions</th> <td>Unscheduled</td> </tr> <tr> <th>Affected versions</th> <td>Unknown</td> </tr> <tr> <th>Fixed in build</th> <td>Next Build</td> </tr> <tr> <th>aggregatetimespent</th> <td>No aggregatetimespent</td> </tr> <tr> <th>aggregatetimeestimate</th> <td>No aggregatetimeestimate</td> </tr> <tr> <th>resolution</th> <td>No resolution</td> </tr> <tr> <th>timespent</th> <td>No timespent</td> </tr> <tr> <th>timeestimate</th> <td>No timeestimate</td> </tr> </table> <div class="wiki text">We want the &quot;trash&quot; section to be labeled as Archive and have the following functionality:<br/><br/>1. have it fully searchable in all categories (feed, candidate leads, workspace)<br/> <br/>2. When a user closes / archives a lead that is not complete it will not go to the archive section but will be queued up to the Team Manager&#39;s Dashboard (see ticket # ) for approval. <br/><br/> a. this lead will not disappear out of the feed, candidate leads or other users workspace, but it will be easily identifiable that the lead is &quot;archive pending&quot; to all users. ID markers could be a that the lead is a different color, grayed out, or some type of distinguishing marker. <br/><br/>3. If a user closes / archives a lead that is complete it can go to the archive section without team manager approval but will also alert the Team Manager in the dashboard that a completed lead (team manager can also see which lead it was) has been archived. <br/><br/>4. any archived lead needs to have a visible date stamped on it as to when the lead was sent to the team manager for approval. This date needs to be stamped while the lead is subject to approval and when the lead get archived as well the date reflected will be the date that it was sent to the team manager for approval. <br/><br/>5. We still need a way to trash non-relevant leads. I am thinking when a user closes out a lead a prompt will come up asking the user &quot;do you want to archive this lead or trash this lead&quot; <br/><br/> a. trash will just trash it<br/> b. archive will prompt complete or not completed. <br/> </div>
+]]>
+            </description>
+            <pubDate>Wed, 27 Aug 2014 22:36:16 UT</pubDate>
+        </item>
+        <item>
+            <title>
+                HA-675: Deleting or thumbs downing a lead from the workspace makes the lead disappear from the feed.
+            </title>
+            <link>http://ontometrics.com:8085/issue/HA-675</link>
+            <description>
+                <![CDATA[
+<table> <tr> <th>Reporter</th> <td> <img src="http://ontometrics.com:8085/_classpath/smartui/img/youPicture.gif" width="56" height="59" alt="Darren Mabashov (dmabashov)" title="Darren Mabashov (dmabashov)"/> Darren Mabashov (dmabashov) </td> </tr> <tr> <th>Created</th> <td>Aug 21, 2014 10:52:16 AM</td> </tr> <tr> <th>Updated</th> <td>Aug 27, 2014 3:36:16 PM</td> </tr> <tr> <th>Priority</th> <td>Normal</td> </tr> <tr> <th>Type</th> <td>Bug</td> </tr> <tr> <th>State</th> <td>In Progress</td> </tr> <tr> <th>Assignee</th> <td>Andrey Chorniy (andrey.chorniy)</td> </tr> <tr> <th>Subsystem</th> <td>No subsystem</td> </tr> <tr> <th>Fix versions</th> <td>2.2</td> </tr> <tr> <th>Affected versions</th> <td>Unknown</td> </tr> <tr> <th>Fixed in build</th> <td>Next Build</td> </tr> <tr> <th>aggregatetimespent</th> <td>No aggregatetimespent</td> </tr> <tr> <th>aggregatetimeestimate</th> <td>No aggregatetimeestimate</td> </tr> <tr> <th>resolution</th> <td>No resolution</td> </tr> <tr> <th>timespent</th> <td>No timespent</td> </tr> <tr> <th>timeestimate</th> <td>No timeestimate</td> </tr> </table> <div class="wiki text">if a user presses the thumbs down button from their workspace or decides to trash a lead in their workspace the lead will disappear from the feed. <br/><br/>only leads that are trashed or thumbs downed directly on the feed should affect the feed. Leads that are thumbs downed or trashed in a users workspace should have no affect on the feed and therefore the ad should not disappear from the feed. </div>
+]]>
+            </description>
+            <pubDate>Wed, 27 Aug 2014 22:36:16 UT</pubDate>
+        </item>
+        <item>
+            <title>
+                HA-686: need to have reasons why lead is "completed" and moving toward placement
+            </title>
+            <link>http://ontometrics.com:8085/issue/HA-686</link>
+            <description>
+                <![CDATA[
+<table> <tr> <th>Reporter</th> <td> <img src="http://ontometrics.com:8085/_classpath/smartui/img/youPicture.gif" width="56" height="59" alt="Darren Mabashov (dmabashov)" title="Darren Mabashov (dmabashov)"/> Darren Mabashov (dmabashov) </td> </tr> <tr> <th>Created</th> <td>Aug 27, 2014 3:16:09 PM</td> </tr> <tr> <th>Updated</th> <td>Aug 27, 2014 3:23:04 PM</td> </tr> <tr> <th>Priority</th> <td>Normal</td> </tr> <tr> <th>Type</th> <td>Bug</td> </tr> <tr> <th>State</th> <td>Submitted</td> </tr> <tr> <th>Assignee</th> <td>Unassigned</td> </tr> <tr> <th>Subsystem</th> <td>No subsystem</td> </tr> <tr> <th>Fix versions</th> <td>Unscheduled</td> </tr> <tr> <th>Affected versions</th> <td>Unknown</td> </tr> <tr> <th>Fixed in build</th> <td>Next Build</td> </tr> <tr> <th>aggregatetimespent</th> <td>No aggregatetimespent</td> </tr> <tr> <th>aggregatetimeestimate</th> <td>No aggregatetimeestimate</td> </tr> <tr> <th>resolution</th> <td>No resolution</td> </tr> <tr> <th>timespent</th> <td>No timespent</td> </tr> <tr> <th>timeestimate</th> <td>No timeestimate</td> </tr> </table> <div class="wiki text">like we have for non-completed section we need a reason why a lead is complete when it moves to the queue to be archived. <br/><br/>can we have the following for a list of reasons:<br/><ul class="wiki-list0"><li> Picked up times<br/></li><li> Sending resumes<br/></li></ul></div>
+]]>
+            </description>
+            <pubDate>Wed, 27 Aug 2014 22:23:04 UT</pubDate>
+        </item>
+        <item>
+            <title>
+                AIA-25: Application posts issue changes which were already posted before
+            </title>
+            <link>http://ontometrics.com:8085/issue/AIA-25</link>
+            <description>
+                <![CDATA[
+<table> <tr> <th>Reporter</th> <td> <img src="http://www.gravatar.com/avatar/0a18770794a74b222730b640455662d9.jpg?s=60&amp;d=monsterid" width="56" height="59" alt="Nikolay Chorniy (nikolay.chorniy@gmail.com)" title="Nikolay Chorniy (nikolay.chorniy@gmail.com)"/> Nikolay Chorniy (nikolay.chorniy@gmail.com) </td> </tr> <tr> <th>Created</th> <td>Aug 26, 2014 10:36:03 AM</td> </tr> <tr> <th>Updated</th> <td>Aug 27, 2014 3:06:01 PM</td> </tr> <tr> <th>Resolved</th> <td>Aug 27, 2014 3:05:54 PM</td> </tr> <tr> <th>Priority</th> <td>Normal</td> </tr> <tr> <th>Type</th> <td>Bug</td> </tr> <tr> <th>State</th> <td>Fixed</td> </tr> <tr> <th>Assignee</th> <td>Unassigned</td> </tr> <tr> <th>Subsystem</th> <td>No subsystem</td> </tr> <tr> <th>Fix versions</th> <td>Unscheduled</td> </tr> <tr> <th>Affected versions</th> <td>Unknown</td> </tr> <tr> <th>Fixed in build</th> <td>Next Build</td> </tr> </table> <div class="wiki text">Application posts issue changes which were already posted before. Write failing test, then fix</div>
+]]>
+            </description>
+            <pubDate>Wed, 27 Aug 2014 22:06:01 UT</pubDate>
+        </item>
+        <item>
+            <title>HA-684: SEP Website--edits</title>
+            <link>http://ontometrics.com:8085/issue/HA-684</link>
+            <description>
+                <![CDATA[
+<table> <tr> <th>Reporter</th> <td> <img src="http://ontometrics.com:8085/_classpath/smartui/img/youPicture.gif" width="56" height="59" alt="Angela Tran (atran)" title="Angela Tran (atran)"/> Angela Tran (atran) </td> </tr> <tr> <th>Created</th> <td>Aug 27, 2014 12:00:52 PM</td> </tr> <tr> <th>Updated</th> <td>Aug 27, 2014 12:00:52 PM</td> </tr> <tr> <th>Priority</th> <td>Normal</td> </tr> <tr> <th>Type</th> <td>Bug</td> </tr> <tr> <th>State</th> <td>Submitted</td> </tr> <tr> <th>Assignee</th> <td>Mona Hammad (mona.hammad)</td> </tr> <tr> <th>Subsystem</th> <td>No subsystem</td> </tr> <tr> <th>Fix versions</th> <td>Unscheduled</td> </tr> <tr> <th>Affected versions</th> <td>Unknown</td> </tr> <tr> <th>Fixed in build</th> <td>Next Build</td> </tr> <tr> <th>aggregatetimespent</th> <td>No aggregatetimespent</td> </tr> <tr> <th>aggregatetimeestimate</th> <td>No aggregatetimeestimate</td> </tr> <tr> <th>resolution</th> <td>No resolution</td> </tr> <tr> <th>timespent</th> <td>No timespent</td> </tr> <tr> <th>timeestimate</th> <td>No timeestimate</td> </tr> </table> <div class="wiki text">Hi Mona, <br/><br/>Can you please replace the icons that are currently under the tech specialty page to what we had on the previous website?<br/><br/>I&#39;m also attaching screenshots that pertain to the spacing for the text. It&#39;s a bit uneven on different places...some with a space between paragraphs...some without. Please edit text so there&#39;s a space between paragraphs. <br/><br/>Please see other slides for other edits. Thanks.<br/><br/>I&#39;ll follow up with a few more items in a bit. Thanks.</div>
+]]>
+            </description>
+            <pubDate>Wed, 27 Aug 2014 19:00:52 UT</pubDate>
+        </item>
+        <item>
+            <title>DMAN-655: NPE on starting the timer</title>
+            <link>http://ontometrics.com:8085/issue/DMAN-655</link>
+            <description>
+                <![CDATA[
+<table> <tr> <th>Reporter</th> <td> <img src="http://ontometrics.com:8085/_classpath/smartui/img/youPicture.gif" width="56" height="59" alt="Noura Hassan (noura)" title="Noura Hassan (noura)"/> Noura Hassan (noura) </td> </tr> <tr> <th>Created</th> <td>Aug 27, 2014 6:49:56 AM</td> </tr> <tr> <th>Updated</th> <td>Aug 27, 2014 6:58:48 AM</td> </tr> <tr> <th>Priority</th> <td>Normal</td> </tr> <tr> <th>Type</th> <td>Exception</td> </tr> <tr> <th>State</th> <td>In Progress</td> </tr> <tr> <th>Assignee</th> <td>Noura Hassan (noura)</td> </tr> <tr> <th>Subsystem</th> <td>No subsystem</td> </tr> <tr> <th>Fix versions</th> <td>1.0.22</td> </tr> <tr> <th>Affected versions</th> <td>Unknown</td> </tr> <tr> <th>Fixed in build</th> <td>Next Build</td> </tr> <tr> <th>resolution</th> <td>No resolution</td> </tr> </table> <div class="wiki text"><div><pre class="wiki-exception">java.lang.NullPointerException at android.content.ContextWrapper.getResources(ContextWrapper.java:89) at android.view.ContextThemeWrapper.getResources(ContextThemeWrapper.java:78) at com.ontometrics.dminder.store.DminderDataStore.getSolarConditions(DminderDataStore.java:33) at com.ontometrics.dminder.timer.TotalDWithVariableRatesComputer.getCurrentConditions(TotalDWithVariableRatesComputer.java:110) at com.ontometrics.dminder.timer.TotalDWithVariableRatesComputer.calculateTotalDForPreviousTime(TotalDWithVariableRatesComputer.java:84) at com.ontometrics.dminder.timer.TotalDWithVariableRatesComputer.sessionDidStart(TotalDWithVariableRatesComputer.java:70) at com.ontometrics.solar.timer.SunExposureTimerImpl.start(SunExposureTimerImpl.java:189) at com.ontometrics.dminder.timer.SolarSessionTimerActivity.onTargetChanged(SolarSessionTimerActivity.java:372) at com.ontometrics.dminder.timer.TimerTargetFragment$3.onSingleTapUp(TimerTargetFragment.java:133) at android.view.GestureDetector.onTouchEvent(GestureDetector.java:595) at com.ontometrics.dminder.timer.TimerTargetFragment$4.onTouch(TimerTargetFragment.java:144) at android.view.View.dispatchTouchEvent(View.java:7701) at android.view.ViewGroup.dispatchTransformedTouchEvent(ViewGroup.java:2216) at android.view.ViewGroup.dispatchTouchEvent(ViewGroup.java:1959) at android.view.ViewGroup.dispatchTransformedTouchEvent(ViewGroup.java:2216) at android.view.ViewGroup.dispatchTouchEvent(ViewGroup.java:1959) at android.view.ViewGroup.dispatchTransformedTouchEvent(ViewGroup.java:2216) at android.view.ViewGroup.dispatchTouchEvent(ViewGroup.java:1959) at android.view.ViewGroup.dispatchTransformedTouchEvent(ViewGroup.java:2216)</pre></div></div>
+]]>
+            </description>
+            <pubDate>Wed, 27 Aug 2014 13:58:48 UT</pubDate>
+        </item>
+        <item>
+            <title>DMAN-654: NPE in RunningTimerFragment</title>
+            <link>http://ontometrics.com:8085/issue/DMAN-654</link>
+            <description>
+                <![CDATA[
+<table> <tr> <th>Reporter</th> <td> <img src="http://ontometrics.com:8085/_classpath/smartui/img/youPicture.gif" width="56" height="59" alt="Noura Hassan (noura)" title="Noura Hassan (noura)"/> Noura Hassan (noura) </td> </tr> <tr> <th>Created</th> <td>Aug 27, 2014 6:48:38 AM</td> </tr> <tr> <th>Updated</th> <td>Aug 27, 2014 6:48:46 AM</td> </tr> <tr> <th>Priority</th> <td>Normal</td> </tr> <tr> <th>Type</th> <td>Exception</td> </tr> <tr> <th>State</th> <td>Open</td> </tr> <tr> <th>Assignee</th> <td>Unassigned</td> </tr> <tr> <th>Subsystem</th> <td>No subsystem</td> </tr> <tr> <th>Fix versions</th> <td>1.0.22</td> </tr> <tr> <th>Affected versions</th> <td>Unknown</td> </tr> <tr> <th>Fixed in build</th> <td>Next Build</td> </tr> <tr> <th>resolution</th> <td>No resolution</td> </tr> </table> <div class="wiki text"><div><pre class="wiki-exception">java.lang.NullPointerException at com.ontometrics.dminder.timer.RunningTimerFragment.unregisterAlarms(RunningTimerFragment.java:251) at com.ontometrics.dminder.timer.RunningTimerFragment.resetBurnWarning(RunningTimerFragment.java:292) at com.ontometrics.dminder.timer.RunningTimerFragment.sunbatherTurnedOver(RunningTimerFragment.java:286) at com.ontometrics.dminder.timer.RunningTimerFragment.access$700(RunningTimerFragment.java:51) at com.ontometrics.dminder.timer.RunningTimerFragment$8$2.onClick(RunningTimerFragment.java:203) at com.android.internal.app.AlertController$ButtonHandler.handleMessage(AlertController.java:167) at android.os.Handler.dispatchMessage(Handler.java:102) at android.os.Looper.loop(Looper.java:157) at android.app.ActivityThread.main(ActivityThread.java:5293) at java.lang.reflect.Method.invokeNative(Native Method) at java.lang.reflect.Method.invoke(Method.java:515) at com.android.internal.os.ZygoteInit$MethodAndArgsCaller.run(ZygoteInit.java:1265) at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:1081) at dalvik.system.NativeStart.main(Native Method)</pre></div></div>
+]]>
+            </description>
+            <pubDate>Wed, 27 Aug 2014 13:48:46 UT</pubDate>
+        </item>
+        <item>
+            <title>DMAN-653: Exception thrown on create user wizard</title>
+            <link>http://ontometrics.com:8085/issue/DMAN-653</link>
+            <description>
+                <![CDATA[
+<table> <tr> <th>Reporter</th> <td> <img src="http://ontometrics.com:8085/_classpath/smartui/img/youPicture.gif" width="56" height="59" alt="Noura Hassan (noura)" title="Noura Hassan (noura)"/> Noura Hassan (noura) </td> </tr> <tr> <th>Created</th> <td>Aug 27, 2014 6:46:51 AM</td> </tr> <tr> <th>Updated</th> <td>Aug 27, 2014 6:47:19 AM</td> </tr> <tr> <th>Priority</th> <td>Normal</td> </tr> <tr> <th>Type</th> <td>Exception</td> </tr> <tr> <th>State</th> <td>Open</td> </tr> <tr> <th>Assignee</th> <td>Unassigned</td> </tr> <tr> <th>Subsystem</th> <td>No subsystem</td> </tr> <tr> <th>Fix versions</th> <td>1.0.22</td> </tr> <tr> <th>Affected versions</th> <td>Unknown</td> </tr> <tr> <th>Fixed in build</th> <td>Next Build</td> </tr> <tr> <th>resolution</th> <td>No resolution</td> </tr> </table> <div class="wiki text"><div><pre class="wiki-exception">ava.lang.RuntimeException: Unable to resume activity {com.ontometrics.dminder/com.ontometrics.dminder.home.CreateUserWizardActivity}: java.lang.NullPointerException at android.app.ActivityThread.performResumeActivity(ActivityThread.java:2946) at android.app.ActivityThread.handleResumeActivity(ActivityThread.java:2975) at android.app.ActivityThread$H.handleMessage(ActivityThread.java:1307) at android.os.Handler.dispatchMessage(Handler.java:102) at android.os.Looper.loop(Looper.java:157) at android.app.ActivityThread.main(ActivityThread.java:5356) at java.lang.reflect.Method.invokeNative(Native Method) at java.lang.reflect.Method.invoke(Method.java:515) at com.android.internal.os.ZygoteInit$MethodAndArgsCaller.run(ZygoteInit.java:1265) at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:1081) at dalvik.system.NativeStart.main(Native Method) Caused by: java.lang.NullPointerException at android.widget.ArrayAdapter.init(ArrayAdapter.java:310) at android.widget.ArrayAdapter.&lt;init&gt;(ArrayAdapter.java:153) at com.ontometrics.dminder.settings.ProfileFragment.setDateText(ProfileFragment.java:274) at com.ontometrics.dminder.settings.ProfileFragment.updateView(ProfileFragment.java:234) at com.ontometrics.dminder.settings.ProfileFragment.onResume(ProfileFragment.java:132) at android.support.v4.app.Fragment.performResume(Fragment.java:1547) at android.support.v4.app.FragmentManagerImpl.moveToState(FragmentManager.java:978) at android.support.v4.app.FragmentManagerImpl.moveToState(FragmentManager.java:1121) at android.support.v4.app.FragmentManagerImpl.moveToState(FragmentManager.java:1103) at android.support.v4.app.FragmentManagerImpl.dispatchResume(FragmentManager.java:1911) at android.support.v4.app.FragmentActivity.onResumeFragments(FragmentActivity.java:467) at android.support.v4.app.FragmentActivity.onPostResume(FragmentActivity.java:456) at android.support.v7.app.ActionBarActivity.onPostResume(ActionBarActivity.java:116) at android.app.Activity.performResume(Activity.java:5518) at android.app.ActivityThread.performResumeActivity(ActivityThread.java:2936) ... 10 more</pre></div></div>
+]]>
+            </description>
+            <pubDate>Wed, 27 Aug 2014 13:47:19 UT</pubDate>
+        </item>
+        <item>
+            <title>
+                HA-682: No technology keywords should be used in querying job sites
+            </title>
+            <link>http://ontometrics.com:8085/issue/HA-682</link>
+            <description>
+                <![CDATA[
+<table> <tr> <th>Reporter</th> <td> <img src="http://www.gravatar.com/avatar/2543fe7b34482922746d3aaf4aa86652.jpg?s=60&amp;d=monsterid" width="56" height="59" alt="Rob Williams (rob)" title="Rob Williams (rob)"/> Rob Williams (rob) </td> </tr> <tr> <th>Created</th> <td>Aug 26, 2014 3:51:23 PM</td> </tr> <tr> <th>Updated</th> <td>Aug 26, 2014 3:51:23 PM</td> </tr> <tr> <th>Priority</th> <td>Normal</td> </tr> <tr> <th>Type</th> <td>Task</td> </tr> <tr> <th>State</th> <td>Open</td> </tr> <tr> <th>Assignee</th> <td>Unassigned</td> </tr> <tr> <th>Subsystem</th> <td>No subsystem</td> </tr> <tr> <th>Fix versions</th> <td>2.2</td> </tr> <tr> <th>Affected versions</th> <td>Unknown</td> </tr> <tr> <th>Fixed in build</th> <td>Next Build</td> </tr> <tr> <th>aggregatetimespent</th> <td>No aggregatetimespent</td> </tr> <tr> <th>aggregatetimeestimate</th> <td>No aggregatetimeestimate</td> </tr> <tr> <th>resolution</th> <td>No resolution</td> </tr> <tr> <th>timespent</th> <td>No timespent</td> </tr> <tr> <th>timeestimate</th> <td>No timeestimate</td> </tr> </table> <div class="wiki text">At the source level, we want to just focus on either categories (e.g. Programming, Network), or specific job titles. NO technology (e.g. PHP). Plain and simple.<br/><br/>Seems we have an issue with Indeed because they don&#39;t have categories. (And LinkedIn, but we found out that that&#39;s not even working right now (and of course we didn&#39;t know...).) <br/><br/>If there are exceptions, add them as subtasks and mark them as blocked.<br/><br/>This ticket is done when we are doing NO technology terms to sources.</div>
+]]>
+            </description>
+            <pubDate>Tue, 26 Aug 2014 22:51:23 UT</pubDate>
+        </item>
+        <item>
+            <title>
+                HA-670: Companies are complaining we are calling them too much
+            </title>
+            <link>http://ontometrics.com:8085/issue/HA-670</link>
+            <description>
+                <![CDATA[
+<table> <tr> <th>Reporter</th> <td> <img src="http://ontometrics.com:8085/_classpath/smartui/img/youPicture.gif" width="56" height="59" alt="Darren Mabashov (dmabashov)" title="Darren Mabashov (dmabashov)"/> Darren Mabashov (dmabashov) </td> </tr> <tr> <th>Created</th> <td>Aug 18, 2014 1:49:04 PM</
+]]>
+                <![CDATA[
+td> </tr> <tr> <th>Updated</th> <td>Aug 26, 2014 3:09:00 PM</td> </tr> <tr> <th>Priority</th> <td>Normal</td> </tr> <tr> <th>Type</th> <td>Story</td> </tr> <tr> <th>State</th> <td>Submitted</td> </tr> <tr> <th>Assignee</th> <td>Unassigned</td> </tr> <tr> <th>Subsystem</th> <td>No subsystem</td> </tr> <tr> <th>Fix versions</th> <td>Unscheduled</td> </tr> <tr> <th>Affected versions</th> <td>Unknown</td> </tr> <tr> <th>Fixed in build</th> <td>Next Build</td> </tr> <tr> <th>aggregatetimespent</th> <td>No aggregatetimespent</td> </tr> <tr> <th>aggregatetimeestimate</th> <td>No aggregatetimeestimate</td> </tr> <tr> <th>resolution</th> <td>No resolution</td> </tr> <tr> <th>timespent</th> <td>No timespent</td> </tr> <tr> <th>timeestimate</th> <td>No timeestimate</td> </tr> </table> <div class="wiki text">there are certain leads that end up getting called too much from different members on the team and the company ends up getting upset at us. In some cases they have sent us pre-legal cease and desist orders.<br/><br/> There system needs to have the following functionality:<br/><br/>1. label a company &quot;do not call&quot; <br/> a. all leads associated with that company will be &quot;greyed out&quot; or something where any user can clearly identify not to call that company<br/><br/>2. Label a Contact that is associated with a Lead &quot;do not call&quot; <br/> a. only the contact marked &quot;do not call&quot; should be clearly identified. all other contacts will be ok to continue to call<br/><br/>3. Team Manager over ride<br/> a. the team manager user will have the ability to un-label a company or a contact off the &quot;do not call&quot; list </div>
+]]>
+            </description>
+            <pubDate>Tue, 26 Aug 2014 22:09:00 UT</pubDate>
+        </item>
+        <item>
+            <title>HA-681: need new user categories</title>
+            <link>http://ontometrics.com:8085/issue/HA-681</link>
+            <description>
+                <![CDATA[
+<table> <tr> <th>Reporter</th> <td> <img src="http://ontometrics.com:8085/_classpath/smartui/img/youPicture.gif" width="56" height="59" alt="Darren Mabashov (dmabashov)" title="Darren Mabashov (dmabashov)"/> Darren Mabashov (dmabashov) </td> </tr> <tr> <th>Created</th> <td>Aug 26, 2014 2:50:44 PM</
+]]>
+                <![CDATA[
+td> </tr> <tr> <th>Updated</th> <td>Aug 26, 2014 2:50:44 PM</td> </tr> <tr> <th>Priority</th> <td>Normal</td> </tr> <tr> <th>Type</th> <td>Bug</td> </tr> <tr> <th>State</th> <td>Submitted</td> </tr> <tr> <th>Assignee</th> <td>Unassigned</td> </tr> <tr> <th>Subsystem</th> <td>No subsystem</td> </tr> <tr> <th>Fix versions</th> <td>Unscheduled</td> </tr> <tr> <th>Affected versions</th> <td>Unknown</td> </tr> <tr> <th>Fixed in build</th> <td>Next Build</td> </tr> <tr> <th>aggregatetimespent</th> <td>No aggregatetimespent</td> </tr> <tr> <th>aggregatetimeestimate</th> <td>No aggregatetimeestimate</td> </tr> <tr> <th>resolution</th> <td>No resolution</td> </tr> <tr> <th>timespent</th> <td>No timespent</td> </tr> <tr> <th>timeestimate</th> <td>No timeestimate</td> </tr> </table> <div class="wiki text">Users:<br/><br/>1.<span class="wiki tab">&nbsp;&nbsp;&nbsp;&nbsp;</span>Administrator <br/><br/>a.<span class="wiki tab">&nbsp;&nbsp;&nbsp;&nbsp;</span>Ability to make system wide changes<br/>b.<span class="wiki tab">&nbsp;&nbsp;&nbsp;&nbsp;</span>All agencies and teams are visible<br/>c.<span class="wiki tab">&nbsp;&nbsp;&nbsp;&nbsp;</span>Add / Delete Agency Manager, Team Manager and Team users<br/>d.<span class="wiki tab">&nbsp;&nbsp;&nbsp;&nbsp;</span>Full functional abilities of all below users<br/><br/><br/>2.<span class="wiki tab">&nbsp;&nbsp;&nbsp;&nbsp;</span>Agency Manager <br/><br/>a.<span class="wiki tab">&nbsp;&nbsp;&nbsp;&nbsp;</span>All teams within agency are visible<br/>b.<span class="wiki tab">&nbsp;&nbsp;&nbsp;&nbsp;</span>Ability to create / delete new Team and/or Team Manager user and Team users<br/>c.<span class="wiki tab">&nbsp;&nbsp;&nbsp;&nbsp;</span>Ability to add / delete Keywords determining relevancy of leads for teams in that agency<br/>d.<span class="wiki tab">&nbsp;&nbsp;&nbsp;&nbsp;</span>Full Functional abilities of all below users<br/><br/><br/>3.<span class="wiki tab">&nbsp;&nbsp;&nbsp;&nbsp;</span>Team Manager<br/><br/>a.<span class="wiki tab">&nbsp;&nbsp;&nbsp;&nbsp;</span>Add / delete members of that specific team<br/>b.<span class="wiki tab">&nbsp;&nbsp;&nbsp;&nbsp;</span>Ability to approve / dis-approve team members (archival or “thumbs down” of candidate leads, workspace leads and feed leads<br/>c.<span class="wiki tab">&nbsp;&nbsp;&nbsp;&nbsp;</span>Ability to approve / dis-approve what leads get dispatched or are taken out of the dispatcher<br/>d.<span class="wiki tab">&nbsp;&nbsp;&nbsp;&nbsp;</span>Ability to trash feed and candidate leads in that team<br/>e.<span class="wiki tab">&nbsp;&nbsp;&nbsp;&nbsp;</span>Full Functional abilities of all below users<br/><br/><br/>4.<span class="wiki tab">&nbsp;&nbsp;&nbsp;&nbsp;</span>Team User<br/><br/>a.<span class="wiki tab">&nbsp;&nbsp;&nbsp;&nbsp;</span>Add / delete leads only in their workspace<br/>b.<span class="wiki tab">&nbsp;&nbsp;&nbsp;&nbsp;</span>Ability to change their password<br/>c.<span class="wiki tab">&nbsp;&nbsp;&nbsp;&nbsp;</span>Ability to add / delete contacts<br/>d.<span class="wiki tab">&nbsp;&nbsp;&nbsp;&nbsp;</span>Ability to merge companies<br/>e.<span class="wiki tab">&nbsp;&nbsp;&nbsp;&nbsp;</span>Ability to edit company / lead information pages<br/>f.<span class="wiki tab">&nbsp;&nbsp;&nbsp;&nbsp;</span>Do not call and (thumbs down and/or archive)</div>
+]]>
+            </description>
+            <pubDate>Tue, 26 Aug 2014 21:50:44 UT</pubDate>
+        </item>
+        <item>
+            <title>HA-676: Feed has inconsistent results</title>
+            <link>http://ontometrics.com:8085/issue/HA-676</link>
+            <description>
+                <![CDATA[
+<table> <tr> <th>Reporter</th> <td> <img src="http://ontometrics.com:8085/_classpath/smartui/img/youPicture.gif" width="56" height="59" alt="Angela Tran (atran)" title="Angela Tran (atran)"/> Angela Tran (atran) </td> </tr> <tr> <th>Created</th> <td>Aug 21, 2014 11:11:17 AM</td> </tr> <tr> <th>Updated</th> <td>Aug 26, 2014 2:47:36 PM</td> </tr> <tr> <th>Priority</th> <td>Normal</td> </tr> <tr> <th>Type</th> <td>Bug</td> </tr> <tr> <th>State</th> <td>In Progress</td> </tr> <tr> <th>Assignee</th> <td>Nikolay Chorniy (nikolay.chorniy@gmail.com)</td> </tr> <tr> <th>Subsystem</th> <td>No subsystem</td> </tr> <tr> <th>Fix versions</th> <td>2.2</td> </tr> <tr> <th>Affected versions</th> <td>Unknown</td> </tr> <tr> <th>Fixed in build</th> <td>Next Build</td> </tr> <tr> <th>aggregatetimespent</th> <td>No aggregatetimespent</td> </tr> <tr> <th>aggregatetimeestimate</th> <td>No aggregatetimeestimate</td> </tr> <tr> <th>resolution</th> <td>No resolution</td> </tr> <tr> <th>timespent</th> <td>No timespent</td> </tr> <tr> <th>timeestimate</th> <td>No timeestimate</td> </tr> </table> <div class="wiki text">The Microsoft Group for SEP LA, Zion, and Lassen are all pulling a different amount of ads&ndash;and this is looking at just 8/20 alone. Please see screen shots. I&#39;m also attaching screen shots of differences in the open source group as well. </div>
+]]>
+            </description>
+            <pubDate>Tue, 26 Aug 2014 21:47:36 UT</pubDate>
+        </item>
+        <item>
+            <title>
+                HA-680: need a simplified way to get back to the Feed, Candidate Lead or Workspace Column and last page left off at after creating a new contact
+            </title>
+            <link>http://ontometrics.com:8085/issue/HA-680</link>
+            <description>
+                <![CDATA[
+<table> <tr> <th>Reporter</th> <td> <img src="http://ontometrics.com:8085/_classpath/smartui/img/youPicture.gif" width="56" height="59" alt="Darren Mabashov (dmabashov)" title="Darren Mabashov (dmabashov)"/> Darren Mabashov (dmabashov) </td> </tr> <tr> <th>Created</th> <td>Aug 25, 2014 4:05:20 PM</td> </tr> <tr> <th>Updated</th> <td>Aug 26, 2014 11:22:25 AM</td> </tr> <tr> <th>Priority</th> <td>Normal</td> </tr> <tr> <th>Type</th> <td>Bug</td> </tr> <tr> <th>State</th> <td>Submitted</td> </tr> <tr> <th>Assignee</th> <td>Unassigned</td> </tr> <tr> <th>Subsystem</th> <td>No subsystem</td> </tr> <tr> <th>Fix versions</th> <td>Unscheduled</td> </tr> <tr> <th>Affected versions</th> <td>2.2</td> </tr> <tr> <th>Fixed in build</th> <td>Next Build</td> </tr> <tr> <th>aggregatetimespent</th> <td>No aggregatetimespent</td> </tr> <tr> <th>aggregatetimeestimate</th> <td>No aggregatetimeestimate</td> </tr> <tr> <th>resolution</th> <td>No resolution</td> </tr> <tr> <th>timespent</th> <td>No timespent</td> </tr> <tr> <th>timeestimate</th> <td>No timeestimate</td> </tr> </table> <div class="wiki text">In order to get back to the page the user left off at on the Feed, Candidate Lead or Workspace Column after creating new contacts, the user needs to hit the back button multiple times or hit the &quot;home&quot; (spider) icon button to get back to the home screen where they will have to search for the exact page the user left off at. <br/><br/>we need to simply this so the user has a very simple way to get back to the same page of the Feed, Candidate Lead, or Workspace tabs they left off at after a new contact has been created. <br/><br/>screencast attached. </div>
+]]>
+            </description>
+            <pubDate>Tue, 26 Aug 2014 18:22:25 UT</pubDate>
+        </item>
+        <item>
+            <title>HA-679: Avoid running validation query</title>
+            <link>http://ontometrics.com:8085/issue/HA-679</link>
+            <description>
+                <![CDATA[
+<table> <tr> <th>Reporter</th> <td> <img src="http://www.gravatar.com/avatar/75c2bdacfd2d62abcbfe7beda3d9c613.jpg?s=60&amp;d=monsterid" width="56" height="59" alt="Andrey Chorniy (andrey.chorniy)" title="Andrey Chorniy (andrey.chorniy)"/> Andrey Chorniy (andrey.chorniy) </td> </tr> <tr> <th>Created</th> <td>Aug 25, 2014 10:32:08 AM</td> </tr> <tr> <th>Updated</th> <td>Aug 26, 2014 11:22:02 AM</td> </tr> <tr> <th>Priority</th> <td>Normal</td> </tr> <tr> <th>Type</th> <td>Improvement</td> </tr> <tr> <th>State</th> <td>Submitted</td> </tr> <tr> <th>Assignee</th> <td>Unassigned</td> </tr> <tr> <th>Subsystem</th> <td>No subsystem</td> </tr> <tr> <th>Fix versions</th> <td>2.2</td> </tr> <tr> <th>Affected versions</th> <td>Unknown</td> </tr> <tr> <th>Fixed in build</th> <td>Next Build</td> </tr> <tr> <th>aggregatetimespent</th> <td>No aggregatetimespent</td> </tr> <tr> <th>aggregatetimeestimate</th> <td>No aggregatetimeestimate</td> </tr> <tr> <th>resolution</th> <td>No resolution</td> </tr> <tr> <th>timespent</th> <td>No timespent</td> </tr> <tr> <th>timeestimate</th> <td>No timeestimate</td> </tr> </table> <div class="wiki text">There is no need to make extra request just to validate that query passed to the search is correct<br/>It could be done by sending the search request and handling an error<br/>App should get &quot;SearchPhaseExecutionException&quot; with phase = &quot;query&quot; in that case.</div>
+]]>
+            </description>
+            <pubDate>Tue, 26 Aug 2014 18:22:02 UT</pubDate>
+        </item>
+        <item>
+            <title>
+                HA-678: Verify that application is collecting jobs for all cities within 31 miles from agency address
+            </title>
+            <link>http://ontometrics.com:8085/issue/HA-678</link>
+            <description>
+                <![CDATA[
+<table> <tr> <th>Reporter</th> <td> <img src="http://www.gravatar.com/avatar/0a18770794a74b222730b640455662d9.jpg?s=60&amp;d=monsterid" width="56" height="59" alt="Nikolay Chorniy (nikolay.chorniy@gmail.com)" title="Nikolay Chorniy (nikolay.chorniy@gmail.com)"/> Nikolay Chorniy (nikolay.chorniy@gmail.com) </td> </tr> <tr> <th>Created</th> <td>Aug 25, 2014 7:00:37 AM</td> </tr> <tr> <th>Updated</th> <td>Aug 26, 2014 11:22:02 AM</td> </tr> <tr> <th>Priority</th> <td>Normal</td> </tr> <tr> <th>Type</th> <td>Bug</td> </tr> <tr> <th>State</th> <td>Open</td> </tr> <tr> <th>Assignee</th> <td>Unassigned</td> </tr> <tr> <th>Subsystem</th> <td>No subsystem</td> </tr> <tr> <th>Fix versions</th> <td>2.2</td> </tr> <tr> <th>Affected versions</th> <td>Unknown</td> </tr> <tr> <th>Fixed in build</th> <td>Next Build</td> </tr> <tr> <th>aggregatetimespent</th> <td>No aggregatetimespent</td> </tr> <tr> <th>aggregatetimeestimate</th> <td>No aggregatetimeestimate</td> </tr> <tr> <th>resolution</th> <td>No resolution</td> </tr> <tr> <th>timespent</th> <td>No timespent</td> </tr> <tr> <th>timeestimate</th> <td>No timeestimate</td> </tr> </table> <div class="wiki text">For sources which can get State name as location, application is scraping new jobs for that state. In case if source does not support &quot;state location&quot; request, application collects all agency cities and performs scraping requests on &quot;per-city&quot; level. However some nearby cities may not be included in that list. We should address this problem so that all nearby cities are included.</div>
+]]>
+            </description>
+            <pubDate>Tue, 26 Aug 2014 18:22:02 UT</pubDate>
+        </item>
+        <item>
+            <title>HA-677: Job Feed has stopped pulling in ads</title>
+            <link>http://ontometrics.com:8085/issue/HA-677</link>
+            <description>
+                <![CDATA[
+<table> <tr> <th>Reporter</th> <td> <img src="http://ontometrics.com:8085/_classpath/smartui/img/youPicture.gif" width="56" height="59" alt="Angela Tran (atran)" title="Angela Tran (atran)"/> Angela Tran (atran) </td> </tr> <tr> <th>Created</th> <td>Aug 22, 2014 1:32:42 PM</td> </tr> <tr> <th>Updated</th> <td>Aug 26, 2014 11:22:02 AM</td> </tr> <tr> <th>Priority</th> <td>Show-stopper</td> </tr> <tr> <th>Type</th> <td>Bug</td> </tr> <tr> <th>State</th> <td>Closed</td> </tr> <tr> <th>Assignee</th> <td>Andrey Chorniy (andrey.chorniy)</td> </tr> <tr> <th>Subsystem</th> <td>No subsystem</td> </tr> <tr> <th>Fix versions</th> <td>2.2</td> </tr> <tr> <th>Affected versions</th> <td>Unknown</td> </tr> <tr> <th>Fixed in build</th> <td>Next Build</td> </tr> <tr> <th>aggregatetimespent</th> <td>No aggregatetimespent</td> </tr> <tr> <th>aggregatetimeestimate</th> <td>No aggregatetimeestimate</td> </tr> <tr> <th>resolution</th> <td>No resolution</td> </tr> <tr> <th>timespent</th> <td>No timespent</td> </tr> <tr> <th>timeestimate</th> <td>No timeestimate</td> </tr> </table> <div class="wiki text">We have stopped receiving ads in our feed for both Open Source and Microsoft teams on SEP LA, Zion, Lassen, SEP SF, and Boston. If you look thru&ndash;we stopped receiving ads on 8/19 for some and 8/20 for others. </div>
+]]>
+            </description>
+            <pubDate>Tue, 26 Aug 2014 18:22:02 UT</pubDate>
+        </item>
+        <item>
+            <title>HA-661: Install a circuit breaker</title>
+            <link>http://ontometrics.com:8085/issue/HA-661</link>
+            <description>
+                <![CDATA[
+<table> <tr> <th>Reporter</th> <td> <img src="http://www.gravatar.com/avatar/2543fe7b34482922746d3aaf4aa86652.jpg?s=60&amp;d=monsterid" width="56" height="59" alt="Rob Williams (rob)" title="Rob Williams (rob)"/> Rob Williams (rob) </td> </tr> <tr> <th>Created</th> <td>Aug 13, 2014 9:55:39 AM</td> </tr> <tr> <th>Updated</th> <td>Aug 26, 2014 11:22:02 AM</td> </tr> <tr> <th>Priority</th> <td>Normal</td> </tr> <tr> <th>Type</th> <td>Bug</td> </tr> <tr> <th>State</th> <td>Submitted</td> </tr> <tr> <th>Assignee</th> <td>Unassigned</td> </tr> <tr> <th>Subsystem</th> <td>No subsystem</td> </tr> <tr> <th>Fix versions</th> <td>2.2</td> </tr> <tr> <th>Affected versions</th> <td>Unknown</td> </tr> <tr> <th>Fixed in build</th> <td>Next Build</td> </tr> <tr> <th>aggregatetimespent</th> <td>No aggregatetimespent</td> </tr> <tr> <th>aggregatetimeestimate</th> <td>No aggregatetimeestimate</td> </tr> <tr> <th>resolution</th> <td>No resolution</td> </tr> <tr> <th>timespent</th> <td>No timespent</td> </tr> <tr> <th>timeestimate</th> <td>No timeestimate</td> </tr> </table> <div class="wiki text">We have to know when we have been banned and then we have to throw the circuit breaker and not allow another request to be sent until the wait period has elapsed. This is for sure why we ended up with a complete ban.</div>
+]]>
+            </description>
+            <pubDate>Tue, 26 Aug 2014 18:22:02 UT</pubDate>
+        </item>
+        <item>
+            <title>
+                HA-660: Make sure the Geocoding Actor only Geocodes
+            </title>
+            <link>http://ontometrics.com:8085/issue/HA-660</link>
+            <description>
+                <![CDATA[
+<table> <tr> <th>Reporter</th> <td> <img src="http://www.gravatar.com/avatar/2543fe7b34482922746d3aaf4aa86652.jpg?s=60&amp;d=monsterid" width="56" height="59" alt="Rob Williams (rob)" title="Rob Williams (rob)"/> Rob Williams (rob) </td> </tr> <tr> <th>Created</th> <td>Aug 13, 2014 9:54:50 AM</td> </tr> <tr> <th>Updated</th> <td>Aug 26, 2014 11:22:02 AM</td> </tr> <tr> <th>Priority</th> <td>Normal</td> </tr> <tr> <th>Type</th> <td>Bug</td> </tr> <tr> <th>State</th> <td>Submitted</td> </tr> <tr> <th>Assignee</th> <td>Unassigned</td> </tr> <tr> <th>Subsystem</th> <td>No subsystem</td> </tr> <tr> <th>Fix versions</th> <td>2.2</td> </tr> <tr> <th>Affected versions</th> <td>Unknown</td> </tr> <tr> <th>Fixed in build</th> <td>Next Build</td> </tr> <tr> <th>aggregatetimespent</th> <td>No aggregatetimespent</td> </tr> <tr> <th>aggregatetimeestimate</th> <td>No aggregatetimeestimate</td> </tr> <tr> <th>resolution</th> <td>No resolution</td> </tr> <tr> <th>timespent</th> <td>No timespent</td> </tr> <tr> <th>timeestimate</th> <td>No timeestimate</td> </tr> </table> <div class="wiki text">WE don&#39;t want that actor talking to the database: in its onReceive, it will be passed an Address and it will return a set of coordinates. Period. It will also, of course, be the only thing that talks to the remote geocoding service.</div>
+]]>
+            </description>
+            <pubDate>Tue, 26 Aug 2014 18:22:02 UT</pubDate>
+        </item>
+        <item>
+            <title>
+                HA-651: Update Advanced Search so user can select which (tabs) he want to search
+            </title>
+            <link>http://ontometrics.com:8085/issue/HA-651</link>
+            <description>
+                <![CDATA[
+<table> <tr> <th>Reporter</th> <td> <img src="http://www.gravatar.com/avatar/75c2bdacfd2d62abcbfe7beda3d9c613.jpg?s=60&amp;d=monsterid" width="56" height="59" alt="Andrey Chorniy (andrey.chorniy)" title="Andrey Chorniy (andrey.chorniy)"/> Andrey Chorniy (andrey.chorniy) </td> </tr> <tr> <th>Created</th> <td>Aug 11, 2014 12:42:31 PM</td> </tr> <tr> <th>Updated</th> <td>Aug 26, 2014 11:22:02 AM</td> </tr> <tr> <th>Priority</th> <td>Normal</td> </tr> <tr> <th>Type</th> <td>Task</td> </tr> <tr> <th>State</th> <td>Closed</td> </tr> <tr> <th>Assignee</th> <td>Unassigned</td> </tr> <tr> <th>Subsystem</th> <td>No subsystem</td> </tr> <tr> <th>Fix versions</th> <td>2.2</td> </tr> <tr> <th>Affected versions</th> <td>Unknown</td> </tr> <tr> <th>Fixed in build</th> <td>Next Build</td> </tr> <tr> <th>aggregatetimespent</th> <td>No aggregatetimespent</td> </tr> <tr> <th>aggregatetimeestimate</th> <td>No aggregatetimeestimate</td> </tr> <tr> <th>resolution</th> <td>No resolution</td> </tr> <tr> <th>timespent</th> <td>No timespent</td> </tr> <tr> <th>timeestimate</th> <td>No timeestimate</td> </tr> </table> <div class="wiki text"><h3>Problem</h3>On the moment advanced search is searching through feed only. However user need to be able to search through the all tabs with one search.<br/><br/><h3>Solution</h3><ol class="wiki-list0"><li> Add the UI to select which tabs (feeds) user want to use for search. <br/></li><li> Update server side search, so it may handle &quot;multi-tabs&quot; search. For example<br/><ol class="wiki-list1"><li> Feed + Candidate<br/></li><li> Feed +Workspace<br/></li><li> Workspace + Candidate<br/></li><li> Feed + Candidate + Workspace</li></ol></li></ol><br/><h4>Notes</h4>Search code/ES-request should take into account<br/><ol class="wiki-list0"><li> Workspace or Candidate leads may have &quot;Manual&quot; origination (created manually). <br/></li><li> They also may not have location with coordinates (while it&#39;s always present in Feed job-postings)<br/></li><li> If they created manually - they have no &quot;source&quot; (so they are not comes from &quot;Monster&quot; or &quot;LinkedIn&quot;)</li></ol><br/>So, when we search through canddate or workspace leads we <strong>can&#39;t</strong> apply location or source restricitons</div>
+]]>
+            </description>
+            <pubDate>Tue, 26 Aug 2014 18:22:02 UT</pubDate>
+        </item>
+        <item>
+            <title>HA-650: Add ability to search by candidate name</title>
+            <link>http://ontometrics.com:8085/issue/HA-650</link>
+            <description>
+                <![CDATA[
+<table> <tr> <th>Reporter</th> <td> <img src="http://www.gravatar.com/avatar/0a18770794a74b222730b640455662d9.jpg?s=60&amp;d=monsterid" width="56" height="59" alt="Nikolay Chorniy (nikolay.chorniy@gmail.com)" title="Nikolay Chorniy (nikolay.chorniy@gmail.com)"/> Nikolay Chorniy (nikolay.chorniy@gmail.com) </td> </tr> <tr> <th>Created</th> <td>Aug 11, 2014 12:37:47 PM</td> </tr> <tr> <th>Updated</th> <td>Aug 26, 2014 11:22:02 AM</td> </tr> <tr> <th>Priority</th> <td>Normal</td> </tr> <tr> <th>Type</th> <td>Task</td> </tr> <tr> <th>State</th> <td>Closed</td> </tr> <tr> <th>Assignee</th> <td>Unassigned</td> </tr> <tr> <th>Subsystem</th> <td>No subsystem</td> </tr> <tr> <th>Fix versions</th> <td>2.2</td> </tr> <tr> <th>Affected versions</th> <td>Unknown</td> </tr> <tr> <th>Fixed in build</th> <td>Next Build</td> </tr> <tr> <th>aggregatetimespent</th> <td>No aggregatetimespent</td> </tr> <tr> <th>aggregatetimeestimate</th> <td>No aggregatetimeestimate</td> </tr> <tr> <th>resolution</th> <td>No resolution</td> </tr> <tr> <th>timespent</th> <td>No timespent</td> </tr> <tr> <th>timeestimate</th> <td>No timeestimate</td> </tr> </table> <div class="wiki text">On Advanced Search and Team search pages (Feed / Candidate / Workspace) add availability to search leads by candidate name (contact name inside lead action). From parent issue:<br/><br/><div class="wiki quote">We would also like to have the functionality to search for a specific candidate name under the candidate leads section. This way when we are speaking to a candidate on the phone we can run a search for his name and see all of the candidate leads he is associated with.</div></div>
+]]>
+            </description>
+            <pubDate>Tue, 26 Aug 2014 18:22:02 UT</pubDate>
+        </item>
+        <item>
+            <title>
+                HA-647: Thumbs ups button fails to add leads to Workspace Tab
+            </title>
+            <link>http://ontometrics.com:8085/issue/HA-647</link>
+            <description>
+                <![CDATA[
+<table> <tr> <th>Reporter</th> <td> <img src="http://ontometrics.com:8085/_classpath/smartui/img/youPicture.gif" width="56" height="59" alt="Darren Mabashov (dmabashov)" title="Darren Mabashov (dmabashov)"/> Darren Mabashov (dmabashov) </td> </tr> <tr> <th>Created</th> <td>Jul 8, 2014 10:43:10 AM</td> </tr> <tr> <th>Updated</th> <td>Aug 26, 2014 11:22:02 AM</td> </tr> <tr> <th>Priority</th> <td>Normal</td> </tr> <tr> <th>Type</th> <td>Bug</td> </tr> <tr> <th>State</th> <td>Closed</td> </tr> <tr> <th>Assignee</th> <td>Unassigned</td> </tr> <tr> <th>Subsystem</th> <td>No subsystem</td> </tr> <tr> <th>Fix versions</th> <td>2.2</td> </tr> <tr> <th>Affected versions</th> <td>Unknown</td> </tr> <tr> <th>Fixed in build</th> <td>Next Build</td> </tr> <tr> <th>aggregatetimespent</th> <td>No aggregatetimespent</td> </tr> <tr> <th>aggregatetimeestimate</th> <td>No aggregatetimeestimate</td> </tr> <tr> <th>resolution</th> <td>No resolution</td> </tr> <tr> <th>timespent</th> <td>No timespent</td> </tr> <tr> <th>timeestimate</th> <td>No timeestimate</td> </tr> </table> <div class="wiki text">clicking on the thumbs up button fails to add a lead to the workspace tab. I tried this from the Feed tab and the screen said the lead is now in the workspace tab but when I clicked on the workspace tab the lead was not there. see screen shot. </div>
+]]>
+            </description>
+            <pubDate>Tue, 26 Aug 2014 18:22:02 UT</pubDate>
+        </item>
+        <item>
+            <title>HA-646: creating a new user fails</title>
+            <link>http://ontometrics.com:8085/issue/HA-646</link>
+            <description>
+                <![CDATA[
+<table> <tr> <th>Reporter</th> <td> <img src="http://ontometrics.com:8085/_classpath/smartui/img/youPicture.gif" width="56" height="59" alt="Darren Mabashov (dmabashov)" title="Darren Mabashov (dmabashov)"/> Darren Mabashov (dmabashov) </td> </tr> <tr> <th>Created</th> <td>Jul 7, 2014 1:02:08 PM</td> </tr> <tr> <th>Updated</th> <td>Aug 26, 2014 11:22:02 AM</td> </tr> <tr> <th>Priority</th> <td>Major</td> </tr> <tr> <th>Type</th> <td>Bug</td> </tr> <tr> <th>State</th> <td>Closed</td> </tr> <tr> <th>Assignee</th> <td>Nikolay Chorniy (nikolay.chorniy@gmail.com)</td> </tr> <tr> <th>Subsystem</th> <td>No subsystem</td> </tr> <tr> <th>Fix versions</th> <td>2.2</td> </tr> <tr> <th>Affected versions</th> <td>Unknown</td> </tr> <tr> <th>Fixed in build</th> <td>Next Build</td> </tr> <tr> <th>aggregatetimespent</th> <td>No aggregatetimespent</td> </tr> <tr> <th>aggregatetimeestimate</th> <td>No aggregatetimeestimate</td> </tr> <tr> <th>resolution</th> <td>No resolution</td> </tr> <tr> <th>timespent</th> <td>No timespent</td> </tr> <tr> <th>timeestimate</th> <td>No timeestimate</td> </tr> </table> <div class="wiki text">It says: opps an error has occurred This exception has been logged with id 6ina9e7a6.</div>
+]]>
+            </description>
+            <pubDate>Tue, 26 Aug 2014 18:22:02 UT</pubDate>
+        </item>
+        <item>
+            <title>HA-645: Retain Original Posting</title>
+            <link>http://ontometrics.com:8085/issue/HA-645</link>
+            <description>
+                <![CDATA[
+<table> <tr> <th>Reporter</th> <td> <img src="http://ontometrics.com:8085/_classpath/smartui/img/youPicture.gif" width="56" height="59" alt="Ryan King (rking)" title="Ryan King (rking)"/> Ryan King (rking) </td> </tr> <tr> <th>Created</th> <td>Jun 18, 2014 3:52:52 PM</td> </tr> <tr> <th>Updated</th> <td>Aug 26, 2014 11:22:02 AM</td> </tr> <tr> <th>Priority</th> <td>Normal</td> </tr> <tr> <th>Type</th> <td>Bug</td> </tr> <tr> <th>State</th> <td>Submitted</td> </tr> <tr> <th>Assignee</th> <td>Unassigned</td> </tr> <tr> <th>Subsystem</th> <td>No subsystem</td> </tr> <tr> <th>Fix versions</th> <td>2.2</td> </tr> <tr> <th>Affected versions</th> <td>Unknown</td> </tr> <tr> <th>Fixed in build</th> <td>Next Build</td> </tr> <tr> <th>aggregatetimespent</th> <td>No aggregatetimespent</td> </tr> <tr> <th>aggregatetimeestimate</th> <td>No aggregatetimeestimate</td> </tr> <tr> <th>resolution</th> <td>No resolution</td> </tr> <tr> <th>timespent</th> <td>No timespent</td> </tr> <tr> <th>timeestimate</th> <td>No timeestimate</td> </tr> </table> <div class="wiki text">Retain original posting to be archived or attached to company profile</div>
+]]>
+            </description>
+            <pubDate>Tue, 26 Aug 2014 18:22:02 UT</pubDate>
+        </item>
+        <item>
+            <title>HA-644: Create Company Profile</title>
+            <link>http://ontometrics.com:8085/issue/HA-644</link>
+            <description>
+                <![CDATA[
+<table> <tr> <th>Reporter</th> <td> <img src="http://ontometrics.com:8085/_classpath/smartui/img/youPicture.gif" width="56" height="59" alt="Ryan King (rking)" title="Ryan King (rking)"/> Ryan King (rking) </td> </tr> <tr> <th>Created</th> <td>Jun 18, 2014 3:37:17 PM</td> </tr> <tr> <th>Updated</th
+]]>
+                <![CDATA[
+> <td>Aug 26, 2014 11:22:02 AM</td> </tr> <tr> <th>Priority</th> <td>Normal</td> </tr> <tr> <th>Type</th> <td>Bug</td> </tr> <tr> <th>State</th> <td>Submitted</td> </tr> <tr> <th>Assignee</th> <td>Unassigned</td> </tr> <tr> <th>Subsystem</th> <td>No subsystem</td> </tr> <tr> <th>Fix versions</th> <td>2.2</td> </tr> <tr> <th>Affected versions</th> <td>Unknown</td> </tr> <tr> <th>Fixed in build</th> <td>Next Build</td> </tr> <tr> <th>aggregatetimespent</th> <td>No aggregatetimespent</td> </tr> <tr> <th>aggregatetimeestimate</th> <td>No aggregatetimeestimate</td> </tr> <tr> <th>resolution</th> <td>No resolution</td> </tr> <tr> <th>timespent</th> <td>No timespent</td> </tr> <tr> <th>timeestimate</th> <td>No timeestimate</td> </tr> </table> <div class="wiki text">Company Profiles will be created based on ads being scraped. The profile will contain all ads/postings associated with the company. Any notes or company information will be contained in the profile.</div>
+]]>
+            </description>
+            <pubDate>Tue, 26 Aug 2014 18:22:02 UT</pubDate>
+        </item>
+        <item>
+            <title>
+                HA-643: User needs to have a way to identify multiple Leads as one
+            </title>
+            <link>http://ontometrics.com:8085/issue/HA-643</link>
+            <description>
+                <![CDATA[
+<table> <tr> <th>Reporter</th> <td> <img src="http://www.gravatar.com/avatar/2543fe7b34482922746d3aaf4aa86652.jpg?s=60&amp;d=monsterid" width="56" height="59" alt="Rob Williams (rob)" title="Rob Williams (rob)"/> Rob Williams (rob) </td> </tr> <tr> <th>Created</th> <td>Jun 15, 2014 7:00:58 PM</td> </tr> <tr> <th>Updated</th> <td>Aug 26, 2014 11:22:02 AM</td> </tr> <tr> <th>Priority</th> <td>Normal</td> </tr> <tr> <th>Type</th> <td>Story</td> </tr> <tr> <th>State</th> <td>Closed</td> </tr> <tr> <th>Assignee</th> <td>Unassigned</td> </tr> <tr> <th>Subsystem</th> <td>No subsystem</td> </tr> <tr> <th>Fix versions</th> <td>2.2</td> </tr> <tr> <th>Affected versions</th> <td>Unknown</td> </tr> <tr> <th>Fixed in build</th> <td>Next Build</td> </tr> <tr> <th>aggregatetimespent</th> <td>No aggregatetimespent</td> </tr> <tr> <th>aggregatetimeestimate</th> <td>No aggregatetimeestimate</td> </tr> <tr> <th>resolution</th> <td>No resolution</td> </tr> <tr> <th>timespent</th> <td>No timespent</td> </tr> <tr> <th>timeestimate</th> <td>No timeestimate</td> </tr> </table> <div class="wiki text">Sometimes leads come in to the System more than once. Could be because the lead was reposted. We have to have a way to indicate that two or more Leads are actually the same.<br/><br/>The flow would be:<br/><br/><ol class="wiki-list0"><li> User sees a lead and think (s)he has seen it before<br/></li><li> User performs a search with something unique to the one posting<br/></li><li> Indeed System returns two Leads that are pretty much identical<br/></li><li> User highlights or selects both and then chooses an option to identify them as the same<br/></li><li> The System combines them into one, having the older one show as a prior version</li></ol><br/>We will have to discuss the implementation because we will want the older one to not appear in normal search results of course (otherwise we would have accomplished nothing and would still be confusing people with dupes).</div>
+]]>
+            </description>
+            <pubDate>Tue, 26 Aug 2014 18:22:02 UT</pubDate>
+        </item>
+        <item>
+            <title>
+                HA-642: Do not allow duplicates created in concurrent job-extraction tasks
+            </title>
+            <link>http://ontometrics.com:8085/issue/HA-642</link>
+            <description>
+                <![CDATA[
+<table> <tr> <th>Reporter</th> <td> <img src="http://www.gravatar.com/avatar/75c2bdacfd2d62abcbfe7beda3d9c613.jpg?s=60&amp;d=monsterid" width="56" height="59" alt="Andrey Chorniy (andrey.chorniy)" title="Andrey Chorniy (andrey.chorniy)"/> Andrey Chorniy (andrey.chorniy) </td> </tr> <tr> <th>Created</th> <td>Jun 13, 2014 4:34:25 AM</td> </tr> <tr> <th>Updated</th> <td>Aug 26, 2014 11:22:02 AM</td> </tr> <tr> <th>Priority</th> <td>Normal</td> </tr> <tr> <th>Type</th> <td>Bug</td> </tr> <tr> <th>State</th> <td>Open</td> </tr> <tr> <th>Assignee</th> <td>Unassigned</td> </tr> <tr> <th>Subsystem</th> <td>No subsystem</td> </tr> <tr> <th>Fix versions</th> <td>2.2</td> </tr> <tr> <th>Affected versions</th> <td>Unknown</td> </tr> <tr> <th>Fixed in build</th> <td>Next Build</td> </tr> <tr> <th>aggregatetimespent</th> <td>No aggregatetimespent</td> </tr> <tr> <th>aggregatetimeestimate</th> <td>No aggregatetimeestimate</td> </tr> <tr> <th>resolution</th> <td>No resolution</td> </tr> <tr> <th>timespent</th> <td>No timespent</td> </tr> <tr> <th>timeestimate</th> <td>No timeestimate</td> </tr> </table> <div class="wiki text">As long data collection of the job-postings executed concurrently (i.e. job-postings extracted in concurrent threads/different actor instances) there is a chance that if source which produce duplicate links in the feed then they will be both inserted, since on the moment of their creation/check there is no duplicates in DB exists<br/><br/><h3>Proposed solution</h3>Perform check after job-posting has been saved into DB, and if duplicate exists at this point - delete the &quot;most-recent&quot; job-posting</div>
+]]>
+            </description>
+            <pubDate>Tue, 26 Aug 2014 18:22:02 UT</pubDate>
+        </item>
+    </channel>
+</rss>

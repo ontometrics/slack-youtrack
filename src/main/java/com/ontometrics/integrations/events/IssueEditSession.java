@@ -22,6 +22,7 @@ public class IssueEditSession {
     private final Issue issue;
     private final String updater;
     private final List<IssueEdit> changes;
+    private final List<Comment> comments;
     private final Date updated;
 
     public IssueEditSession(Builder builder) {
@@ -29,6 +30,7 @@ public class IssueEditSession {
         updater = builder.updater;
         updated = builder.updated;
         changes = new ArrayList<>(builder.changes);
+        comments = new ArrayList<>(builder.comments);
     }
 
     public static class Builder {
@@ -36,6 +38,7 @@ public class IssueEditSession {
         private Issue issue;
         private String updater;
         private List<IssueEdit> changes;
+        private List<Comment> comments;
         private Date updated;
 
         public Builder issue(Issue issue){
@@ -57,6 +60,11 @@ public class IssueEditSession {
             this.changes = changes;
             return this;
             }
+
+        public Builder comments(List<Comment> comments){
+            this.comments = comments;
+            return this;
+        }
 
         public IssueEditSession build(){
             return new IssueEditSession(this);
@@ -84,6 +92,10 @@ public class IssueEditSession {
         return changes;
     }
 
+    public List<Comment> getComments() {
+        return comments;
+    }
+
     @Override
     public String toString() {
         StringBuilder b = new StringBuilder(issue.toString());
@@ -94,6 +106,9 @@ public class IssueEditSession {
             if (changeCounter++ < changes.size()-1){
                 b.append(", ");
             }
+        }
+        for (Comment comment : comments){
+            b.append(comment.toString());
         }
         return b.toString();
     }

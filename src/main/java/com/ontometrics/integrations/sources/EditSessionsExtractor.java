@@ -1,6 +1,5 @@
 package com.ontometrics.integrations.sources;
 
-import com.ontometrics.integrations.configuration.EventProcessorConfiguration;
 import com.ontometrics.integrations.configuration.IssueTracker;
 import com.ontometrics.integrations.events.*;
 import org.apache.commons.io.IOUtils;
@@ -65,6 +64,7 @@ public class EditSessionsExtractor {
     public List<IssueEditSession> getLatestEdits() throws Exception {
         return getLatestEdits(null);
     }
+
     /**
      * Provides a means of seeing what things were changed on an {@link com.ontometrics.integrations.events.Issue} and by whom.
      * Gets a list of IssueEditSessions, being sure to only include edits that were made since we last
@@ -95,6 +95,7 @@ public class EditSessionsExtractor {
                 Date updated = null;
                 List<IssueEditSession> extractedEdits = new ArrayList<>();
                 List<ProcessEventChange> currentChanges = new ArrayList<>();
+                List<Comment> newComments = new ArrayList<>();
 
                 while (eventReader.hasNext()) {
                     XMLEvent nextEvent = eventReader.nextEvent();
@@ -109,6 +110,12 @@ public class EditSessionsExtractor {
                                     currentFieldName = nextEvent.asStartElement().getAttributeByName(new QName("", "name")).getValue();
                                     //currentChangeType = nextEvent.asStartElement().getAttributes().next().toString();
                                     //log.info("found field named: {}: change type: {}", currentFieldName, currentChangeType);
+                                    break;
+                                case "comment":
+                                    Comment newComment = extractCommentFromStream(nextEvent.asStartElement());
+                                    if (upToDate==null || newComment.getCreated().after(upToDate)) {
+                                        newComments.add(newComment);
+                                    }
                                     break;
                                 default:
                                     String elementText;
@@ -154,9 +161,6 @@ public class EditSessionsExtractor {
                                                 .build();
 
                                         currentChanges.add(processEventChange);
-                                        log.info("process event change: {}", processEventChange);
-                                    } else {
-                                        log.info("process event change skipped due to event-date {} upToDate={}", updated, upToDate);
                                     }
                                     currentFieldName = "";
                                     oldValue = "";
@@ -171,6 +175,7 @@ public class EditSessionsExtractor {
                                             .updated(updated)
                                             .issue(e.getIssue())
                                             .changes(edits)
+                                            .comments(newComments)
                                             .build();
                                     extractedEdits.add(session);
                                 }
@@ -183,6 +188,14 @@ public class EditSessionsExtractor {
                 return extractedEdits;
             }
         });
+    }
+
+    private Comment extractCommentFromStream(StartElement commentTag) {
+        return new Comment.Builder()
+                .author(commentTag.getAttributeByName(new QName("", "authorFullName")).getValue())
+                .text(commentTag.getAttributeByName(new QName("","text")).getValue())
+                .created(new Date(Long.parseLong(commentTag.getAttributeByName(new QName("", "created")).getValue())))
+                .build();
     }
 
     private List<IssueEdit> buildIssueEdits(List<ProcessEventChange> changes) {
@@ -233,7 +246,6 @@ public class EditSessionsExtractor {
                                     //todo: decide if we have to swallow exception thrown by attempt of single event extraction.
                                     //If we swallow it, we have at least report the problem
                                     ProcessEvent event = extractEventFromStream(dateFormat);
-                                    log.info("min date: {} publish date: {}", minDate, event.getPublishDate());
                                     if (minDate ==null || event.getPublishDate().after(minDate)) {
                                         //we are adding only events with date after deployment date
                                         events.addFirst(event);
