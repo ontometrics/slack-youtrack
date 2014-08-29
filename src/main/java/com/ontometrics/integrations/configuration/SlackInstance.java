@@ -91,13 +91,10 @@ public class SlackInstance implements ChatServer {
         s.append(System.lineSeparator());
         int changeCounter = 0;
         for (IssueEdit edit : session.getChanges()){
-            s.append(edit.toString());
-            if (changeCounter++ < session.getChanges().size()-1){
-                s.append(System.lineSeparator());
-            }
+            s.append(edit.toString()).append(System.lineSeparator());
         }
         for (Comment comment : session.getComments()){
-            s.append(comment.getText());
+            s.append(comment.getText()).append(System.lineSeparator());
         }
         return s.toString();
     }

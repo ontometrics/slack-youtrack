@@ -82,20 +82,19 @@ public class EventListenerImpl implements EventListener {
         List<IssueEditSession> editSessions = editSessionsExtractor.getLatestEdits(minDateOfEvents);
 
         log.info("Found {} edit sessions to post.", editSessions.size());
+        final AtomicInteger processedSessionsCount = new AtomicInteger(0);
         if (editSessions.size() > 0) {
             log.debug("sessions: {}", editSessions);
-        }
+            Date lastProcessedSessionDate = null;
+            for (IssueEditSession session : editSessions) {
+                chatServer.post(session);
+                lastProcessedSessionDate = session.getUpdated();
+                processedSessionsCount.incrementAndGet();
+            }
 
-        Date lastProcessedSessionDate = null;
-        final AtomicInteger processedSessionsCount = new AtomicInteger(0);
-        for (IssueEditSession session : editSessions){
-            chatServer.post(session);
-            lastProcessedSessionDate = session.getUpdated();
-            processedSessionsCount.incrementAndGet();
+            log.debug("setting last processed date to: {}", lastProcessedSessionDate);
+            EventProcessorConfiguration.instance().saveLastProcessedEventDate(lastProcessedSessionDate);
         }
-
-        log.debug("setting last processed date to: {}", lastProcessedSessionDate);
-        EventProcessorConfiguration.instance().saveLastProcessedEventDate(lastProcessedSessionDate);
         return processedSessionsCount.get();
     }
 
