@@ -99,7 +99,7 @@ public class SlackInstance implements ChatServer {
         return s.toString();
     }
 
-    protected String buildNewIssueMessage(Issue newIssue){
+    public String buildNewIssueMessage(Issue newIssue){
         return String.format("*%s* created %s%s", newIssue.getCreator(), MessageFormatter.getIssueLink(newIssue), MessageFormatter.getTitleWithoutIssueID(newIssue));
     }
 

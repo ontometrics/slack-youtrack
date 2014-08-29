@@ -87,7 +87,12 @@ public class EventListenerImpl implements EventListener {
             log.debug("sessions: {}", editSessions);
             Date lastProcessedSessionDate = null;
             for (IssueEditSession session : editSessions) {
-                chatServer.post(session);
+                if (session.getChanges().isEmpty() && session.getComments().isEmpty()) {
+                    //todo: that's wrong condition to detect issue creation, we should also use event change map
+                    chatServer.postIssueCreation(session.getIssue());
+                } else {
+                    chatServer.post(session);
+                }
                 lastProcessedSessionDate = session.getUpdated();
                 processedSessionsCount.incrementAndGet();
             }

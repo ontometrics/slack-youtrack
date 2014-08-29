@@ -15,6 +15,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import static org.hamcrest.CoreMatchers.allOf;
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -92,5 +94,17 @@ public class SlackInstanceTest {
     @Test
     public void testGetUsers() throws Exception {
 
+    }
+
+    @Test
+    /**
+     * Verifies that {@link com.ontometrics.integrations.configuration.SlackInstance#buildNewIssueMessage(com.ontometrics.integrations.events.Issue)}
+     * returns correct text
+     */
+    public void testBuildNewIssueMessage() throws MalformedURLException {
+        String message = slackInstance.buildNewIssueMessage(new Issue.Builder().created(new Date()).creator("Johann Bach")
+                .title("HA-492: Prelude and Fugue in C major").link(new URL("http://google.com")).projectPrefix("HA").build());
+        assertThat(message, allOf(containsString("Johann Bach"), containsString("created"),
+                containsString("Prelude and Fugue in C major"), containsString("http://google.com")));
     }
 }

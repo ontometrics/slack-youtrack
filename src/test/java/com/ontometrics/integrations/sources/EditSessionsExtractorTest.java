@@ -213,8 +213,9 @@ public class EditSessionsExtractorTest {
         assertThat(edits, hasSize(1));
 
         assertThat(edits.get(0).getIssue().getCreator(), is("nikolay.chorniy@gmail.com"));
-        assertThat(edits.get(0).getIssue().getCreated().toString(), is("Thu Aug 28 15:22:21 PDT 2014"));
-
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH);
+        dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+        assertThat(dateFormat.format(edits.get(0).getIssue().getCreated()), is("2014-08-28 22:22:21"));
     }
 
 

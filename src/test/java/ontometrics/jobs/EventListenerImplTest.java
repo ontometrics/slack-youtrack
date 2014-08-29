@@ -12,7 +12,6 @@ import com.ontometrics.util.DateBuilder;
 import ontometrics.test.util.TestUtil;
 import ontometrics.test.util.UrlStreamProvider;
 import org.apache.commons.configuration.ConfigurationException;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.net.URL;
@@ -30,7 +29,6 @@ import static org.junit.Assert.fail;
  * EventListenerImplTest.java
 
  */
-@Ignore
 public class EventListenerImplTest {
 
 
@@ -343,7 +341,7 @@ public class EventListenerImplTest {
                 assertThat(minDate, notNullValue());
                 //asserting that past time configured by property ISSUE_HISTORY_WINDOW is used
                 assertThat(Math.abs(new DateBuilder().addMinutes(-EventProcessorConfiguration.instance()
-                        .getIssueHistoryWindowInMinutes()).build().getTime() - minDate.getTime()), lessThan(100L));
+                        .getIssueHistoryWindowInMinutes()).build().getTime() - minDate.getTime()), lessThan(300L));
                 assertionOccurred.set(true);
                 return processEvents;
             }
@@ -373,7 +371,7 @@ public class EventListenerImplTest {
                 final Date expectedMinIssueChangeDate = new DateBuilder().addMinutes(-EventProcessorConfiguration
                         .instance().getIssueHistoryWindowInMinutes()).build();
                 assertThat(upToDate, notNullValue());
-                assertThat(Math.abs(expectedMinIssueChangeDate.getTime() - upToDate.getTime()), lessThan(100L));
+                assertThat(Math.abs(expectedMinIssueChangeDate.getTime() - upToDate.getTime()), lessThan(300L));
                 return super.getEdits(e, upToDate);
             }
         }, new EmptyChatServer()).checkForNewEvents();
