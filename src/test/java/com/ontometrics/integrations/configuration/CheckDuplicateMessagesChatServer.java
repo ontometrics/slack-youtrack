@@ -34,4 +34,12 @@ public class CheckDuplicateMessagesChatServer implements ChatServer {
         }
 
     }
+
+    public List<Issue> getCreatedIssues() {
+        return createdIssues;
+    }
+
+    public List<IssueEditSession> getPostedIssueEditSessions() {
+        return postedIssueEditSessions;
+    }
 }
