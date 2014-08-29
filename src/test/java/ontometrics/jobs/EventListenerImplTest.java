@@ -1,7 +1,7 @@
 package ontometrics.jobs;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
+import com.google.common.base.Predicate;
+import com.google.common.collect.*;
 import com.ontometrics.integrations.configuration.*;
 import com.ontometrics.integrations.events.Issue;
 import com.ontometrics.integrations.events.IssueEditSession;
@@ -19,8 +19,7 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.hamcrest.Matchers.lessThan;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
@@ -29,8 +28,14 @@ import static org.junit.Assert.fail;
  * EventListenerImplTest.java
 
  */
+
 public class EventListenerImplTest {
 
+
+    public static final Date T3 = new Date(1406227765001L);
+    public static final Date T4 = new Date(1407626732316L);
+    public static final Date T1 = new Date(1404927516756L);
+    public static final Date T2 = new Date(1405025458837L);
 
     @Test
     /**
@@ -180,6 +185,108 @@ public class EventListenerImplTest {
 
         eventListener.checkForNewEvents();
     }
+
+
+
+    @Test
+    /**
+     *
+     * This case cover the case when issues has been created while we iterating through issues and retrieving changes for them
+     * Probability of that is not high (in case of two issues and fast requests/response) however if we'll process larger set of issues
+     * (100 and more) the probability of that will be quite real
+     *
+     *             T0
+     * Issue-1:            T1           (+T3)
+     * Issue-2:              T2             (+T4)
+     *
+     * T0 - initial stored LastEventDate
+     * On first call to {@link com.ontometrics.integrations.jobs.EventListener#checkForNewEvents()} we'll get list of issues
+     * Issue1(T1) and Issue2(T2),
+     * Call to {@link com.ontometrics.integrations.sources.EditSessionsExtractor#getEdits(com.ontometrics.integrations.events.ProcessEvent)}
+     * getChanges(Issue-1) will return changes with time T1
+     * getChanges(Issue-2) will return changes with time   T2 and T4
+     *
+     * On completion of first session last processed event date will be set to T4
+
+     * Problem: On second read we will not get T3 (which were created after we retrieve list of changes for Issue-1)
+     *
+     *
+     * T0 < T1 < T2 < T3 < T4
+     */
+    public void testThatEventCreatedDuringCheckForNewEventsSessionWillBeReportedInNextSession() throws Exception {
+
+        final Issue issue1 = new Issue.Builder().projectPrefix("ISSUE").id(1).build();
+        final Issue issue2 = new Issue.Builder().projectPrefix("ISSUE").id(2).build();
+        MockIssueTracker mockIssueTracker = new MockIssueTracker("/feeds/issues-feed-rss.xml",
+                ImmutableMap.<Issue, String>builder().put(issue1, "/feeds/issue-changes-t1.xml")
+                        .put(issue2, "/feeds/issue-changes-t2-t4.xml")
+                        .build()
+                );
+        EventProcessorConfiguration.instance().clear();
+        EventProcessorConfiguration.instance().saveLastProcessedEventDate(new Date(0)); //set it to 1970, to not depend on it
+        //Issue-1 with T1 and Issue-2 with T2 will be returned on first call  to getLatestEvents(minDate)
+        final List<ProcessEvent> firstCall = ImmutableList.<ProcessEvent> builder()
+                .add(new ProcessEvent.Builder().issue(issue1).published(T1).build()) //T1
+                .add(new ProcessEvent.Builder().issue(issue2).published(T2).build()) //T2
+                .build();
+        //Issue-1 with T1 and Issue-2 with T3 and T4 filtered by passed minDate will be returned on second call to getLatestEvents(minDate)
+        final List<ProcessEvent> secondCall = ImmutableList.<ProcessEvent> builder()
+                .add(new ProcessEvent.Builder().issue(issue1).published(T3).build())  //T3
+                .add(new ProcessEvent.Builder().issue(issue1).published(T4).build())  //T4
+                .build();
+
+        final AtomicInteger executionCount = new AtomicInteger(1);
+        //create mocked editSessionsExtractor#getLatestEvents() depending on execution count
+        EditSessionsExtractor editSessionsExtractor = new EditSessionsExtractor(mockIssueTracker,
+                UrlStreamProvider.instance()) {
+            @Override
+            public List<ProcessEvent> getLatestEvents(Date minDate) throws Exception {
+                if (executionCount.get() == 1) {
+                    return filterEvents(firstCall, minDate);
+                } else if (executionCount.get() == 2) {
+                    return filterEvents(secondCall, minDate);
+                }
+                throw new IllegalStateException("only first and second calls are supported");
+            }
+        };
+
+        //create EventListenerImpl with CheckDuplicateMessagesChatServer to check there are no duplicates
+        CheckDuplicateMessagesChatServer chatServer = new CheckDuplicateMessagesChatServer();
+        EventListenerImpl eventListener = new EventListenerImpl(editSessionsExtractor, chatServer);
+
+        eventListener.checkForNewEvents();
+
+        assertThat(findEvent(chatServer.getPostedIssueEditSessions(), T1), notNullValue());
+        assertThat(findEvent(chatServer.getPostedIssueEditSessions(), T2), notNullValue());
+        assertThat(findEvent(chatServer.getPostedIssueEditSessions(), T4), notNullValue());
+        assertThat(findEvent(chatServer.getPostedIssueEditSessions(), T3), nullValue());
+
+        executionCount.incrementAndGet();
+
+        eventListener.checkForNewEvents();
+
+
+        assertThat("Message T3 was not reported", findEvent(chatServer.getPostedIssueEditSessions(), T3), notNullValue());
+    }
+
+    private IssueEditSession findEvent(List<IssueEditSession> postedIssueEditSessions, final Date time) {
+        return Iterables.find(postedIssueEditSessions, new Predicate<IssueEditSession>() {
+            @Override
+            public boolean apply(IssueEditSession issueEditSession) {
+                return issueEditSession.getUpdated().equals(time);
+            }
+        }, null);
+    }
+
+    private List<ProcessEvent> filterEvents(List<ProcessEvent> firstCall, final Date minDate) {
+        return ImmutableList.copyOf(Collections2.filter(firstCall, new Predicate<ProcessEvent>() {
+            @Override
+            public boolean apply(ProcessEvent processEvent) {
+                return processEvent.getPublishDate().after(minDate);
+            }
+        }));
+    }
+
 
     @Test
     /**
