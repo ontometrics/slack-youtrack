@@ -103,7 +103,7 @@ public class SlackInstance implements ChatServer {
     }
 
     protected String buildNewIssueMessage(Issue newIssue){
-        return String.format("*%s*", newIssue.getCreator()) + " created " + MessageFormatter.getIssueLink(newIssue) + MessageFormatter.getTitleWithoutIssueID(newIssue);
+        return String.format("*%s* created %s%s", newIssue.getCreator(), MessageFormatter.getIssueLink(newIssue), MessageFormatter.getTitleWithoutIssueID(newIssue));
     }
 
     private static class MessageFormatter {
@@ -112,7 +112,7 @@ public class SlackInstance implements ChatServer {
         }
 
         static String getTitleWithoutIssueID(Issue issue){
-            return issue.getTitle().substring(issue.getTitle().indexOf(":") + 1);
+            return issue.getTitle().substring(issue.getTitle().indexOf(":") + 2);
         }
     }
 

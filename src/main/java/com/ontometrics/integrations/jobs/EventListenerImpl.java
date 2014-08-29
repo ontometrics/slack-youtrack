@@ -91,7 +91,7 @@ public class EventListenerImpl implements EventListener {
             processedSessionsCount.incrementAndGet();
         }
 
-        eventProcessorConfiguration.saveLastProcessedEventDate(lastProcessedSessionDate);
+        EventProcessorConfiguration.instance().saveLastProcessedEventDate(lastProcessedSessionDate);
         return processedSessionsCount.get();
     }
 
