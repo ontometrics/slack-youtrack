@@ -52,7 +52,7 @@ public class SlackInstance implements ChatServer {
 
     @Override
     public void postIssueCreation(Issue issue) {
-        postToChannel(channelMapper.getChannel(issue), buildIssueCreationMessage(issue));
+        postToChannel(channelMapper.getChannel(issue), buildNewIssueMessage(issue));
     }
 
     @Override
@@ -97,17 +97,16 @@ public class SlackInstance implements ChatServer {
         return s.toString();
     }
 
+    protected String buildNewIssueMessage(Issue newIssue){
+        return String.format("*%s*", newIssue.getCreator()) + " created " + buildIssueLink(newIssue);
+    }
+
     private String removeIssueId(String title) {
         return title.substring(title.indexOf(":")+1);
     }
 
-    private String buildIssueCreationMessage(Issue issue) {
-
-        StringBuilder builder = new StringBuilder();
-        String title = issue.getTitle();
-        title = title.replace(String.valueOf(issue.toString()), "");
-        builder.append("<").append(issue.getLink()).append("|").append(issue.toString()).append(">").append(title);
-        return builder.toString();
+    private String buildIssueLink(Issue issue) {
+        return String.format("<%s|%s>%s", issue.getLink(), issue.toString(), issue.getTitle().replace(String.format("%s ", issue.toString()), ""));
     }
 
     private static class MessageFormatter {
