@@ -1,23 +1,18 @@
 package com.ontometrics.integrations.jobs;
 
-import com.google.common.base.Function;
-import com.google.common.collect.Multimaps;
 import com.ontometrics.integrations.configuration.ChatServer;
 import com.ontometrics.integrations.configuration.ConfigurationFactory;
 import com.ontometrics.integrations.configuration.EventProcessorConfiguration;
 import com.ontometrics.integrations.configuration.YouTrackInstance;
 import com.ontometrics.integrations.events.IssueEditSession;
-import com.ontometrics.integrations.events.ProcessEvent;
-import com.ontometrics.integrations.events.ProcessEventChange;
 import com.ontometrics.integrations.sources.EditSessionsExtractor;
 import com.ontometrics.integrations.sources.StreamProvider;
 import org.apache.commons.configuration.Configuration;
-import org.apache.commons.configuration.ConfigurationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.util.*;
+import java.util.Date;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 
@@ -86,6 +81,8 @@ public class EventListenerImpl implements EventListener {
 
         List<IssueEditSession> editSessions = editSessionsExtractor.getLatestEdits(minDateOfEvents);
 
+        log.info("Found {} edit sessions to post.", editSessions.size());
+
         Date lastProcessedSessionDate = null;
         final AtomicInteger processedSessionsCount = new AtomicInteger(0);
         for (IssueEditSession session : editSessions){
@@ -95,7 +92,6 @@ public class EventListenerImpl implements EventListener {
         }
 
         eventProcessorConfiguration.saveLastProcessedEventDate(lastProcessedSessionDate);
-
         return processedSessionsCount.get();
     }
 

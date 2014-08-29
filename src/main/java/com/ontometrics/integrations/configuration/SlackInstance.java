@@ -1,5 +1,6 @@
 package com.ontometrics.integrations.configuration;
 
+import com.ontometrics.integrations.events.Comment;
 import com.ontometrics.integrations.events.Issue;
 import com.ontometrics.integrations.events.IssueEdit;
 import com.ontometrics.integrations.events.IssueEditSession;
@@ -84,7 +85,8 @@ public class SlackInstance implements ChatServer {
 
     protected String buildSessionMessage(IssueEditSession session) {
         StringBuilder s = new StringBuilder(String.format("*%s*", session.getUpdater()));
-        s.append(String.format(" updated %s: ", MessageFormatter.getIssueLink(session.getIssue())));
+        String action = session.getComments().size() > 0 ? "commented on " : "updated";
+        s.append(String.format(" %s %s: ", action, MessageFormatter.getIssueLink(session.getIssue())));
         s.append(MessageFormatter.getTitleWithoutIssueID(session.getIssue()));
         s.append(System.lineSeparator());
         int changeCounter = 0;
@@ -93,6 +95,9 @@ public class SlackInstance implements ChatServer {
             if (changeCounter++ < session.getChanges().size()-1){
                 s.append(System.lineSeparator());
             }
+        }
+        for (Comment comment : session.getComments()){
+            s.append(comment.getText());
         }
         return s.toString();
     }
