@@ -1,0 +1,75 @@
+<issue id="HA-663">
+    <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="SingleField" name="projectShortName">
+        <value>HA</value>
+    </field>
+    <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="SingleField" name="numberInProject">
+        <value>663</value>
+    </field>
+    <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="SingleField" name="summary">
+        <value>Detect lead duplication across different sources</value>
+    </field>
+    <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="SingleField" name="description">
+        <value>
+            *Problem:* There are the cases when different sources has similar (duplicate jobs) http://insidehire.com/lead/53eb1529e4b0b6b12d015c04_524d7e2476ec77212be0a7f9 http://insidehire.com/lead/53eac0e9e4b0b6b12d015462_524d7e2476ec77212be0a7f9 System should autodetect that and show only one posting instead. System should maintain the links to the "duplicates" from different sources in the job-posting which will not be filtered out and show them as additional source icons in the "job-posting" - that icns will be a links to that "filtered" job-postings. *Notes:* # on the moment system do not have full-descriptions for both sourcesto compare (we may need to extract them from HTML for any source) # Indeed have short description and we really do not extract job-details from Indeed postings. We need to extract full job-description out of job-details page
+        </value>
+    </field>
+    <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="SingleField" name="created">
+        <value>1408046616632</value>
+    </field>
+    <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="SingleField" name="updated">
+        <value>1409255012201</value>
+    </field>
+    <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="SingleField" name="updaterName">
+        <value>rob</value>
+    </field>
+    <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="SingleField" name="updaterFullName">
+        <value>Rob Williams</value>
+    </field>
+    <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="SingleField" name="reporterName">
+        <value>andrey.chorniy</value>
+    </field>
+    <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="SingleField" name="reporterFullName">
+        <value>Andrey Chorniy</value>
+    </field>
+    <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="SingleField" name="commentsCount">
+        <value>3</value>
+    </field>
+    <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="SingleField" name="votes">
+        <value>0</value>
+    </field>
+    <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="CustomFieldValue" name="Priority">
+        <value>Normal</value>
+    </field>
+    <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="CustomFieldValue" name="Type">
+        <value>Task</value>
+    </field>
+    <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="CustomFieldValue" name="State">
+        <value>In Progress</value>
+    </field>
+    <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="CustomFieldValue" name="Subsystem">
+        <value>No subsystem</value>
+    </field>
+    <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="CustomFieldValue" name="Fix versions">
+        <value>2.2</value>
+    </field>
+    <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="CustomFieldValue" name="Affected versions">
+        <value>2.1</value>
+    </field>
+    <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="AttachmentField" name="attachments">
+        <value id="78-938" url="http://ontometrics.com:8085/_persistent/image1.png?file=78-938&v=0&c=true">image1.png</value>
+        <value id="78-978" url="http://ontometrics.com:8085/_persistent/Screen%20Shot%202014-08-25%20at%202.28.54%20PM.png?file=78-978&v=0&c=true">Screen Shot 2014-08-25 at 2.28.54 PM.png</value>
+    </field>
+    <comment id="76-1761" author="andrey.chorniy" authorFullName="Andrey Chorniy" issueId="HA-663" deleted="true" text="." shownForIssueAuthor="false" created="1408047741525">
+        <replies/>
+    </comment>
+    <comment id="76-1768" author="nikolay.chorniy@gmail.com" authorFullName="Nikolay Chorniy" issueId="HA-663" deleted="false" text="==Notes== For each new job posting application will check if there is a duplicate from any of the sources (so it can identify new Indeed job posting as a duplicate of LinkedIn posting based on title and description). Job Posting details page will show all sources it has been found on." shownForIssueAuthor="false" created="1408114811115">
+        <replies/>
+    </comment>
+    <comment id="76-1862" author="dmabashov" authorFullName="Darren Mabashov" issueId="HA-663" deleted="false" text="See screen shot from the Dev. Server. " shownForIssueAuthor="false" created="1409002338563">
+        <replies/>
+    </comment>
+    <comment id="76-1881" author="rob" authorFullName="Rob Williams" issueId="HA-663" deleted="false" text="The title in the second one contains the address, that's why this is not seeing them as dupes. " shownForIssueAuthor="false" created="1409255012191">
+        <replies/>
+    </comment>
+    <tag>Star</tag>
+</issue>

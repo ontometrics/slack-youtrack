@@ -85,7 +85,7 @@ public class SlackInstance implements ChatServer {
     protected String buildSessionMessage(IssueEditSession session) {
         StringBuilder s = new StringBuilder(String.format("*%s*", session.getUpdater()));
         s.append(String.format(" updated %s: ", MessageFormatter.getIssueLink(session.getIssue())));
-        s.append(removeIssueId(session.getIssue().getTitle()));
+        s.append(MessageFormatter.getTitleWithoutIssueID(session.getIssue()));
         s.append(System.lineSeparator());
         int changeCounter = 0;
         for (IssueEdit edit : session.getChanges()){
@@ -98,20 +98,16 @@ public class SlackInstance implements ChatServer {
     }
 
     protected String buildNewIssueMessage(Issue newIssue){
-        return String.format("*%s*", newIssue.getCreator()) + " created " + buildIssueLink(newIssue);
-    }
-
-    private String removeIssueId(String title) {
-        return title.substring(title.indexOf(":")+1);
-    }
-
-    private String buildIssueLink(Issue issue) {
-        return String.format("<%s|%s>%s", issue.getLink(), issue.toString(), issue.getTitle().replace(String.format("%s ", issue.toString()), ""));
+        return String.format("*%s*", newIssue.getCreator()) + " created " + MessageFormatter.getIssueLink(newIssue) + MessageFormatter.getTitleWithoutIssueID(newIssue);
     }
 
     private static class MessageFormatter {
         static String getIssueLink(Issue issue){
             return String.format("<%s|%s-%d>", issue.getLink(), issue.getPrefix(), issue.getId());
+        }
+
+        static String getTitleWithoutIssueID(Issue issue){
+            return issue.getTitle().substring(issue.getTitle().indexOf(":") + 1);
         }
     }
 
