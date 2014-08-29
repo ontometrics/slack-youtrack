@@ -32,7 +32,6 @@ public class EventListenerImpl implements EventListener {
     private static final int YT_PORT = 8085;
     private ChatServer chatServer;
 
-
     private EditSessionsExtractor editSessionsExtractor;
 
     /**
@@ -66,23 +65,17 @@ public class EventListenerImpl implements EventListener {
     }
 
     /**
-     * Load the list of latest-events (list of updated issues since last time this was called.
-     * Note: items in this list guarantee that there is no items with same ISSUE-ID exists, they are ordered from most oldest one (first item) to most recent one (last item)
+     * <p>
+     * On wake, the job of this agent is simply to get any edits that have occurred since its last run from
+     * the ticketing system (using the {@link com.ontometrics.integrations.sources.EditSessionsExtractor} and
+     * then post them to the {@link com.ontometrics.integrations.configuration.ChatServer}.
+     * </p>
+     * <p>
+     * This should stay simple: if we can't process a session for any reason we should skip it.
+     * </p>
      *
-     * For each issue (@link ProcessEvent}) in this list the list of issue change events {@link ProcessEventChange}
-     * is loaded.
-     * Each of loaded event will have an updated date after
-     * {@link EventProcessorConfiguration#resolveMinimumAllowedDate(java.util.Date)}
-     *  where date passed in is {@link EventProcessorConfiguration#loadLastProcessedDate()}
-     *
-     * This list will only include the list of updates which were created after
-     * {@link EventProcessorConfiguration#resolveMinimumAllowedDate(java.util.Date)} with date {@link #getLastEventChangeDate(com.ontometrics.integrations.events.ProcessEvent)}
-     *
-     * The list of updates for each issue will be grouped by {@link com.ontometrics.integrations.events.ProcessEventChange#getUpdater()}
-     * and for each group (group of updates by user) app will generate and post message to external system (slack).
-     *
-     * @return number of processed events.
-     * @throws IOException
+     * @return the number of sessions that were processed
+     * @throws Exception if it fails to save the last event date
      */
     @Override
     public int checkForNewEvents() throws Exception {
@@ -91,103 +84,20 @@ public class EventListenerImpl implements EventListener {
         Date minDateOfEvents = eventProcessorConfiguration
                 .resolveMinimumAllowedDate(eventProcessorConfiguration.loadLastProcessedDate());
 
-        List<ProcessEvent> events = editSessionsExtractor.getLatestEvents(minDateOfEvents);
+        List<IssueEditSession> editSessions = editSessionsExtractor.getLatestEdits(minDateOfEvents);
 
-        if (events.isEmpty()) {
-            log.info("There are no new events to process");
-        } else {
-            log.info("There are {} events to process", events.size());
-        }
-
+        Date lastProcessedSessionDate = null;
         final AtomicInteger processedSessionsCount = new AtomicInteger(0);
-        for (ProcessEvent event : events) {
+        for (IssueEditSession session : editSessions){
+            chatServer.post(session);
+            lastProcessedSessionDate = session.getUpdated();
             processedSessionsCount.incrementAndGet();
-            //load list of updates (using REST service of YouTrack)
-            List<IssueEditSession> editSessions;
-            Date minChangeDate = eventProcessorConfiguration.resolveMinimumAllowedDate(getLastEventChangeDate(event));
-            try {
-                editSessions = editSessionsExtractor.getEdits(event, minChangeDate);
-                postEditSessionsToChatServer(event, editSessions);
-            } catch (Exception ex) {
-                log.error("Failed to process event " + event, ex);
-            } finally {
-                //whatever happens, update save the last event as processed
-                try {
-                    eventProcessorConfiguration.saveLastProcessedEventDate(event.getPublishDate());
-                } catch (ConfigurationException e) {
-                    log.error("Failed to update last processed event", e);
-                }
-            }
         }
+
+        eventProcessorConfiguration.saveLastProcessedEventDate(lastProcessedSessionDate);
 
         return processedSessionsCount.get();
     }
 
-    /**
-     * Group the list of events by {@link com.ontometrics.integrations.events.ProcessEventChange#getUpdater()}
-     * For each group app will generate and post message to chat server.
-     *
-     * @param event updated issue
-     * @param editSessions list of edit sessions for particular issue
-     */
-    private void postEditSessionsToChatServer(ProcessEvent event, List<IssueEditSession> editSessions) {
-
-        if (editSessions.isEmpty()) {
-            log.info("List of edit sessions for event is empty");
-            //report issue creation only if we do not reported about this event before
-            Date eventChangeDate = EventProcessorConfiguration.instance().getEventChangeDate(event);
-            if (eventChangeDate == null) {
-                log.info("Going to report about issue creation. Issue: {}", event);
-                chatServer.postIssueCreation(event.getIssue());
-                //record the fact that we already posted info about this issue, so next time we will not report it again
-                EventProcessorConfiguration.instance()
-                        .saveEventChangeDate(event, event.getPublishDate());
-            } else {
-                log.info("Do not report about issue creation since issue info has been posted already on {}", eventChangeDate);
-            }
-        } else {
-            log.info("There are {} edit sessions for issue {}", editSessions.size(), event.getIssue().toString());
-
-            try {
-                for (Map.Entry<String, Collection<IssueEditSession>> mapEntry : groupChangesByUpdater(editSessions).entrySet()) {
-                    for (IssueEditSession editSession : mapEntry.getValue()) {
-                        chatServer.post(editSession);
-                    }
-                }
-            } catch (Exception ex) {
-                log.error("Failed to post edit sessions to chat server", ex);
-            } finally {
-                //whatever happens, update the last change date
-                EventProcessorConfiguration.instance()
-                        .saveEventChangeDate(event, getMostRecentEvent(editSessions).getUpdated());
-            }
-        }
-    }
-
-    private IssueEditSession getMostRecentEvent(List<IssueEditSession> editSessions) {
-        Date mostRecentEventDate = null;
-        IssueEditSession mostRecentIssueEditSession = null;
-        for (IssueEditSession editSession : editSessions) {
-            if (mostRecentEventDate == null || editSession.getUpdated().after(mostRecentEventDate)) {
-                mostRecentEventDate = editSession.getUpdated();
-                mostRecentIssueEditSession = editSession;
-            }
-        }
-        return mostRecentIssueEditSession;
-    }
-
-
-    private Map<String, Collection<IssueEditSession>> groupChangesByUpdater(List<IssueEditSession> editSessions) {
-        return Multimaps.index(editSessions, new Function<IssueEditSession, String>() {
-            @Override
-            public String apply(IssueEditSession issueEditSession) {
-                return issueEditSession.getUpdater();
-            }
-        }).asMap();
-    }
-
-    private Date getLastEventChangeDate(ProcessEvent event) {
-        return EventProcessorConfiguration.instance().getEventChangeDate(event);
-    }
 
 }
