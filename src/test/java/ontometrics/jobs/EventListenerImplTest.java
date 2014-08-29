@@ -112,7 +112,7 @@ public class EventListenerImplTest {
         int events = eventListener.checkForNewEvents();
         //asserting that there are 2 issues processed
         assertThat(issueOrder.get(), is(2));
-        assertThat(events, is(2));
+        assertThat(events, is(4));
     }
 
 
@@ -352,7 +352,6 @@ public class EventListenerImplTest {
     }
 
     @Test
-    @Ignore
     /**
      * Tests that correct min date is passed to {@link com.ontometrics.integrations.sources.EditSessionsExtractor#getEdits(com.ontometrics.integrations.events.ProcessEvent, java.util.Date)}
      * If there is no last event change date, it should be taken from property
