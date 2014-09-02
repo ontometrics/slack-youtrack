@@ -1,0 +1,19 @@
+<rss xmlns:dc="http://purl.org/dc/elements/1.1/" version="2.0">
+    <channel>
+        <title>YouTrack</title>
+        <link>http://ontometrics.com:8085/_rss/issues</link>
+        <description/>
+        <item>
+            <title>
+                HA-696: Searching for Company and Contact names is difficult using the search bar
+            </title>
+            <link>http://ontometrics.com:8085/issue/HA-696</link>
+            <description>
+                <![CDATA[
+<table> <tr> <th>Reporter</th> <td> <img src="http://ontometrics.com:8085/_classpath/smartui/img/youPicture.gif" width="56" height="59" alt="Darren Mabashov (dmabashov)" title="Darren Mabashov (dmabashov)"/> Darren Mabashov (dmabashov) </td> </tr> <tr> <th>Created</th> <td>Sep 2, 2014 3:17:56 PM</td> </tr> <tr> <th>Updated</th> <td>Sep 2, 2014 4:27:31 PM</td> </tr> <tr> <th>Priority</th> <td>Normal</td> </tr> <tr> <th>Type</th> <td>Bug</td> </tr> <tr> <th>State</th> <td>Open</td> </tr> <tr> <th>Assignee</th> <td>Unassigned</td> </tr> <tr> <th>Subsystem</th> <td>No subsystem</td> </tr> <tr> <th>Fix versions</th> <td>Unscheduled</td> </tr> <tr> <th>Affected versions</th> <td>Unknown</td> </tr> <tr> <th>Fixed in build</th> <td>Next Build</td> </tr> <tr> <th>aggregatetimespent</th> <td>No aggregatetimespent</td> </tr> <tr> <th>aggregatetimeestimate</th> <td>No aggregatetimeestimate</td> </tr> <tr> <th>resolution</th> <td>No resolution</td> </tr> <tr> <th>timespent</th> <td>No timespent</td> </tr> <tr> <th>timeestimate</th> <td>No timeestimate</td> </tr> </table> <div class="wiki text">The search bar feature won&#39;t bring up results unless the term is spelled correctly. Perhaps a potential solution would be to add in functionality similar to what we have when we create a new lead (see screenshot) <br/><br/>Perhaps an auto-suggest function (see screen shot) similar to the functionality of when you are creating a lead would make sense here? <br/><br/>I think it would be great as well that if we spelled a word incorrectly the system will either auto correct and say like &quot;did you mean....&quot; or bring up results from a partial word we bring up. Just some thoughts. </div>
+]]>
+            </description>
+            <pubDate>Tue, 02 Sep 2014 23:27:31 UT</pubDate>
+        </item>
+     </channel>
+</rss>

@@ -197,6 +197,20 @@ public class EditSessionsExtractorTest {
 
     }
 
+    @Test
+    public void testCanExtractCommentWhenNoChangesArePresent() throws Exception {
+        mockYouTrackInstance = new SimpleMockIssueTracker("/feeds/issue-feed-with-new-ticket-one-comment.xml", "/feeds/issue-change-new-item-with-comment-no-changes.xml");
+        EditSessionsExtractor sourceEventMapper = new EditSessionsExtractor(mockYouTrackInstance, URL_STREAM_PROVIDER);
+        List<IssueEditSession> edits = sourceEventMapper.getLatestEdits();
+
+        log.info("number of comments found: {}", edits.get(0).getComments().size());
+
+        log.info("edits: {}", edits);
+
+        assertThat(edits.get(0).getComments(), hasSize(1));
+
+    }
+
     /**
      * When a new issue appears, there are no changes. We should get more information about the {@link com.ontometrics.integrations.events.Issue}
      * in this case.

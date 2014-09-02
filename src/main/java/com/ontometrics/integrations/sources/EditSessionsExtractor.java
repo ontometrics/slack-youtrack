@@ -115,12 +115,12 @@ public class EditSessionsExtractor {
                                     //log.info("found field named: {}: change type: {}", currentFieldName, currentChangeType);
                                     break;
                                 case "comment":
-                                    if (!insideChangesTag) { // sadly, comment tags can appear in changes, want to ignore
+//                                    if (!insideChangesTag) { // sadly, comment tags can appear in changes, want to ignore
                                         Comment newComment = extractCommentFromStream(nextEvent.asStartElement());
                                         if (upToDate == null || newComment.getCreated().after(upToDate)) {
                                             newComments.add(newComment);
                                         }
-                                    }
+//                                    }
                                     break;
                                 case "created":
                                     currentFieldName = "created";
@@ -156,55 +156,58 @@ public class EditSessionsExtractor {
                         case XMLStreamConstants.END_ELEMENT:
                             EndElement endElement = nextEvent.asEndElement();
                             String tagName = endElement.getName().getLocalPart();
-                            if (tagName.equals("field")) {
-                                if (newValue.length() > 0) {
-                                    //include only non-processed changes
-                                    if (upToDate == null || updated.after(upToDate)) {
-                                        if (currentFieldName.equals("resolved")){
-                                            newValue = new Date(Long.parseLong(newValue)).toString();
+                            switch (tagName){
+                                case "field":
+                                    if (newValue.length() > 0) {
+                                        //include only non-processed changes
+                                        if (upToDate == null || updated.after(upToDate)) {
+                                            if (currentFieldName.equals("resolved")){
+                                                newValue = new Date(Long.parseLong(newValue)).toString();
+                                            }
+                                            ProcessEventChange processEventChange = new ProcessEventChange.Builder()
+                                                    .updater(updaterName)
+                                                    .updated(updated)
+                                                    .field(StringUtils.trim(currentFieldName))
+                                                    .priorValue(StringUtils.trim(oldValue))
+                                                    .currentValue(StringUtils.trim(newValue))
+                                                    .build();
+
+                                            currentChanges.add(processEventChange);
                                         }
-                                        ProcessEventChange processEventChange = new ProcessEventChange.Builder()
-                                                .updater(updaterName)
-                                                .updated(updated)
-                                                .field(StringUtils.trim(currentFieldName))
-                                                .priorValue(StringUtils.trim(oldValue))
-                                                .currentValue(StringUtils.trim(newValue))
-                                                .build();
+                                        currentFieldName = "";
+                                        oldValue = "";
+                                        newValue = "";
 
-                                        currentChanges.add(processEventChange);
                                     }
-                                    currentFieldName = "";
-                                    oldValue = "";
-                                    newValue = "";
-
-                                }
-                            } else if (tagName.equals("change")) {
-                                if (upToDate == null || updated.after(upToDate) || newComments.size() > 0) {
-                                    log.debug("upToDate: {} updated: {}", upToDate, updated);
-                                    List<IssueEdit> edits = buildIssueEdits(currentChanges);
-                                    IssueEditSession session = null;
-                                    if (edits.size()==0 && newComments.size() > 0){
-                                        Comment firstComment = newComments.get(0);
-                                        session = new IssueEditSession.Builder()
-                                                .updater(firstComment.getAuthor())
-                                                .updated(firstComment.getCreated())
-                                                .issue(e.getIssue())
-                                                .comments(newComments)
-                                                .build();
-                                    } else {
-                                        session = new IssueEditSession.Builder()
-                                                .updater(updaterName)
-                                                .updated(updated)
-                                                .issue(e.getIssue())
-                                                .changes(edits)
-                                                .comments(newComments)
-                                                .build();
+                                    break;
+                                case "change":
+                                    if (upToDate == null || updated.after(upToDate) || newComments.size() > 0) {
+                                        log.debug("upToDate: {} updated: {}", upToDate, updated);
+                                        List<IssueEdit> edits = buildIssueEdits(currentChanges);
+                                        IssueEditSession session = null;
+                                        if (edits.size()==0 && newComments.size() > 0){
+                                            Comment firstComment = newComments.get(0);
+                                            session = new IssueEditSession.Builder()
+                                                    .updater(firstComment.getAuthor())
+                                                    .updated(firstComment.getCreated())
+                                                    .issue(e.getIssue())
+                                                    .comments(newComments)
+                                                    .build();
+                                        } else {
+                                            session = new IssueEditSession.Builder()
+                                                    .updater(updaterName)
+                                                    .updated(updated)
+                                                    .issue(e.getIssue())
+                                                    .changes(edits)
+                                                    .comments(newComments)
+                                                    .build();
+                                        }
+                                        extractedEdits.add(session);
                                     }
-                                    extractedEdits.add(session);
-                                }
-                                currentChanges.clear();
-                                newComments.clear();
-                                insideChangesTag = false;
+                                    currentChanges.clear();
+                                    newComments.clear();
+                                    insideChangesTag = false;
+                                    break;
                             }
                             break;
 
@@ -212,21 +215,32 @@ public class EditSessionsExtractor {
                 }
                 if (extractedEdits.isEmpty()){
                     if (upToDate == null || updated.after(upToDate)){
-                        Issue newIssue = new Issue.Builder()
-                                .projectPrefix(e.getIssue().getPrefix())
-                                .id(e.getIssue().getId())
-                                .created(updated)
-                                .creator(updaterName)
-                                .description(e.getIssue().getDescription())
-                                .title(e.getIssue().getTitle())
-                                .link(e.getIssue().getLink())
-                                .build();
-                        IssueEditSession session = new IssueEditSession.Builder()
-                                .updater(updaterName)
-                                .updated(updated)
-                                .issue(newIssue)
-                                .build();
-                        extractedEdits.add(session);
+                        if (newComments.isEmpty()) {
+                            Issue newIssue = new Issue.Builder()
+                                    .projectPrefix(e.getIssue().getPrefix())
+                                    .id(e.getIssue().getId())
+                                    .created(updated)
+                                    .creator(updaterName)
+                                    .description(e.getIssue().getDescription())
+                                    .title(e.getIssue().getTitle())
+                                    .link(e.getIssue().getLink())
+                                    .build();
+                            IssueEditSession session = new IssueEditSession.Builder()
+                                    .updater(updaterName)
+                                    .updated(updated)
+                                    .issue(newIssue)
+                                    .build();
+                            extractedEdits.add(session);
+                        } else {
+                            Comment firstComment = newComments.get(0);
+                            IssueEditSession session = new IssueEditSession.Builder()
+                                    .updater(firstComment.getAuthor())
+                                    .updated(firstComment.getCreated())
+                                    .issue(e.getIssue())
+                                    .comments(newComments)
+                                    .build();
+                            extractedEdits.add(session);
+                        }
                     }
                 }
                 return extractedEdits;

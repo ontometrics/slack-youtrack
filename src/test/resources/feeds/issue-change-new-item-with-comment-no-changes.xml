@@ -1,0 +1,58 @@
+<issue id="AIA-19">
+    <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="SingleField" name="projectShortName">
+        <value>AIA</value>
+    </field>
+    <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="SingleField" name="numberInProject">
+        <value>19</value>
+    </field>
+    <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="SingleField" name="summary">
+        <value>Need to make a monitor Agent</value>
+    </field>
+    <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="SingleField" name="description">
+        <value>
+            So on JobSpider, we are constantly deploying builds only to have the Customer tell us later that no data is coming through. We need to write a simple monitor that counts the # of items found, imported, geocoded, etc., and then posts a message into the channel from time-to-time. This agent should also have the ability to detect idle periods that are too long, so for example post a message if we have not seen any new items in 5 hours.
+        </value>
+    </field>
+    <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="SingleField" name="created">
+        <value>1408804483646</value>
+    </field>
+    <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="SingleField" name="updated">
+        <value>1409328580340</value>
+    </field>
+    <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="SingleField" name="updaterName">
+        <value>rob</value>
+    </field>
+    <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="SingleField" name="updaterFullName">
+        <value>Rob Williams</value>
+    </field>
+    <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="SingleField" name="reporterName">
+        <value>rob</value>
+    </field>
+    <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="SingleField" name="reporterFullName">
+        <value>Rob Williams</value>
+    </field>
+    <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="SingleField" name="commentsCount">
+        <value>1</value>
+    </field>
+    <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="SingleField" name="votes">
+        <value>0</value>
+    </field>
+    <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="CustomFieldValue" name="Priority">
+        <value>Normal</value>
+    </field>
+    <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="CustomFieldValue" name="Type">
+        <value>Story</value>
+    </field>
+    <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="CustomFieldValue" name="State">
+        <value>Open</value>
+    </field>
+    <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="CustomFieldValue" name="Subsystem">
+        <value>Services</value>
+    </field>
+    <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="CustomFieldValue" name="Fix versions">
+        <value>0.0.2</value>
+    </field>
+    <comment id="76-1891" author="rob" authorFullName="Rob Williams" issueId="AIA-19" deleted="false" text="Looked a bit more at some of the Akka templates (Activator). I think Akka is the right way to go for this." shownForIssueAuthor="false" created="1409327556299">
+        <replies/>
+    </comment>
+</issue>
