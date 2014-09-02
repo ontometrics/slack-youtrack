@@ -63,7 +63,7 @@ public class SlackInstanceTest {
 
         log.info("new issue: {}", newIssueMessage);
 
-        assertThat(newIssueMessage, is("*Noura* created <http://ontometrics.com:8085/issue/ASOC-408|ASOC-492>Title autosuggest and normalization"));
+        assertThat(newIssueMessage, is("*Noura* created <http://ontometrics.com:8085/issue/ASOC-408|ASOC-492>: Title autosuggest and normalization"));
 
     }
 
