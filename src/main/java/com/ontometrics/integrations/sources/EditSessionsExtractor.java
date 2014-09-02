@@ -192,6 +192,7 @@ public class EditSessionsExtractor {
                                     extractedEdits.add(session);
                                 }
                                 currentChanges.clear();
+                                newComments.clear();
                                 insideChangesTag = false;
                             }
                             break;
