@@ -182,13 +182,24 @@ public class EditSessionsExtractor {
                                 if (upToDate == null || updated.after(upToDate) || newComments.size() > 0) {
                                     log.debug("upToDate: {} updated: {}", upToDate, updated);
                                     List<IssueEdit> edits = buildIssueEdits(currentChanges);
-                                    IssueEditSession session = new IssueEditSession.Builder()
-                                            .updater(updaterName)
-                                            .updated(updated)
-                                            .issue(e.getIssue())
-                                            .changes(edits)
-                                            .comments(newComments)
-                                            .build();
+                                    IssueEditSession session = null;
+                                    if (edits.size()==0 && newComments.size() > 0){
+                                        Comment firstComment = newComments.get(0);
+                                        session = new IssueEditSession.Builder()
+                                                .updater(firstComment.getAuthor())
+                                                .updated(firstComment.getCreated())
+                                                .issue(e.getIssue())
+                                                .comments(newComments)
+                                                .build();
+                                    } else {
+                                        session = new IssueEditSession.Builder()
+                                                .updater(updaterName)
+                                                .updated(updated)
+                                                .issue(e.getIssue())
+                                                .changes(edits)
+                                                .comments(newComments)
+                                                .build();
+                                    }
                                     extractedEdits.add(session);
                                 }
                                 currentChanges.clear();
