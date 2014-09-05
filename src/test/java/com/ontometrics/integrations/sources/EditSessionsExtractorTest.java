@@ -26,6 +26,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+import static java.util.Calendar.AUGUST;
 import static java.util.Calendar.JULY;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -47,7 +48,11 @@ public class EditSessionsExtractorTest {
     @Before
     public void setUp() throws Exception {
         EventProcessorConfiguration.instance().clear();
-        mockYouTrackInstance = new SimpleMockIssueTracker("/feeds/issues-feed-rss.xml", "/feeds/issue-changes.xml");
+        mockYouTrackInstance = new SimpleMockIssueTracker.Builder()
+            .feed("/feeds/issues-feed-rss.xml")
+            .changes("/feeds/issue-changes.xml")
+            .build();
+
         editsExtractor = new EditSessionsExtractor(mockYouTrackInstance, URL_STREAM_PROVIDER);
         //editsExtractor.setLastEventDate(createProcessEvent());
     }
@@ -153,7 +158,10 @@ public class EditSessionsExtractorTest {
     @Test
     @SuppressWarnings("unchecked")
     public void testThatEventChangesAreParsed() throws Exception {
-        mockYouTrackInstance = new SimpleMockIssueTracker("/feeds/issues-feed-rss.xml", "/feeds/issue-changes2.xml");
+        mockYouTrackInstance = new SimpleMockIssueTracker.Builder()
+                .feed("/feeds/issues-feed-rss.xml")
+                .changes("/feeds/issue-changes2.xml")
+                .build();
         EditSessionsExtractor sessionsExtractor = new EditSessionsExtractor(mockYouTrackInstance, URL_STREAM_PROVIDER);
         List<IssueEditSession> edits = sessionsExtractor.getEdits(createProcessEvent(), null);
         assertThat(edits, not(empty()));
@@ -161,7 +169,10 @@ public class EditSessionsExtractorTest {
 
     @Test
     public void testThatRSSRawFileCanBeRead() throws Exception {
-        mockYouTrackInstance = new SimpleMockIssueTracker("/feeds/issues-feed-rss-2.xml", "/feeds/issue-changes.xml");
+        mockYouTrackInstance = new SimpleMockIssueTracker.Builder()
+                .feed("/feeds/issues-feed-rss-2.xml")
+                .changes("/feeds/issue-changes.xml")
+                .build();
         EditSessionsExtractor sourceEventMapper = new EditSessionsExtractor(mockYouTrackInstance, URL_STREAM_PROVIDER);
         List<ProcessEvent> changes = sourceEventMapper.getLatestEvents();
         assertThat(changes, not(empty()));
@@ -181,7 +192,11 @@ public class EditSessionsExtractorTest {
 
     @Test
     public void testCanExtractNewComment() throws Exception {
-        mockYouTrackInstance = new SimpleMockIssueTracker("/feeds/issue-feed-with-comments.xml", "/feeds/issue-changes-with-comments.xml");
+        mockYouTrackInstance = new SimpleMockIssueTracker.Builder()
+                .feed("/feeds/issue-feed-with-comments.xml")
+                .changes("/feeds/issue-changes-with-comments.xml")
+                .attachments("/feeds/issue-attachments.xml")
+                .build();
         EditSessionsExtractor sourceEventMapper = new EditSessionsExtractor(mockYouTrackInstance, URL_STREAM_PROVIDER);
         List<IssueEditSession> edits = sourceEventMapper.getLatestEdits();
 
@@ -199,7 +214,11 @@ public class EditSessionsExtractorTest {
 
     @Test
     public void testCanExtractCommentWhenNoChangesArePresent() throws Exception {
-        mockYouTrackInstance = new SimpleMockIssueTracker("/feeds/issue-feed-with-new-ticket-one-comment.xml", "/feeds/issue-change-new-item-with-comment-no-changes.xml");
+        mockYouTrackInstance = new SimpleMockIssueTracker.Builder()
+                .feed("/feeds/issue-feed-with-new-ticket-one-comment.xml")
+                .changes("/feeds/issue-change-new-item-with-comment-no-changes.xml")
+                .attachments("/feeds/empty-attachments.xml")
+                .build();
         EditSessionsExtractor sourceEventMapper = new EditSessionsExtractor(mockYouTrackInstance, URL_STREAM_PROVIDER);
         List<IssueEditSession> edits = sourceEventMapper.getLatestEdits();
 
@@ -211,13 +230,29 @@ public class EditSessionsExtractorTest {
 
     }
 
+    @Test
+    public void testCanExtractCommentsWithIllegalCharacters() throws Exception {
+        mockYouTrackInstance = new SimpleMockIssueTracker.Builder()
+                .feed("/feeds/issue-feed-with-comments.xml")
+                .changes("/feeds/issue-changes-with-comments.xml")
+                .attachments("/feeds/issue-attachments.xml")
+                .build();
+        EditSessionsExtractor sourceEventMapper = new EditSessionsExtractor(mockYouTrackInstance, URL_STREAM_PROVIDER);
+        List<IssueEditSession> edits = sourceEventMapper.getLatestEdits();
+
+    }
+
     /**
      * When a new issue appears, there are no changes. We should get more information about the {@link com.ontometrics.integrations.events.Issue}
      * in this case.
      */
     @Test
     public void testThatOnlyANewIssueWillBeExtracted() throws Exception {
-        mockYouTrackInstance = new SimpleMockIssueTracker("/feeds/issue-feed-with-new-issue.xml", "/feeds/issue-changes-no-changes.xml");
+        mockYouTrackInstance = new SimpleMockIssueTracker.Builder()
+                .feed("/feeds/issue-feed-with-new-issue.xml")
+                .changes("/feeds/issue-changes-no-changes.xml")
+                .attachments("/feeds/issue-attachments.xml")
+                .build();
         EditSessionsExtractor sourceEventMapper = new EditSessionsExtractor(mockYouTrackInstance, URL_STREAM_PROVIDER);
         Date editDate = new DateBuilder().year(2014).day(28).month(Calendar.AUGUST).hour(22).minutes(22).seconds(0).build();
         List<IssueEditSession> edits = sourceEventMapper.getLatestEdits(editDate);
@@ -291,6 +326,28 @@ public class EditSessionsExtractorTest {
                 assertThatStringNotStartsAndEndsWithBlankSymbols(issueEdit.getField());
             }
         }
+    }
+
+    @Test
+    public void testExtractingAttachment() throws Exception {
+        mockYouTrackInstance = new SimpleMockIssueTracker.Builder()
+                .feed("/feeds/issue-feed-attachment-only.xml")
+                .changes("/feeds/issue-changes-no-changes.xml")
+                .attachments("/feeds/issue-attachments.xml")
+                .build();
+
+        Date twoEventsDate = new DateBuilder().year(2014).month(JULY).day(28).build();
+        Date oneEventsDate = new DateBuilder().year(2014).month(AUGUST).day(20).build();
+
+        EditSessionsExtractor editSessionsExtractor = new EditSessionsExtractor(mockYouTrackInstance, URL_STREAM_PROVIDER);
+        List<IssueEditSession> edits = editSessionsExtractor.getLatestEdits(oneEventsDate);
+
+        log.info("attachments found: {}", edits.get(0).getAttachments());
+
+        edits = editSessionsExtractor.getLatestEdits(oneEventsDate);
+        log.info("edits: {}", edits);
+
+        assertThat(edits.get(1).getAttachments(), hasSize(1));
     }
 
     private void assertThatStringNotStartsAndEndsWithBlankSymbols(String str) {

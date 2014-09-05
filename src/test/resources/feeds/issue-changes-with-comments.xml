@@ -11,7 +11,11 @@
         </field>
         <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="SingleField" name="description">
             <value>
-                We need a new instance for deploying a backend for Job Spider. It will be responsible for performing address geocoding and job posting scraping. None of these tasks requires storing data on disk, so the new instance does not have to have a lot of disk capacity. It has to run many processes in parallel though, so instance needs at least 2 CPUs. We reviewed EC2 instance types with their pricing and think that 'c3.large' instance with 3.75 GiB of memory and 2 virtual CPUs will be a good fit.
+                We need a new instance for deploying a backend for Job Spider. It will be responsible for performing
+                address geocoding and job posting scraping. None of these tasks requires storing data on disk, so the
+                new instance does not have to have a lot of disk capacity. It has to run many processes in parallel
+                though, so instance needs at least 2 CPUs. We reviewed EC2 instance types with their pricing and think
+                that 'c3.large' instance with 3.75 GiB of memory and 2 virtual CPUs will be a good fit.
             </value>
         </field>
         <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="SingleField" name="created">
@@ -63,82 +67,109 @@
         <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="CustomFieldValue" name="Fix versions">
             <value>2.1</value>
         </field>
-        <comment id="76-1778" author="dru" authorFullName="Dru Grote" issueId="HA-668" deleted="false" text="What are the software requirements for Job Spider? I.e. what applications do you need installed/configured to support the application on the new instance?" shownForIssueAuthor="false" created="1408384046203">
+        <comment id="76-1778" author="dru" authorFullName="Dru Grote" issueId="HA-668" deleted="false"
+                 text="What are the software requirements for Job Spider? I.e. what applications do you need installed/configured to support the application on the new instance?"
+                 shownForIssueAuthor="false" created="1408384046203">
             <replies/>
         </comment>
-        <comment id="76-1779" author="rob" authorFullName="Rob Williams" issueId="HA-668" deleted="false" text="It's going to run basically the same thing the existing instance runs, but just with a subset of the classes: Play and Akka." shownForIssueAuthor="false" created="1408384217210">
+        <comment id="76-1779" author="rob" authorFullName="Rob Williams" issueId="HA-668" deleted="false"
+                 text="It's going to run basically the same thing the existing instance runs, but just with a subset of the classes: Play and Akka."
+                 shownForIssueAuthor="false" created="1408384217210">
             <replies/>
         </comment>
-        <comment id="76-1780" author="andrey.chorniy" authorFullName="Andrey Chorniy" issueId="HA-668" deleted="false" text="We'll need to be able to install latest version of java 7 and playframework 2.2.0, plus midnight-commander. Please open port 8765 on this and insidehire.com server, so they can communicate with each-other. This server should be able to access Mongo and ES servers (not sure if we need anything for that) Generally it would be good to have sudo access during deployment since we may need to install something else" shownForIssueAuthor="false" created="1408384350311" updated="1408384654492">
+        <comment id="76-1780" author="andrey.chorniy" authorFullName="Andrey Chorniy" issueId="HA-668" deleted="false"
+                 text="We'll need to be able to install latest version of java 7 and playframework 2.2.0, plus midnight-commander. Please open port 8765 on this and insidehire.com server, so they can communicate with each-other. This server should be able to access Mongo and ES servers (not sure if we need anything for that) Generally it would be good to have sudo access during deployment since we may need to install something else"
+                 shownForIssueAuthor="false" created="1408384350311" updated="1408384654492">
             <replies/>
         </comment>
-        <comment id="76-1786" author="dru" authorFullName="Dru Grote" issueId="HA-668" deleted="false" text="This instance will be referred to as js1(.insidehire.com). 1) I see OpenJDK is being used on appserver. Is this sufficient or do you require Oracle Java? 2) Please verify the following firewall requirements: appserver --> js1 TCP 8765 js1 --> mongoserver TCP 27017 js1 --> es1 TCP 9200 " shownForIssueAuthor="false" created="1408385845909">
+        <comment id="76-1786" author="dru" authorFullName="Dru Grote" issueId="HA-668" deleted="false"
+                 text="This instance will be referred to as js1(.insidehire.com). 1) I see OpenJDK is being used on appserver. Is this sufficient or do you require Oracle Java? 2) Please verify the following firewall requirements: appserver --> js1 TCP 8765 js1 --> mongoserver TCP 27017 js1 --> es1 TCP 9200 "
+                 shownForIssueAuthor="false" created="1408385845909">
             <replies/>
         </comment>
-        <comment id="76-1789" author="nikolay.chorniy@gmail.com" authorFullName="Nikolay Chorniy" issueId="HA-668" deleted="false" text="# OpenJDK is sufficient # We have these requirements appserver TCP 8765 js1 TCP 8765 js1 mongoserver TCP 27017 js1 es1 TCP 9300 js1 es1 TCP 9200" shownForIssueAuthor="false" created="1408387298153">
+        <comment id="76-1789" author="nikolay.chorniy@gmail.com" authorFullName="Nikolay Chorniy" issueId="HA-668"
+                 deleted="false"
+                 text="# OpenJDK is sufficient # We have these requirements appserver TCP 8765 js1 TCP 8765 js1 mongoserver TCP 27017 js1 es1 TCP 9300 js1 es1 TCP 9200"
+                 shownForIssueAuthor="false" created="1408387298153">
             <replies/>
         </comment>
-        <comment id="76-1795" author="dru" authorFullName="Dru Grote" issueId="HA-668" deleted="false" text="Building instance..." shownForIssueAuthor="false" created="1408392149083">
+        <comment id="76-1795" author="dru" authorFullName="Dru Grote" issueId="HA-668" deleted="false"
+                 text="Building instance..." shownForIssueAuthor="false" created="1408392149083">
             <replies/>
         </comment>
-        <comment id="76-1796" author="dru" authorFullName="Dru Grote" issueId="HA-668" deleted="false" text="Andrey/Nikolay, you should be able to ssh to js1.insidehire.com=54.235.214.110 (i-d6cb9039). Please run the Job Spider scraper as user 'jobspider'. You've been granted full sudo privileges to this user. The root(/) partition is an EBS volume and will retain data across reboots. Space is limited here but you indicated no writing to disk so this should not be a problem. If you require temporary storage of large files or data, please use /s3data. This is an ephemeral partition backed by S3 that will be destroyed on reboot. I have installed openjdk-7-jdk per your requirements. Please let me know when the application is functioning as desired so I can convert this instance into an AMI for future deployments." shownForIssueAuthor="false" created="1408394115422">
+        <comment id="76-1796" author="dru" authorFullName="Dru Grote" issueId="HA-668" deleted="false"
+                 text="Andrey/Nikolay, you should be able to ssh to js1.insidehire.com=54.235.214.110 (i-d6cb9039). Please run the Job Spider scraper as user 'jobspider'. You've been granted full sudo privileges to this user. The root(/) partition is an EBS volume and will retain data across reboots. Space is limited here but you indicated no writing to disk so this should not be a problem. If you require temporary storage of large files or data, please use /s3data. This is an ephemeral partition backed by S3 that will be destroyed on reboot. I have installed openjdk-7-jdk per your requirements. Please let me know when the application is functioning as desired so I can convert this instance into an AMI for future deployments."
+                 shownForIssueAuthor="false" created="1408394115422">
             <replies/>
         </comment>
-        <comment id="76-1797" author="dru" authorFullName="Dru Grote" issueId="HA-668" deleted="false" text="I'm not sure what to do with this ticket. The Assign function doesn't seem to do anything." shownForIssueAuthor="false" created="1408394194699" updated="1408395507589">
+        <comment id="76-1797" author="dru" authorFullName="Dru Grote" issueId="HA-668" deleted="false"
+                 text="I'm not sure what to do with this ticket. The Assign function doesn't seem to do anything."
+                 shownForIssueAuthor="false" created="1408394194699" updated="1408395507589">
             <replies/>
         </comment>
-        <comment id="76-1803" author="andrey.chorniy" authorFullName="Andrey Chorniy" issueId="HA-668" deleted="false" text="@dru could you please install the git? We also would like to have permissions to write to etc/init.d file to install service The general requirement is to have sudo permissions for certain amount of time (while we installing jobspider stuff here), not sure what password we should use if we doing something like sudo xyz something?" shownForIssueAuthor="false" created="1408479516577">
+        <comment id="76-1803" author="andrey.chorniy" authorFullName="Andrey Chorniy" issueId="HA-668" deleted="false"
+                 text="@dru could you please install the git? We also would like to have permissions to write to etc/init.d file to install service The general requirement is to have sudo permissions for certain amount of time (while we installing jobspider stuff here), not sure what password we should use if we doing something like sudo xyz something?"
+                 shownForIssueAuthor="false" created="1408479516577">
             <replies/>
         </comment>
-<comment id="76-1804" author="dru" authorFullName="Dru Grote" issueId="HA-668" deleted="false" text="I have installed git. I have temporarily granted you sudo root privileges. Please carefully note all changes that are made to the system to support your application and document here. Once completed, please let me know so that I can create an AMI of a working instance." shownForIssueAuthor="false" created="1408479901842">
-<replies/>
-</comment>
-<comment id="76-1808" author="nikolay.chorniy@gmail.com" authorFullName="Nikolay Chorniy" issueId="HA-668" deleted="false" text="Dru, we have successfully deployed a web application on this new instance. It's running on behalf of 'jobspider' user." shownForIssueAuthor="false" created="1408566448214">
-<replies/>
-</comment>
-    <comment id="76-1878" author="dru" authorFullName="Dru Grote" issueId="HA-668" deleted="false" text="Imaged as ami-0c449e64 " shownForIssueAuthor="false" created="1409237824867">
-        <replies/>
-</comment>
-<tag>Star</tag>
-        </issue>
-<change>
-    <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="SingleField" name="updaterName">
-        <value>andrey.chorniy</value>
-    </field>
-    <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="SingleField" name="updated">
-        <value>1408384068536</value>
-    </field>
-    <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="LinkChangeField" name="links">
-        <newValue type="Subtask" role="subtask of">HA-657</newValue>
-    </field>
+        <comment id="76-1804" author="dru" authorFullName="Dru Grote" issueId="HA-668" deleted="false"
+                 text="I have installed git. I have temporarily granted you sudo root privileges. Please carefully note all changes that are made to the system to support your application and document here. Once completed, please let me know so that I can create an AMI of a working instance."
+                 shownForIssueAuthor="false" created="1408479901842">
+            <replies/>
+        </comment>
+        <comment id="76-1808" author="nikolay.chorniy@gmail.com" authorFullName="Nikolay Chorniy" issueId="HA-668"
+                 deleted="false"
+                 text="Dru, we have successfully deployed a web application on this new instance. It's running on behalf of 'jobspider' user."
+                 shownForIssueAuthor="false" created="1408566448214">
+            <replies/>
+        </comment>
+        <comment id="76-1878" author="dru" authorFullName="Dru Grote" issueId="HA-668" deleted="false"
+                 text="Imaged as ami-0c449e64 " shownForIssueAuthor="false" created="1409237824867">
+            <replies/>
+        </comment>
+        <tag>Star</tag>
+    </issue>
+    <change>
+        <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="SingleField" name="updaterName">
+            <value>andrey.chorniy</value>
+        </field>
+        <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="SingleField" name="updated">
+            <value>1408384068536</value>
+        </field>
+        <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="LinkChangeField" name="links">
+            <newValue type="Subtask" role="subtask of">HA-657</newValue>
+        </field>
     </change>
     <change>
-    <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="SingleField" name="updaterName">
-        <value>andrey.chorniy</value>
-    </field>
-    <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="SingleField" name="updated">
-        <value>1408566342858</value>
-    </field>
-    <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="LinkChangeField" name="links">
-        <newValue type="Relates" role="relates to">HA-659</newValue>
-    </field>
+        <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="SingleField" name="updaterName">
+            <value>andrey.chorniy</value>
+        </field>
+        <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="SingleField" name="updated">
+            <value>1408566342858</value>
+        </field>
+        <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="LinkChangeField" name="links">
+            <newValue type="Relates" role="relates to">HA-659</newValue>
+        </field>
     </change>
     <change>
-    <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="SingleField" name="updaterName">
-        <value>nikolay.chorniy@gmail.com</value>
-    </field>
-    <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="SingleField" name="updated">
-        <value>1408566451810</value>
-    </field>
-    <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="ChangeField" name="resolved">
-        <newValue>1408566451802</newValue>
-    </field>
-    <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="ChangeField" name="State">
-        <oldValue>Open</oldValue>
-        <newValue>Fixed</newValue>
-    </field>
-    <comment id="76-1808" author="nikolay.chorniy@gmail.com" authorFullName="Nikolay Chorniy" issueId="HA-668" deleted="false" text="Dru, we have successfully deployed a web application on this new instance. It's running on behalf of 'jobspider' user." shownForIssueAuthor="false" created="1408566448214">
-        <replies/>
-    </comment>
-</change>
+        <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="SingleField" name="updaterName">
+            <value>nikolay.chorniy@gmail.com</value>
+        </field>
+        <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="SingleField" name="updated">
+            <value>1408566451810</value>
+        </field>
+        <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="ChangeField" name="resolved">
+            <newValue>1408566451802</newValue>
+        </field>
+        <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="ChangeField" name="State">
+            <oldValue>Open</oldValue>
+            <newValue>Fixed</newValue>
+        </field>
+        <comment id="76-1808" author="nikolay.chorniy@gmail.com" authorFullName="Nikolay Chorniy" issueId="HA-668"
+                 deleted="false"
+                 text="Dru, we have successfully deployed a web application on this new instance. It's running on behalf of 'jobspider' user."
+                 shownForIssueAuthor="false" created="1408566448214">
+            <replies/>
+        </comment>
+    </change>
 </changes>

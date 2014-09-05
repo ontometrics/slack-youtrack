@@ -76,11 +76,56 @@ public class EditSessionsExtractor {
     public List<IssueEditSession> getLatestEdits(Date minDate) throws Exception {
         log.debug("edits since: {}", minDate);
         List<IssueEditSession> sessions = new ArrayList<>();
+        List<IssueEditSession> attachmentSessions = new ArrayList<>();
         List<ProcessEvent> events = getLatestEvents(minDate);
         for (ProcessEvent event : events){
-            sessions.addAll(getEdits(event, minDate));
+            List<IssueEditSession> editSessions = getEdits(event, minDate);
+            for (IssueEditSession session : editSessions){
+                if (session.getChanges().isEmpty()){
+                    List<AttachmentEvent> attachmentEvents = getAttachmentEvents(event, minDate);
+                    for (AttachmentEvent attachmentEvent : attachmentEvents){
+                        attachmentSessions.add(new IssueEditSession.Builder()
+                                .updater(attachmentEvent.getAuthor())
+                                .updated(attachmentEvent.getCreated())
+                                .issue(event.getIssue())
+                                .attachments(attachmentEvents)
+                                .build());
+                    }
+                }
+            }
+            sessions.addAll(editSessions);
+            sessions.addAll(attachmentSessions);
         }
         return sessions;
+    }
+
+    private List<AttachmentEvent> getAttachmentEvents(ProcessEvent event, final Date minDate) throws Exception {
+        return streamProvider.openResourceStream(issueTracker.getAttachmentsUrl(event.getIssue()), new InputStreamHandler<List<AttachmentEvent>>() {
+            @Override
+            public List<AttachmentEvent> handleStream(InputStream is) throws Exception {
+                XMLInputFactory inputFactory = XMLInputFactory.newInstance();
+                XMLEventReader eventReader = inputFactory.createXMLEventReader(is);
+                List<AttachmentEvent> attachmentEvents = new ArrayList<>();
+                while (eventReader.hasNext()){
+                    XMLEvent nextEvent = eventReader.nextEvent();
+                    switch (nextEvent.getEventType()){
+                        case XMLStreamConstants.START_ELEMENT:
+                            if (nextEvent.asStartElement().getName().getLocalPart().equals("fileUrl")) {
+                                String url = nextEvent.asStartElement().getAttributeByName(new QName("", "url")).getValue();
+                                String name = nextEvent.asStartElement().getAttributeByName(new QName("", "name")).getValue();
+                                String author = nextEvent.asStartElement().getAttributeByName(new QName("", "authorLogin")).getValue();
+                                Date created = new Date(Long.parseLong(nextEvent.asStartElement().getAttributeByName(new QName("", "created")).getValue()));
+                                if (minDate==null || created.after(minDate)) {
+                                    attachmentEvents.add(new AttachmentEvent.Builder().created(created).author(author).url(url).name(name).build());
+                                } else {
+                                    log.debug("attachment from {} found, before {}", created, minDate);
+                                }
+                            }
+                    }
+                }
+                return attachmentEvents;
+            }
+        });
     }
 
     public List<IssueEditSession> getEdits(final ProcessEvent e, final Date upToDate) throws Exception {

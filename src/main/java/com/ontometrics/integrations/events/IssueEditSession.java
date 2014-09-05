@@ -25,6 +25,7 @@ public class IssueEditSession {
     private final List<IssueEdit> changes;
     private final List<Comment> comments;
     private final Date updated;
+    private final List<AttachmentEvent> attachments;
 
     public IssueEditSession(Builder builder) {
         issue = builder.issue;
@@ -32,15 +33,17 @@ public class IssueEditSession {
         updated = builder.updated;
         changes = new ArrayList<>(builder.changes);
         comments = new ArrayList<>(builder.comments);
+        attachments = new ArrayList<>(builder.attachments);
     }
 
     public static class Builder {
 
         private Issue issue;
         private String updater;
+        private Date updated;
         private List<IssueEdit> changes = Collections.emptyList();
         private List<Comment> comments = Collections.emptyList();
-        private Date updated;
+        private List<AttachmentEvent> attachments = Collections.emptyList();
 
         public Builder issue(Issue issue){
             this.issue = issue;
@@ -66,6 +69,11 @@ public class IssueEditSession {
             this.comments = comments;
             return this;
         }
+
+        public Builder attachments(List<AttachmentEvent> attachments){
+            this.attachments = attachments;
+            return this;
+            }
 
         public IssueEditSession build(){
             return new IssueEditSession(this);
@@ -95,6 +103,10 @@ public class IssueEditSession {
 
     public List<Comment> getComments() {
         return comments;
+    }
+
+    public List<AttachmentEvent> getAttachments() {
+        return attachments;
     }
 
     @Override
@@ -132,6 +144,9 @@ public class IssueEditSession {
         }
         for (Comment comment : comments){
             b.append(comment.toString());
+        }
+        for (AttachmentEvent attachmentEvent : attachments){
+            b.append(attachmentEvent.toString());
         }
         return b.toString();
     }
