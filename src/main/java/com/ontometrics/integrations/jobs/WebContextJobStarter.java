@@ -19,7 +19,12 @@ public class WebContextJobStarter implements ServletContextListener {
     public void contextInitialized(ServletContextEvent servletContextEvent) {
         logger.info("Started up");
         this.jobStarter = new JobStarter();
-        jobStarter.scheduleTasks();
+        try {
+            jobStarter.scheduleTasks();
+        } catch (Exception ex) {
+            logger.error("Failed to initialize", ex);
+            throw ex;
+        }
     }
 
 
