@@ -81,7 +81,7 @@ public class EditSessionsExtractor {
         for (ProcessEvent event : events){
             List<IssueEditSession> editSessions = getEdits(event, minDate);
             for (IssueEditSession session : editSessions){
-                if (session.getChanges().isEmpty()){
+                if (session.getChanges().isEmpty() && session.getComments().isEmpty()){
                     List<AttachmentEvent> attachmentEvents = getAttachmentEvents(event, minDate);
                     for (AttachmentEvent attachmentEvent : attachmentEvents){
                         sessions.add(new IssueEditSession.Builder()
