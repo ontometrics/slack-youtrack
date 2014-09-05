@@ -22,7 +22,7 @@ public class WebContextJobStarter implements ServletContextListener {
         try {
             jobStarter.scheduleTasks();
         } catch (Exception ex) {
-            logger.error("Failed to initialize", ex);
+            logger.error("Failed to initialize application", ex);
             throw ex;
         }
     }

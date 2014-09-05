@@ -68,7 +68,7 @@
             <value>2.1</value>
         </field>
         <comment id="76-1778" author="dru" authorFullName="Dru Grote" issueId="HA-668" deleted="false"
-                 text="What are the software requirements for Job Spider? I.e. what applications do you need installed/configured to support the application on the new instance?"
+                 text="What are the software &amp; requirements for &lt;Job Spider&gt;? I.e. what applications do you need installed/configured to support the application on the new instance?"
                  shownForIssueAuthor="false" created="1408384046203">
             <replies/>
         </comment>

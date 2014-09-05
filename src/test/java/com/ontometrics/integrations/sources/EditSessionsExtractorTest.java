@@ -29,6 +29,7 @@ import java.util.*;
 import static java.util.Calendar.AUGUST;
 import static java.util.Calendar.JULY;
 import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.CoreMatchers.startsWith;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.fail;
@@ -239,7 +240,13 @@ public class EditSessionsExtractorTest {
                 .build();
         EditSessionsExtractor sourceEventMapper = new EditSessionsExtractor(mockYouTrackInstance, URL_STREAM_PROVIDER);
         List<IssueEditSession> edits = sourceEventMapper.getLatestEdits();
+        assertThat(edits, not(empty()));
+        IssueEditSession firstSession = edits.get(0);
+        assertThat(firstSession.getComments(), hasSize(12));
 
+        // '&amp;' escaped XML entity should be read as '&'
+        assertThat(firstSession.getComments().get(0).getText(),
+                startsWith("What are the software & requirements for <Job Spider>"));
     }
 
     /**
