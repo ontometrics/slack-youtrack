@@ -36,6 +36,12 @@ public class YouTrackInstanceTest {
     }
 
     @Test
+    public void testAttachmentsUrlBuilder() throws MalformedURLException {
+        assertThat(youTrackInstance.getAttachmentsUrl(new Issue.Builder().projectPrefix("ASOC").id(480).build()),
+                is(new URL("http://ontometrics.com:8085/rest/issue/ASOC-480/attachment")));
+    }
+
+    @Test
     public void testThatNoPortWorks() throws MalformedURLException {
         youTrackInstance = new YouTrackInstance.Builder().baseUrl("http://ontometrics.com").build();
 

@@ -11,12 +11,40 @@ import java.net.URL;
  * MockIssueTracker.java
  */
 public class SimpleMockIssueTracker implements IssueTracker {
-    private String feedUrl;
-    private String changesUrl;
+    private String filePathToFeed;
+    private String filePathToChanges;
+    private String filePathToAttachment;
 
-    public SimpleMockIssueTracker(String feedUrl, String changesUrl) {
-        this.feedUrl = feedUrl;
-        this.changesUrl = changesUrl;
+    public SimpleMockIssueTracker(Builder builder) {
+        filePathToFeed = builder.filePathToFeed;
+        filePathToChanges = builder.filePathToChanges;
+        filePathToAttachment = builder.filePathToAttachment;
+    }
+
+    public static class Builder {
+
+        private String filePathToFeed;
+        private String filePathToChanges;
+        private String filePathToAttachment;
+
+        public Builder feed(String filePathToFeed){
+            this.filePathToFeed = filePathToFeed;
+            return this;
+        }
+
+        public Builder changes(String filePathToChanges){
+            this.filePathToChanges = filePathToChanges;
+            return this;
+        }
+
+        public Builder attachments(String filePathToAttachment){
+            this.filePathToAttachment = filePathToAttachment;
+            return this;
+        }
+
+        public SimpleMockIssueTracker build(){
+            return new SimpleMockIssueTracker(this);
+        }
     }
 
     @Override
@@ -26,11 +54,17 @@ public class SimpleMockIssueTracker implements IssueTracker {
 
     @Override
     public URL getFeedUrl() {
-        return TestUtil.getFileAsURL(feedUrl);
+        return TestUtil.getFileAsURL(filePathToFeed);
     }
 
     @Override
     public URL getChangesUrl(Issue issue) {
-        return TestUtil.getFileAsURL(changesUrl);
+        return TestUtil.getFileAsURL(filePathToChanges);
     }
+
+    @Override
+    public URL getAttachmentsUrl(Issue issue) {
+        return TestUtil.getFileAsURL(filePathToAttachment);
+    }
+
 }

@@ -87,7 +87,7 @@ public class EventListenerImpl implements EventListener {
             log.debug("sessions: {}", editSessions);
             Date lastProcessedSessionDate = null;
             for (IssueEditSession session : editSessions) {
-                if (session.getChanges().isEmpty() && session.getComments().isEmpty()) {
+                if (session.getChanges().isEmpty() && session.getComments().isEmpty() && session.getAttachments().isEmpty()) {
                     //todo: that's wrong condition to detect issue creation, we should also use event change map
                     chatServer.postIssueCreation(session.getIssue());
                 } else {

@@ -1,0 +1,17 @@
+<rss xmlns:dc="http://purl.org/dc/elements/1.1/" version="2.0">
+    <channel>
+        <title>YouTrack</title>
+        <link>http://ontometrics.com:8085/_rss/issues</link>
+        <description/>
+        <item>
+            <title>
+                HA-663: Detect lead duplication across different sources
+            </title>
+            <link>http://ontometrics.com:8085/issue/HA-663</link>
+            <description>
+                <![CDATA[]]>
+            </description>
+            <pubDate>Sun, 25 Aug 2014 23:13:29 UT</pubDate>
+        </item>
+    </channel>
+</rss>

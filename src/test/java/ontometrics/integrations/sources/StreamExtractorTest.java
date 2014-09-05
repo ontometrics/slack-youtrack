@@ -29,6 +29,9 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.slf4j.LoggerFactory.getLogger;
 
 /**
+ * This is pretty much a playground. Should probably delete this. Real tests are in 
+ * {@link com.ontometrics.integrations.sources.EditSessionsExtractorTest}.
+ * 
  * User: robwilliams
  * Date: 8/20/14
  * Time: 9:09 PM
@@ -42,10 +45,16 @@ public class StreamExtractorTest {
 
     @Test
     public void testReadingExtraction() throws IOException, XMLStreamException {
-        mockYouTrackInstance = new MockIssueTracker("/feeds/issues-feed-rss.xml", "/feeds/issue-changes.xml");
+        mockYouTrackInstance = new MockIssueTracker.Builder()
+                .feed("/feeds/issues-feed-rss.xml")
+                .changes("/feeds/issue-changes.xml")
+                .build();
         List<ProcessEventChange> changes = extractFields();
+        mockYouTrackInstance = new MockIssueTracker.Builder()
+                .feed("/feeds/issues-feed-rss.xml")
+                .changes("/feeds/issue-changes2.xml")
+                .build();
         assertThat(changes.size(), is(not(0)));
-        mockYouTrackInstance = new MockIssueTracker("/feeds/issues-feed-rss.xml", "/feeds/issue-changes2.xml");
         extractFields();
     }
 
@@ -138,12 +147,40 @@ public class StreamExtractorTest {
     }
 
     private static class MockIssueTracker implements IssueTracker {
-        private String feedUrl;
-        private String changesUrl;
+        private String filePathToFeed;
+        private String filePathToChanges;
+        private String filePathToAttachment;
 
-        private MockIssueTracker(String feedUrl, String changesUrl) {
-            this.feedUrl = feedUrl;
-            this.changesUrl = changesUrl;
+        public MockIssueTracker(Builder builder) {
+            filePathToFeed = builder.filePathToFeed;
+            filePathToChanges = builder.filePathToChanges;
+            filePathToAttachment = builder.filePathToAttachment;
+        }
+
+        public static class Builder {
+
+            private String filePathToFeed;
+            private String filePathToChanges;
+            private String filePathToAttachment;
+
+            public Builder feed(String filePathToFeed){
+                this.filePathToFeed = filePathToFeed;
+                return this;
+                }
+
+            public Builder changes(String filePathToChanges){
+                this.filePathToChanges = filePathToChanges;
+                return this;
+                }
+
+            public Builder attachments(String filePathToAttachment){
+                this.filePathToAttachment = filePathToAttachment;
+                return this;
+                }
+
+            public MockIssueTracker build(){
+                return new MockIssueTracker(this);
+                }
         }
 
         @Override
@@ -153,12 +190,17 @@ public class StreamExtractorTest {
 
         @Override
         public URL getFeedUrl() {
-            return TestUtil.getFileAsURL(feedUrl);
+            return TestUtil.getFileAsURL(filePathToFeed);
         }
 
         @Override
         public URL getChangesUrl(Issue issue) {
-            return TestUtil.getFileAsURL(changesUrl);
+            return TestUtil.getFileAsURL(filePathToChanges);
+        }
+
+        @Override
+        public URL getAttachmentsUrl(Issue issue) {
+            return TestUtil.getFileAsURL(filePathToAttachment);
         }
     }
 

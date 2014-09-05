@@ -16,4 +16,6 @@ public interface IssueTracker {
 
     URL getChangesUrl(Issue issue);
 
+    URL getAttachmentsUrl(Issue issue);
+
 }
