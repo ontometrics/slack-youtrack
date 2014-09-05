@@ -26,6 +26,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+import static java.util.Calendar.AUGUST;
 import static java.util.Calendar.JULY;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -130,7 +131,7 @@ public class EditSessionsExtractorTest {
         List<IssueEditSession> recentEdits = editSessionsExtractor.getLatestEdits();
 
         log.info("recent changes: {}", recentEdits);
-        assertThat(recentEdits, hasSize(450));
+        assertThat(recentEdits, hasSize(500));
 
     }
 
@@ -201,7 +202,8 @@ public class EditSessionsExtractorTest {
     public void testCanExtractCommentWhenNoChangesArePresent() throws Exception {
         mockYouTrackInstance = new SimpleMockIssueTracker("/feeds/issue-feed-with-new-ticket-one-comment.xml", "/feeds/issue-change-new-item-with-comment-no-changes.xml");
         EditSessionsExtractor sourceEventMapper = new EditSessionsExtractor(mockYouTrackInstance, URL_STREAM_PROVIDER);
-        List<IssueEditSession> edits = sourceEventMapper.getLatestEdits();
+        Date lastChecked = new DateBuilder().year(2014).day(24).month(AUGUST).build();
+        List<IssueEditSession> edits = sourceEventMapper.getLatestEdits(lastChecked);
 
         log.info("number of comments found: {}", edits.get(0).getComments().size());
 
@@ -245,7 +247,7 @@ public class EditSessionsExtractorTest {
 
         List<IssueEditSession> allEditSessions = editSessionsExtractor.getEdits(createProcessEvent(), null);
         //all changes should be included if no date is specified
-        assertThat(allEditSessions, hasSize(9));
+        assertThat(allEditSessions, hasSize(10));
 
 
         Date minDate = new Date(1407626732316L);
@@ -284,7 +286,6 @@ public class EditSessionsExtractorTest {
             assertThatStringNotStartsAndEndsWithBlankSymbols(editSession.getIssue().getTitle());
             assertThatStringNotStartsAndEndsWithBlankSymbols(editSession.getIssue().getDescription());
             assertThatStringNotStartsAndEndsWithBlankSymbols(editSession.getIssue().getPrefix());
-            assertThat(editSession.getChanges(), not(empty()));
             for (IssueEdit issueEdit : editSession.getChanges()) {
                 assertThatStringNotStartsAndEndsWithBlankSymbols(issueEdit.getCurrentValue());
                 assertThatStringNotStartsAndEndsWithBlankSymbols(issueEdit.getPriorValue());
