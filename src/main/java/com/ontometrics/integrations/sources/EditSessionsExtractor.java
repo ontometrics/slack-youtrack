@@ -236,7 +236,6 @@ public class EditSessionsExtractor {
                                                 .updated(updated)
                                                 .issue(e.getIssue())
                                                 .changes(edits)
-                                                .comments(newComments)
                                                 .build();
                                         extractedEdits.add(session);
                                     }

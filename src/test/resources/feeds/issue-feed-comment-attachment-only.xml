@@ -1,0 +1,17 @@
+<rss xmlns:dc="http://purl.org/dc/elements/1.1/" version="2.0">
+    <channel>
+        <title>YouTrack</title>
+        <link>http://ontometrics.com:8085/_rss/issues</link>
+        <description/>
+        <item>
+            <title>AIA-38: Support for Attachments</title>
+            <link>http://ontometrics.com:8085/issue/AIA-38</link>
+            <description>
+                <![CDATA[
+<table> <tr> <th>Reporter</th> <td> <img src="http://www.gravatar.com/avatar/2543fe7b34482922746d3aaf4aa86652.jpg?s=60&amp;d=monsterid" width="56" height="59" alt="Rob Williams (rob)" title="Rob Williams (rob)"/> Rob Williams (rob) </td> </tr> <tr> <th>Created</th> <td>Sep 4, 2014 9:03:42 PM</td> </tr> <tr> <th>Updated</th> <td>Sep 5, 2014 12:44:52 PM</td> </tr> <tr> <th>Resolved</th> <td>Sep 4, 2014 9:05:08 PM</td> </tr> <tr> <th>Priority</th> <td>Normal</td> </tr> <tr> <th>Type</th> <td>Task</td> </tr> <tr> <th>State</th> <td>Fixed</td> </tr> <tr> <th>Assignee</th> <td>Rob Williams (rob)</td> </tr> <tr> <th>Subsystem</th> <td>No subsystem</td> </tr> <tr> <th>Fix versions</th> <td>0.0.3</td> </tr> <tr> <th>Affected versions</th> <td>Unknown</td> </tr> <tr> <th>Fixed in build</th> <td>Next Build</td> </tr> </table> <div class="wiki text">Currently, attachments do not appear in changes. So we have to have some logic that just looks for attachments that were added in the time window of interest and simply add them as an edit.</div>
+]]>
+            </description>
+            <pubDate>Fri, 05 Sep 2014 19:44:52 UT</pubDate>
+        </item>
+    </channel>
+</rss>

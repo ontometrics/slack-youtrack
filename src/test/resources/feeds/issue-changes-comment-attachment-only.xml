@@ -1,0 +1,70 @@
+<issue id="AIA-38">
+    <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="SingleField" name="projectShortName">
+        <value>AIA</value>
+    </field>
+    <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="SingleField" name="numberInProject">
+        <value>38</value>
+    </field>
+    <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="SingleField" name="summary">
+        <value>Support for Attachments</value>
+    </field>
+    <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="SingleField" name="description">
+        <value>
+            Currently, attachments do not appear in changes. So we have to have some logic that just looks for attachments that were added in the time window of interest and simply add them as an edit.
+        </value>
+    </field>
+    <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="SingleField" name="created">
+        <value>1409889822124</value>
+    </field>
+    <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="SingleField" name="updated">
+        <value>1409946292661</value>
+    </field>
+    <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="SingleField" name="updaterName">
+        <value>rob</value>
+    </field>
+    <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="SingleField" name="updaterFullName">
+        <value>Rob Williams</value>
+    </field>
+    <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="SingleField" name="resolved">
+        <value>1409889908795</value>
+    </field>
+    <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="SingleField" name="reporterName">
+        <value>rob</value>
+    </field>
+    <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="SingleField" name="reporterFullName">
+        <value>Rob Williams</value>
+    </field>
+    <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="SingleField" name="commentsCount">
+        <value>1</value>
+    </field>
+    <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="SingleField" name="votes">
+        <value>0</value>
+    </field>
+    <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="LinkField" name="links">
+        <value type="Subtask" role="parent for">AIA-39</value>
+    </field>
+    <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="CustomFieldValue" name="Priority">
+        <value>Normal</value>
+    </field>
+    <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="CustomFieldValue" name="Type">
+        <value>Task</value>
+    </field>
+    <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="CustomFieldValue" name="State">
+        <value>Fixed</value>
+    </field>
+    <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="MultiUserField" name="Assignee">
+        <value fullName="Rob Williams">rob</value>
+    </field>
+    <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="CustomFieldValue" name="Subsystem">
+        <value>No subsystem</value>
+    </field>
+    <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="CustomFieldValue" name="Fix versions">
+        <value>0.0.3</value>
+    </field>
+    <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="AttachmentField" name="attachments">
+        <value id="78-1038" url="http://ontometrics.com:8085/_persistent/Screen%20Shot%202014-08-27%20at%204.17.53%20PM.png?file=78-1038&v=0&c=true">Screen Shot 2014-08-27 at 4.17.53 PM.png</value>
+    </field>
+    <comment id="76-1943" author="rob" authorFullName="Rob Williams" issueId="AIA-38" deleted="false" text="What better way to test attachments than attach something here, and comment?" shownForIssueAuthor="false" created="1409946285042">
+        <replies/>
+    </comment>
+</issue>

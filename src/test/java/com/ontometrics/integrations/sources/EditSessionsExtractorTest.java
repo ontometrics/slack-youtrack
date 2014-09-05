@@ -272,7 +272,6 @@ public class EditSessionsExtractorTest {
         assertThat(dateFormat.format(edits.get(0).getIssue().getCreated()), is("2014-08-28 22:22:21"));
     }
 
-
     @Test
     /**
      * Tests that {@link com.ontometrics.integrations.sources.EditSessionsExtractor#getEdits(com.ontometrics.integrations.events.ProcessEvent, java.util.Date)}
