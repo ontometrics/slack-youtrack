@@ -1,9 +1,6 @@
 package com.ontometrics.integrations.configuration;
 
-import com.ontometrics.integrations.events.Comment;
-import com.ontometrics.integrations.events.Issue;
-import com.ontometrics.integrations.events.IssueEdit;
-import com.ontometrics.integrations.events.IssueEditSession;
+import com.ontometrics.integrations.events.*;
 import com.ontometrics.integrations.sources.ChannelMapper;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -89,13 +86,17 @@ public class SlackInstance implements ChatServer {
         s.append(String.format(" %s %s: ", action, MessageFormatter.getIssueLink(session.getIssue())));
         s.append(MessageFormatter.getTitleWithoutIssueID(session.getIssue()));
         s.append(System.lineSeparator());
-        int changeCounter = 0;
         for (IssueEdit edit : session.getChanges()){
             s.append(edit.toString()).append(System.lineSeparator());
         }
         for (Comment comment : session.getComments()){
             s.append(comment.getText()).append(System.lineSeparator());
         }
+        for (AttachmentEvent attachment : session.getAttachments()){
+            s.append("attached ").append(MessageFormatter.getNamedLink(attachment.getFileUrl(), attachment.getName()))
+                    .append(System.lineSeparator());
+        }
+
         return s.toString();
     }
 
@@ -106,6 +107,10 @@ public class SlackInstance implements ChatServer {
     private static class MessageFormatter {
         static String getIssueLink(Issue issue){
             return String.format("<%s|%s-%d>", issue.getLink(), issue.getPrefix(), issue.getId());
+        }
+
+        static String getNamedLink(String url, String text){
+            return String.format("<%s|%s>", url, text);
         }
 
         static String getTitleWithoutIssueID(Issue issue){
