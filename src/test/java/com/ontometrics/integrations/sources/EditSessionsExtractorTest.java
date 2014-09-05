@@ -3,10 +3,7 @@ package com.ontometrics.integrations.sources;
 import com.ontometrics.integrations.configuration.EventProcessorConfiguration;
 import com.ontometrics.integrations.configuration.SimpleMockIssueTracker;
 import com.ontometrics.integrations.configuration.YouTrackInstance;
-import com.ontometrics.integrations.events.Issue;
-import com.ontometrics.integrations.events.IssueEdit;
-import com.ontometrics.integrations.events.IssueEditSession;
-import com.ontometrics.integrations.events.ProcessEvent;
+import com.ontometrics.integrations.events.*;
 import com.ontometrics.util.DateBuilder;
 import ontometrics.test.util.UrlStreamProvider;
 import org.hamcrest.Matchers;
@@ -343,7 +340,6 @@ public class EditSessionsExtractorTest {
                 .attachments("/feeds/issue-attachments.xml")
                 .build();
 
-        Date twoEventsDate = new DateBuilder().year(2014).month(JULY).day(28).build();
         Date oneEventsDate = new DateBuilder().year(2014).month(AUGUST).day(20).build();
 
         EditSessionsExtractor editSessionsExtractor = new EditSessionsExtractor(mockYouTrackInstance, URL_STREAM_PROVIDER);
@@ -354,8 +350,33 @@ public class EditSessionsExtractorTest {
         edits = editSessionsExtractor.getLatestEdits(oneEventsDate);
         log.info("edits: {}", edits);
 
-        assertThat(edits.get(1).getAttachments(), hasSize(1));
+        List<AttachmentEvent> attachments = edits.get(1).getAttachments();
+        assertThat(attachments, hasSize(1));
+        assertSecondAttachment(attachments.get(0));
+
+        Date twoEventsDate = new DateBuilder().year(2014).month(JULY).day(28).build();
+        edits = editSessionsExtractor.getLatestEdits(twoEventsDate);
+
+        attachments = edits.get(1).getAttachments();
+        assertThat(attachments, hasSize(2));
+        assertFirstAttachment(attachments.get(0));
+        assertSecondAttachment(attachments.get(1));
     }
+
+    private void assertSecondAttachment(AttachmentEvent attachment) {
+        assertThat(attachment.getFileUrl(), is("http://ontometrics.com:8085/_persistent/Screen%20Shot%202014-08-25%20at%202.28.54%20PM.png?file=78-978&v=0&c=false"));
+        assertThat(attachment.getName(), is("Screen Shot 2014-08-25 at 2.28.54 PM.png"));
+        assertThat(attachment.getAuthor(), is("dmabashov"));
+        assertThat(attachment.getCreated(), is(new Date(1409002338563L)));
+    }
+
+    private void assertFirstAttachment(AttachmentEvent attachment) {
+        assertThat(attachment.getFileUrl(), is("http://ontometrics.com:8085/_persistent/image1.png?file=78-938&v=0&c=false"));
+        assertThat(attachment.getName(), is("image1.png"));
+        assertThat(attachment.getAuthor(), is("andrey.chorniy"));
+        assertThat(attachment.getCreated(), is(new Date(1408047741525L)));
+    }
+
 
     private void assertThatStringNotStartsAndEndsWithBlankSymbols(String str) {
         assertThat(str, allOf(not(startsWith("\n")), not(startsWith(" ")),

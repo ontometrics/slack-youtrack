@@ -1,4 +1,6 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <fileUrls>
-    <fileUrl id="78-938" url="http://ontometrics.com:8085/_persistent/image1.png?file=78-938" name="image1.png" authorLogin="andrey.chorniy" group="All Users" created="1408047741525"/>
-    <fileUrl id="78-978" url="http://ontometrics.com:8085/_persistent/Screen%20Shot%202014-08-25%20at%202.28.54%20PM.png?file=78-978" name="Screen Shot 2014-08-25 at 2.28.54 PM.png" authorLogin="dmabashov" group="All Users" created="1409002338563"/>
+    <fileUrl id="78-938" url="http://ontometrics.com:8085/_persistent/image1.png?file=78-938&amp;v=0&amp;c=false" name="image1.png" authorLogin="andrey.chorniy" group="All Users" created="1408047741525"/>
+    <fileUrl id="78-978" url="http://ontometrics.com:8085/_persistent/Screen%20Shot%202014-08-25%20at%202.28.54%20PM.png?file=78-978&amp;v=0&amp;c=false"
+        name="Screen Shot 2014-08-25 at 2.28.54 PM.png" authorLogin="dmabashov" group="All Users" created="1409002338563"/>
 </fileUrls>
