@@ -75,9 +75,19 @@ public class IssueEditSession {
             return this;
             }
 
+        public Builder attachment(AttachmentEvent attachmentEvent) {
+            if (this.attachments.isEmpty()){
+                this.attachments = new ArrayList<>();
+            }
+            this.attachments.add(attachmentEvent);
+            return this;
+        }
+
         public IssueEditSession build(){
             return new IssueEditSession(this);
-            }
+        }
+
+
     }
 
     public Issue getIssue() {
@@ -107,6 +117,14 @@ public class IssueEditSession {
 
     public List<AttachmentEvent> getAttachments() {
         return attachments;
+    }
+
+    public boolean isCreationEdit(){
+        return getIssue().getCreated()!=null && getIssue().getCreated().equals(getUpdated());
+    }
+
+    public boolean hasChanges(){
+        return isCreationEdit() || getChanges().size() > 0 || getComments().size() > 0;
     }
 
     @Override

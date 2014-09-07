@@ -1,5 +1,7 @@
 package com.ontometrics.util;
 
+import com.ontometrics.integrations.events.IssueEdit;
+
 import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
@@ -111,6 +113,10 @@ public class DateBuilder {
         return this;
     }
 
+    public DateBuilder addDays(int daysToAdd) {
+        calendar.add(Calendar.DAY_OF_YEAR, daysToAdd);
+        return this;
+    }
 
     /**
      * Sets specified timestamp
@@ -131,4 +137,5 @@ public class DateBuilder {
     public Date build() {
         return calendar.getTime();
     }
+
 }

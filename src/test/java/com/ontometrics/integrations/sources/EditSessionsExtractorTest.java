@@ -47,9 +47,10 @@ public class EditSessionsExtractorTest {
     public void setUp() throws Exception {
         EventProcessorConfiguration.instance().clear();
         mockYouTrackInstance = new SimpleMockIssueTracker.Builder()
-            .feed("/feeds/issues-feed-rss.xml")
-            .changes("/feeds/issue-changes.xml")
-            .build();
+                .feed("/feeds/issues-feed-rss.xml")
+                .changes("/feeds/issue-changes.xml")
+                .attachments("/feeds/empty-attachments.xml")
+                .build();
 
         editsExtractor = new EditSessionsExtractor(mockYouTrackInstance, URL_STREAM_PROVIDER);
         //editsExtractor.setLastEventDate(createProcessEvent());
@@ -133,7 +134,7 @@ public class EditSessionsExtractorTest {
         List<IssueEditSession> recentEdits = editSessionsExtractor.getLatestEdits();
 
         log.info("recent changes: {}", recentEdits);
-        assertThat(recentEdits, hasSize(500));
+        assertThat(recentEdits, hasSize(450));
 
     }
 
@@ -193,7 +194,7 @@ public class EditSessionsExtractorTest {
         mockYouTrackInstance = new SimpleMockIssueTracker.Builder()
                 .feed("/feeds/issue-feed-with-comments.xml")
                 .changes("/feeds/issue-changes-with-comments.xml")
-                .attachments("/feeds/issue-attachments.xml")
+                .attachments("/feeds/empty-attachments.xml")
                 .build();
         EditSessionsExtractor sourceEventMapper = new EditSessionsExtractor(mockYouTrackInstance, URL_STREAM_PROVIDER);
         List<IssueEditSession> edits = sourceEventMapper.getLatestEdits();
@@ -203,10 +204,6 @@ public class EditSessionsExtractorTest {
         log.info("edits: {}", edits);
 
         assertThat(edits.get(0).getComments(), hasSize(12));
-
-        edits = sourceEventMapper.getLatestEdits(new DateBuilder().day(27).month(Calendar.AUGUST).year(2014).build());
-
-        assertThat(edits.get(0).getComments(), hasSize(1));
 
     }
 

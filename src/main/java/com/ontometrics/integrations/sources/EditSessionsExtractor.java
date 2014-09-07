@@ -2,6 +2,7 @@ package com.ontometrics.integrations.sources;
 
 import com.ontometrics.integrations.configuration.IssueTracker;
 import com.ontometrics.integrations.events.*;
+import com.ontometrics.util.DateBuilder;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -78,25 +79,32 @@ public class EditSessionsExtractor {
         List<IssueEditSession> sessions = new ArrayList<>();
         List<IssueEditSession> attachmentSessions = new ArrayList<>();
         List<ProcessEvent> events = getLatestEvents(minDate);
+        Set<Integer> issuesWeHaveGottenChangesFor = new HashSet<>();
         for (ProcessEvent event : events){
-            List<IssueEditSession> editSessions = getEdits(event, minDate);
-            for (IssueEditSession session : editSessions){
-                if (session.getIssue().getCreated().before(minDate) && session.getChanges().isEmpty() && session.getComments().isEmpty()){
+            if (!issuesWeHaveGottenChangesFor.contains(event.getIssue().getId())) {
+                issuesWeHaveGottenChangesFor.add(event.getIssue().getId());
+                List<IssueEditSession> editSessions = getEdits(event, minDate);
+                for (IssueEditSession session : editSessions) {
+                    if (session.hasChanges()) {
+                        sessions.add(session);
+                    }
                     List<AttachmentEvent> attachmentEvents = getAttachmentEvents(event, minDate);
-                    for (AttachmentEvent attachmentEvent : attachmentEvents){
+                    if (!attachmentEvents.isEmpty()){
                         sessions.add(new IssueEditSession.Builder()
-                                .updater(attachmentEvent.getAuthor())
-                                .updated(attachmentEvent.getCreated())
+                                .updater(attachmentEvents.get(0).getAuthor())
+                                .updated(attachmentEvents.get(0).getCreated())
                                 .issue(event.getIssue())
                                 .attachments(attachmentEvents)
                                 .build());
                     }
-                } else {
-                    sessions.add(session);
                 }
             }
         }
         return sessions;
+    }
+
+    private boolean hasNoChangesFound(IssueEditSession session) {
+        return session.isCreationEdit() && session.getChanges().isEmpty() && session.getComments().isEmpty();
     }
 
     private List<AttachmentEvent> getAttachmentEvents(ProcessEvent event, final Date minDate) throws Exception {
@@ -123,6 +131,7 @@ public class EditSessionsExtractor {
                             }
                     }
                 }
+                log.debug("returning attachment events: {} since: {}", attachmentEvents, minDate);
                 return attachmentEvents;
             }
         });
@@ -140,6 +149,7 @@ public class EditSessionsExtractor {
                 String updaterName = "";
                 Date updated = null;
                 Date created = null;
+                String creator = "";
                 boolean insideChangesTag = false;
                 List<IssueEditSession> extractedEdits = new ArrayList<>();
                 List<ProcessEventChange> currentChanges = new ArrayList<>();
@@ -172,6 +182,9 @@ public class EditSessionsExtractor {
                                 case "updaterFullName":
                                     currentFieldName = "creator";
                                     break;
+                                case "creator":
+                                    currentFieldName = "creator";
+                                    break;
                                 default:
                                     String elementText;
                                     try {
@@ -190,6 +203,8 @@ public class EditSessionsExtractor {
                                                     updated = new Date(Long.parseLong(elementText));
                                                 } else if (currentFieldName.equals("created")){
                                                     created = new Date(Long.parseLong(elementText));
+                                                } else if (currentFieldName.equals("creator")){
+                                                    creator = elementText;
                                                 }
                                         }
                                     } catch (Exception e) {
@@ -231,16 +246,27 @@ public class EditSessionsExtractor {
                                         log.debug("upToDate: {} updated: {}", upToDate, updated);
                                         List<IssueEdit> edits = buildIssueEdits(currentChanges);
                                         IssueEditSession session = null;
+                                        Issue issue = new Issue.Builder()
+                                                .projectPrefix(e.getIssue().getPrefix())
+                                                .id(e.getIssue().getId())
+                                                .created(created)
+                                                .creator(creator)
+                                                .link(e.getIssue().getLink())
+                                                .description(e.getIssue().getDescription())
+                                                .build();
                                         session = new IssueEditSession.Builder()
                                                 .updater(updaterName)
                                                 .updated(updated)
-                                                .issue(e.getIssue())
+                                                .issue(issue)
                                                 .changes(edits)
+                                                .comments(newComments)
                                                 .build();
                                         extractedEdits.add(session);
+                                    } else {
+                                        log.debug("skipped change dated: {}", updated);
                                     }
                                     currentChanges.clear();
-                                    //newComments.clear();
+                                    newComments.clear();
                                     insideChangesTag = false;
                                     break;
                             }
@@ -252,7 +278,7 @@ public class EditSessionsExtractor {
                     Issue newIssue = new Issue.Builder()
                             .projectPrefix(e.getIssue().getPrefix())
                             .id(e.getIssue().getId())
-                            .created(updated)
+                            .created(created)
                             .creator(updaterName)
                             .description(e.getIssue().getDescription())
                             .title(e.getIssue().getTitle())
@@ -380,7 +406,6 @@ public class EditSessionsExtractor {
                 .issue(issue)
                 .published(currentPublishDate)
                 .build();
-        log.debug("process event extracted and built: {}", event);
         return event;
     }
 
