@@ -112,10 +112,8 @@ public class Issue {
 
         Issue issue = (Issue) o;
 
-        if (id != issue.id) return false;
-        if (prefix != null ? !prefix.equals(issue.prefix) : issue.prefix != null) return false;
+        return id == issue.id && !(prefix != null ? !prefix.equals(issue.prefix) : issue.prefix != null);
 
-        return true;
     }
 
     @Override
@@ -127,6 +125,14 @@ public class Issue {
 
     @Override
     public String toString() {
-        return prefix + "-" + id;
+        return "Issue{" +
+                "id=" + id +
+                ", prefix='" + prefix + '\'' +
+                ", title='" + title + '\'' +
+                ", description='" + description + '\'' +
+                ", link=" + link +
+                ", creator='" + creator + '\'' +
+                ", created=" + created +
+                '}';
     }
 }

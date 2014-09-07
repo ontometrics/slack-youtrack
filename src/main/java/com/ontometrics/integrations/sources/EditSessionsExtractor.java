@@ -2,7 +2,6 @@ package com.ontometrics.integrations.sources;
 
 import com.ontometrics.integrations.configuration.IssueTracker;
 import com.ontometrics.integrations.events.*;
-import com.ontometrics.util.DateBuilder;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -77,7 +76,6 @@ public class EditSessionsExtractor {
     public List<IssueEditSession> getLatestEdits(Date minDate) throws Exception {
         log.debug("edits since: {}", minDate);
         List<IssueEditSession> sessions = new ArrayList<>();
-        List<IssueEditSession> attachmentSessions = new ArrayList<>();
         List<ProcessEvent> events = getLatestEvents(minDate);
         Set<Integer> issuesWeHaveGottenChangesFor = new HashSet<>();
         for (ProcessEvent event : events){
@@ -101,10 +99,6 @@ public class EditSessionsExtractor {
             }
         }
         return sessions;
-    }
-
-    private boolean hasNoChangesFound(IssueEditSession session) {
-        return session.isCreationEdit() && session.getChanges().isEmpty() && session.getComments().isEmpty();
     }
 
     private List<AttachmentEvent> getAttachmentEvents(ProcessEvent event, final Date minDate) throws Exception {
@@ -150,7 +144,6 @@ public class EditSessionsExtractor {
                 Date updated = null;
                 Date created = null;
                 String creator = "";
-                boolean insideChangesTag = false;
                 List<IssueEditSession> extractedEdits = new ArrayList<>();
                 List<ProcessEventChange> currentChanges = new ArrayList<>();
                 List<Comment> newComments = new ArrayList<>();
@@ -163,7 +156,6 @@ public class EditSessionsExtractor {
                             String elementName = startElement.getName().getLocalPart();
                             switch (elementName) {
                                 case "change":
-                                    insideChangesTag = true;
                                     break;
                                 case "field":
                                     currentFieldName = nextEvent.asStartElement().getAttributeByName(new QName("", "name")).getValue();
@@ -197,14 +189,19 @@ public class EditSessionsExtractor {
                                                 oldValue = elementText;
                                                 break;
                                             case "value":
-                                                if (currentFieldName.equals("updaterName")) {
-                                                    updaterName = elementText;
-                                                } else if (currentFieldName.equals("updated")) {
-                                                    updated = new Date(Long.parseLong(elementText));
-                                                } else if (currentFieldName.equals("created")){
-                                                    created = new Date(Long.parseLong(elementText));
-                                                } else if (currentFieldName.equals("creator")){
-                                                    creator = elementText;
+                                                switch (currentFieldName) {
+                                                    case "updaterName":
+                                                        updaterName = elementText;
+                                                        break;
+                                                    case "updated":
+                                                        updated = new Date(Long.parseLong(elementText));
+                                                        break;
+                                                    case "created":
+                                                        created = new Date(Long.parseLong(elementText));
+                                                        break;
+                                                    case "creator":
+                                                        creator = elementText;
+                                                        break;
                                                 }
                                         }
                                     } catch (Exception e) {
@@ -245,7 +242,7 @@ public class EditSessionsExtractor {
                                     if (upToDate == null || updated.after(upToDate)) {
                                         log.debug("upToDate: {} updated: {}", upToDate, updated);
                                         List<IssueEdit> edits = buildIssueEdits(currentChanges);
-                                        IssueEditSession session = null;
+                                        IssueEditSession session;
                                         Issue issue = new Issue.Builder()
                                                 .projectPrefix(e.getIssue().getPrefix())
                                                 .id(e.getIssue().getId())
@@ -267,7 +264,6 @@ public class EditSessionsExtractor {
                                     }
                                     currentChanges.clear();
                                     newComments.clear();
-                                    insideChangesTag = false;
                                     break;
                             }
                             break;
@@ -406,6 +402,7 @@ public class EditSessionsExtractor {
                 .issue(issue)
                 .published(currentPublishDate)
                 .build();
+        log.debug("event extracted from stream: {}", event);
         return event;
     }
 
