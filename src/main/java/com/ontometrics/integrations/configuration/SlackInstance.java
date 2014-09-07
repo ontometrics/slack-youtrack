@@ -84,7 +84,7 @@ public class SlackInstance implements ChatServer {
         StringBuilder s = new StringBuilder(String.format("*%s*", session.getUpdater()));
         String action = session.getComments().size() > 0 ? "commented on " : "updated";
         s.append(String.format(" %s %s: ", action, MessageFormatter.getIssueLink(session.getIssue())));
-        if (!session.getIssue().getTitle().isEmpty()) {
+        if (session.getIssue().getTitle()!=null) {
             s.append(MessageFormatter.getTitleWithoutIssueID(session.getIssue()));
         }
         s.append(System.lineSeparator());
