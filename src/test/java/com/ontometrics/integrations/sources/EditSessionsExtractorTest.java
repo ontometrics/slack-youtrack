@@ -26,6 +26,7 @@ import java.util.*;
 import static java.util.Calendar.AUGUST;
 import static java.util.Calendar.JULY;
 import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.startsWith;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -262,6 +263,7 @@ public class EditSessionsExtractorTest {
         log.info("edits: {}", edits);
 
         assertThat(edits, hasSize(1));
+        assertThat(edits.get(0).getIssue().getTitle(), notNullValue());
 
         assertThat(edits.get(0).getIssue().getCreator(), is("nikolay.chorniy@gmail.com"));
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH);

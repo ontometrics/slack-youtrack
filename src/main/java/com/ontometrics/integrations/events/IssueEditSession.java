@@ -134,11 +134,8 @@ public class IssueEditSession {
 
         IssueEditSession that = (IssueEditSession) o;
 
-        if (!issue.equals(that.issue)) return false;
-        if (!updated.equals(that.updated)) return false;
-        if (updater != null ? !updater.equals(that.updater) : that.updater != null) return false;
+        return issue.equals(that.issue) && updated.equals(that.updated) && !(updater != null ? !updater.equals(that.updater) : that.updater != null);
 
-        return true;
     }
 
     @Override
