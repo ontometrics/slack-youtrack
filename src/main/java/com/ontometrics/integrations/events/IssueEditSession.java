@@ -120,7 +120,7 @@ public class IssueEditSession {
     }
 
     public boolean isCreationEdit(){
-        return getIssue().getCreated()!=null && getIssue().getCreated().equals(getUpdated());
+        return getIssue().getCreated()!=null && ((getUpdated().getTime()-getIssue().getCreated().getTime())/(1000*60*60) < 5);
     }
 
     public boolean hasChanges(){
