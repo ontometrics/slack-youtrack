@@ -7,7 +7,7 @@ import org.junit.Test;
 import java.net.URL;
 import java.util.Date;
 
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.junit.Assert.assertThat;
 
 public class ProcessEventTest {
@@ -24,7 +24,7 @@ public class ProcessEventTest {
                 .published(new Date())
                 .build();
 
-        assertThat(processEvent.getIssue().toString(), is("ASOC-28"));
+        assertThat(processEvent.getIssue().toString(), containsString("ASOC-28"));
 
     }
 }

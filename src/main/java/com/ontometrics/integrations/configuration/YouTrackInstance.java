@@ -18,7 +18,6 @@ public class YouTrackInstance implements IssueTracker {
     private final int port;
     private final String baseUrl;
     private final String issueBase;
-    private String issueBaseURL;
 
     public YouTrackInstance(Builder builder) {
         baseUrl = builder.baseUrl;
@@ -27,7 +26,7 @@ public class YouTrackInstance implements IssueTracker {
     }
 
     public String getIssueBaseURL(Issue issue) {
-        return String.format(issueBase, issue);
+        return String.format(issueBase, issue.getPrefix() + "-" + issue.getId());
     }
 
     public static class Builder {
@@ -74,9 +73,9 @@ public class YouTrackInstance implements IssueTracker {
 
     @Override
     public URL getChangesUrl(Issue issue){
-        URL url = null;
+        URL url;
         try {
-            url = new URL(String.format("%s/rest/issue/%s/changes", getBaseUrl(), issue.toString()));
+            url = new URL(String.format("%s/rest/issue/%s/changes", getBaseUrl(), issue.getPrefix() + "-" + issue.getId()));
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);
         }
