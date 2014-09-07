@@ -86,6 +86,8 @@ public class SlackInstance implements ChatServer {
         s.append(String.format(" %s %s: ", action, MessageFormatter.getIssueLink(session.getIssue())));
         if (session.getIssue().getTitle()!=null) {
             s.append(MessageFormatter.getTitleWithoutIssueID(session.getIssue()));
+        } else {
+            log.debug("title null on issue: {}", session.getIssue());
         }
         s.append(System.lineSeparator());
         for (IssueEdit edit : session.getChanges()){
