@@ -246,6 +246,7 @@ public class EditSessionsExtractor {
                                         Issue issue = new Issue.Builder()
                                                 .projectPrefix(e.getIssue().getPrefix())
                                                 .id(e.getIssue().getId())
+                                                .title(e.getIssue().getTitle())
                                                 .created(created)
                                                 .creator(creator)
                                                 .link(e.getIssue().getLink())
