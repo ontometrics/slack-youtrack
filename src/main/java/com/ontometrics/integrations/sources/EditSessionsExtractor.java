@@ -144,6 +144,7 @@ public class EditSessionsExtractor {
                 Date updated = null;
                 Date created = null;
                 String creator = "";
+                String description = "";
                 List<IssueEditSession> extractedEdits = new ArrayList<>();
                 List<ProcessEventChange> currentChanges = new ArrayList<>();
                 List<Comment> newComments = new ArrayList<>();
@@ -177,6 +178,9 @@ public class EditSessionsExtractor {
                                 case "creator":
                                     currentFieldName = "creator";
                                     break;
+                                case "description":
+                                    currentFieldName = "description";
+                                    break;
                                 default:
                                     String elementText;
                                     try {
@@ -201,6 +205,9 @@ public class EditSessionsExtractor {
                                                         break;
                                                     case "creator":
                                                         creator = elementText;
+                                                        break;
+                                                    case "description":
+                                                        description = elementText;
                                                         break;
                                                 }
                                         }
@@ -250,7 +257,7 @@ public class EditSessionsExtractor {
                                                 .created(created)
                                                 .creator(creator)
                                                 .link(e.getIssue().getLink())
-                                                .description(e.getIssue().getDescription())
+                                                .description(description)
                                                 .build();
                                         session = new IssueEditSession.Builder()
                                                 .updater(updaterName)
@@ -277,7 +284,7 @@ public class EditSessionsExtractor {
                             .id(e.getIssue().getId())
                             .created(created)
                             .creator(updaterName)
-                            .description(e.getIssue().getDescription())
+                            .description(description)
                             .title(e.getIssue().getTitle())
                             .link(e.getIssue().getLink())
                             .build();
