@@ -51,10 +51,12 @@ public class SlackInstanceTest {
 
     @Test
     public void testNewIssueMessage() throws MalformedURLException {
+        String issueDescription = "Right now there is too much work to get what you want.";
         Issue issue = new Issue.Builder()
                 .projectPrefix("ASOC")
                 .id(492)
                 .title("ASOC-492: Title autosuggest and normalization")
+                .description(issueDescription)
                 .created(new Date())
                 .creator("Noura")
                 .link(new URL("http://ontometrics.com:8085/issue/ASOC-408"))
@@ -63,7 +65,7 @@ public class SlackInstanceTest {
 
         log.info("new issue: {}", newIssueMessage);
 
-        assertThat(newIssueMessage, is("*Noura* created <http://ontometrics.com:8085/issue/ASOC-408|ASOC-492>: Title autosuggest and normalization"));
+        assertThat(newIssueMessage, is("*Noura* created <http://ontometrics.com:8085/issue/ASOC-408|ASOC-492>: Title autosuggest and normalization" + System.lineSeparator() + issueDescription));
 
     }
 
