@@ -124,7 +124,7 @@ public class IssueEditSession {
     }
 
     public boolean hasChanges(){
-        return getChanges().size() > 0;
+        return getChanges().size() > 0 || getComments().size() > 0;
     }
 
     @Override

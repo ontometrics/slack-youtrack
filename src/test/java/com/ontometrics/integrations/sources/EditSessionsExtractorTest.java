@@ -219,9 +219,8 @@ public class EditSessionsExtractorTest {
         Date lastChecked = new DateBuilder().year(2014).day(24).month(AUGUST).build();
         List<IssueEditSession> edits = sourceEventMapper.getLatestEdits(lastChecked);
 
-        log.info("number of comments found: {}", edits.get(0).getComments().size());
-
         log.info("edits: {}", edits);
+        log.info("number of comments found: {}", edits.get(0).getComments().size());
 
         assertThat(edits.get(0).getComments(), hasSize(1));
 
@@ -232,7 +231,7 @@ public class EditSessionsExtractorTest {
         mockYouTrackInstance = new SimpleMockIssueTracker.Builder()
                 .feed("/feeds/issue-feed-with-comments.xml")
                 .changes("/feeds/issue-changes-with-comments.xml")
-                .attachments("/feeds/issue-attachments.xml")
+                .attachments("/feeds/empty-attachments.xml")
                 .build();
         EditSessionsExtractor sourceEventMapper = new EditSessionsExtractor(mockYouTrackInstance, URL_STREAM_PROVIDER);
         List<IssueEditSession> edits = sourceEventMapper.getLatestEdits();
@@ -348,14 +347,14 @@ public class EditSessionsExtractorTest {
         edits = editSessionsExtractor.getLatestEdits(oneEventsDate);
         log.info("edits: {}", edits);
 
-        List<AttachmentEvent> attachments = edits.get(1).getAttachments();
+        List<AttachmentEvent> attachments = edits.get(0).getAttachments();
         assertThat(attachments, hasSize(1));
         assertSecondAttachment(attachments.get(0));
 
         Date twoEventsDate = new DateBuilder().year(2014).month(JULY).day(28).build();
         edits = editSessionsExtractor.getLatestEdits(twoEventsDate);
 
-        attachments = edits.get(1).getAttachments();
+        attachments = edits.get(0).getAttachments();
         assertThat(attachments, hasSize(2));
         assertFirstAttachment(attachments.get(0));
         assertSecondAttachment(attachments.get(1));
