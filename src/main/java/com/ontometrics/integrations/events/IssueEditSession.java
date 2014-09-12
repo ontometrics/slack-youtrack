@@ -124,7 +124,7 @@ public class IssueEditSession {
     }
 
     public boolean isCreationEdit(){
-        return getIssue().getCreated()!=null && getIssue().getCreator()!=null && ((getUpdated().getTime()-getIssue().getCreated().getTime())/(1000*60*60) < 5);
+        return getIssue().getCreated()!=null && !getIssue().getCreator().isEmpty() && ((getUpdated().getTime()-getIssue().getCreated().getTime())/(1000*60*60) < 5);
     }
 
     public boolean hasChanges(){
