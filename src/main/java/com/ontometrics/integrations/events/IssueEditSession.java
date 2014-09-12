@@ -23,17 +23,19 @@ public class IssueEditSession {
     private final Issue issue;
     private final String updater;
     private final List<IssueEdit> changes;
-    private final List<Comment> comments;
+    private final Comment comment;
     private final Date updated;
     private final List<AttachmentEvent> attachments;
+    private final List<IssueLink> links;
 
     public IssueEditSession(Builder builder) {
         issue = builder.issue;
         updater = builder.updater;
         updated = builder.updated;
         changes = new ArrayList<>(builder.changes);
-        comments = new ArrayList<>(builder.comments);
+        comment = builder.comment;
         attachments = new ArrayList<>(builder.attachments);
+        links = new ArrayList<>(builder.links);
     }
 
     public static class Builder {
@@ -42,8 +44,9 @@ public class IssueEditSession {
         private String updater;
         private Date updated;
         private List<IssueEdit> changes = Collections.emptyList();
-        private List<Comment> comments = Collections.emptyList();
+        private Comment comment;
         private List<AttachmentEvent> attachments = Collections.emptyList();
+        private List<IssueLink> links = Collections.emptyList();
 
         public Builder issue(Issue issue){
             this.issue = issue;
@@ -65,8 +68,8 @@ public class IssueEditSession {
             return this;
             }
 
-        public Builder comments(List<Comment> comments){
-            this.comments = comments;
+        public Builder comment(Comment comment){
+            this.comment = comment;
             return this;
         }
 
@@ -75,13 +78,10 @@ public class IssueEditSession {
             return this;
             }
 
-        public Builder attachment(AttachmentEvent attachmentEvent) {
-            if (this.attachments.isEmpty()){
-                this.attachments = new ArrayList<>();
-            }
-            this.attachments.add(attachmentEvent);
+        public Builder links(List<IssueLink> links){
+            this.links = links;
             return this;
-        }
+            }
 
         public IssueEditSession build(){
             return new IssueEditSession(this);
@@ -111,20 +111,24 @@ public class IssueEditSession {
         return changes;
     }
 
-    public List<Comment> getComments() {
-        return comments;
+    public Comment getComment() {
+        return comment;
     }
 
     public List<AttachmentEvent> getAttachments() {
         return attachments;
     }
 
+    public List<IssueLink> getLinks() {
+        return links;
+    }
+
     public boolean isCreationEdit(){
-        return getIssue().getCreated()!=null && ((getUpdated().getTime()-getIssue().getCreated().getTime())/(1000*60*60) < 5);
+        return getIssue().getCreated()!=null && getIssue().getCreator()!=null && ((getUpdated().getTime()-getIssue().getCreated().getTime())/(1000*60*60) < 5);
     }
 
     public boolean hasChanges(){
-        return getChanges().size() > 0 || getComments().size() > 0;
+        return getChanges().size() > 0 || getComment()!=null;
     }
 
     @Override
@@ -157,11 +161,14 @@ public class IssueEditSession {
                 b.append(", ");
             }
         }
-        for (Comment comment : comments){
-            b.append(comment.toString());
+        if (getComment()!=null){
+            b.append(comment.toString()).append(System.lineSeparator());
         }
         for (AttachmentEvent attachmentEvent : attachments){
-            b.append(attachmentEvent.toString());
+            b.append(attachmentEvent.toString()).append(System.lineSeparator());
+        }
+        for (IssueLink link : links){
+            b.append(link.toString()).append(System.lineSeparator());
         }
         return b.toString();
     }

@@ -200,11 +200,11 @@ public class EditSessionsExtractorTest {
         EditSessionsExtractor sourceEventMapper = new EditSessionsExtractor(mockYouTrackInstance, URL_STREAM_PROVIDER);
         List<IssueEditSession> edits = sourceEventMapper.getLatestEdits();
 
-        log.info("number of comments found: {}", edits.get(0).getComments().size());
+        log.info("number of comments found: {}", edits.get(0).getComment());
 
         log.info("edits: {}", edits);
 
-        assertThat(edits.get(0).getComments(), hasSize(12));
+        assertThat(edits.get(0).getComment(), Matchers.notNullValue());
 
     }
 
@@ -220,9 +220,9 @@ public class EditSessionsExtractorTest {
         List<IssueEditSession> edits = sourceEventMapper.getLatestEdits(lastChecked);
 
         log.info("edits: {}", edits);
-        log.info("number of comments found: {}", edits.get(0).getComments().size());
+        log.info("comment found: {}", edits.get(0).getComment());
 
-        assertThat(edits.get(0).getComments(), hasSize(1));
+        assertThat(edits.get(0).getComment(), Matchers.notNullValue());
 
     }
 
@@ -237,10 +237,11 @@ public class EditSessionsExtractorTest {
         List<IssueEditSession> edits = sourceEventMapper.getLatestEdits();
         assertThat(edits, not(empty()));
         IssueEditSession firstSession = edits.get(0);
-        assertThat(firstSession.getComments(), hasSize(12));
+        log.debug("first session: {}", firstSession);
+        assertThat(firstSession.getComment(), Matchers.notNullValue());
 
         // '&amp;' escaped XML entity should be read as '&'
-        assertThat(firstSession.getComments().get(0).getText(),
+        assertThat(firstSession.getComment().getText(),
                 startsWith("What are the software & requirements for <Job Spider>"));
     }
 
@@ -358,6 +359,22 @@ public class EditSessionsExtractorTest {
         assertThat(attachments, hasSize(2));
         assertFirstAttachment(attachments.get(0));
         assertSecondAttachment(attachments.get(1));
+    }
+
+    @Test
+    public void testExtractsLinksToOtherIssues() throws Exception {
+        mockYouTrackInstance = new SimpleMockIssueTracker.Builder()
+                .feed("/feeds/issue-feed-attachment-only.xml")
+                .changes("/feeds/issue-details-with-link.xml")
+                .attachments("/feeds/empty-attachments.xml")
+                .build();
+
+        EditSessionsExtractor editSessionsExtractor = new EditSessionsExtractor(mockYouTrackInstance, URL_STREAM_PROVIDER);
+        List<IssueEditSession> edits = editSessionsExtractor.getLatestEdits();
+
+        log.info("issue with a link to related issue: {}", edits.get(0));
+        assertThat(edits.get(0).getLinks(), hasSize(1));
+
     }
 
     private void assertSecondAttachment(AttachmentEvent attachment) {

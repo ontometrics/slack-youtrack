@@ -153,6 +153,7 @@ public class EditSessionsExtractor {
                 List<IssueEditSession> extractedEdits = new ArrayList<>();
                 List<ProcessEventChange> currentChanges = new ArrayList<>();
                 List<Comment> newComments = new ArrayList<>();
+                List<IssueLink> links = new ArrayList<>();
 
                 while (eventReader.hasNext()) {
                     XMLEvent nextEvent = eventReader.nextEvent();
@@ -186,6 +187,9 @@ public class EditSessionsExtractor {
                                 case "description":
                                     currentFieldName = "description";
                                     break;
+                                case "links":
+                                    currentFieldName = "links";
+                                    break;
                                 default:
                                     String elementText;
                                     try {
@@ -213,6 +217,16 @@ public class EditSessionsExtractor {
                                                         break;
                                                     case "description":
                                                         description = elementText;
+                                                        break;
+                                                    case "links":
+                                                        log.debug("found links");
+                                                        IssueLink link = new IssueLink.Builder()
+                                                                .type(startElement.getAttributeByName(new QName("", "type")).getValue())
+                                                                .role(startElement.getAttributeByName(new QName("", "role")).getValue())
+                                                                .relatedIssue(elementText)
+                                                                .build();
+                                                        links.add(link);
+                                                        log.debug("adding link: {}", link);
                                                         break;
                                                 }
                                         }
@@ -255,6 +269,15 @@ public class EditSessionsExtractor {
                                         log.debug("upToDate: {} updated: {}", upToDate, updated);
                                         List<IssueEdit> edits = buildIssueEdits(currentChanges);
                                         IssueEditSession session;
+                                        for (Comment comment : newComments){
+                                            session = new IssueEditSession.Builder()
+                                                    .updater(comment.getAuthor())
+                                                    .updated(comment.getCreated())
+                                                    .issue(e.getIssue())
+                                                    .comment(comment)
+                                                    .build();
+                                            extractedEdits.add(session);
+                                        }
                                         Issue issue = new Issue.Builder()
                                                 .projectPrefix(e.getIssue().getPrefix())
                                                 .id(e.getIssue().getId())
@@ -269,7 +292,6 @@ public class EditSessionsExtractor {
                                                 .updated(updated)
                                                 .issue(issue)
                                                 .changes(edits)
-                                                .comments(newComments)
                                                 .build();
                                         extractedEdits.add(session);
                                     } else {
@@ -297,6 +319,7 @@ public class EditSessionsExtractor {
                             .updater(updaterName)
                             .updated(updated)
                             .issue(newIssue)
+                            .links(links)
                             .build();
                     log.info("found new issue created on: {}: {}", created, newIssue);
                     extractedEdits.add(session);
@@ -306,7 +329,7 @@ public class EditSessionsExtractor {
                             .updater(comment.getAuthor())
                             .updated(comment.getCreated())
                             .issue(e.getIssue())
-                            .comments(newComments)
+                            .comment(comment)
                             .build();
                     extractedEdits.add(session);
                 }

@@ -26,7 +26,7 @@ public class IssueEditSessionTest {
     public void canDetectNewTickets() {
         Date justNow = new Date();
         Date threeMinutesAgo = new DateBuilder().start(justNow).addMinutes(-3).build();
-        Issue issue = new Issue.Builder().projectPrefix("AIA").id(721).created(threeMinutesAgo).build();
+        Issue issue = new Issue.Builder().projectPrefix("AIA").id(721).creator("Rob").created(threeMinutesAgo).build();
         IssueEditSession issueEditSession = new IssueEditSession.Builder().issue(issue).updated(justNow).build();
 
         assertThat(issueEditSession.isCreationEdit(), is(true));

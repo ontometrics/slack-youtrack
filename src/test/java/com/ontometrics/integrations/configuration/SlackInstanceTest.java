@@ -11,13 +11,9 @@ import org.slf4j.Logger;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
-import static org.hamcrest.CoreMatchers.allOf;
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -80,13 +76,12 @@ public class SlackInstanceTest {
                 .link(new URL("http://ontometrics.com:8085/issue/ASOC-408"))
                 .build();
 
-        List<Comment> comments = new ArrayList<>();
-        comments.add(new Comment.Builder().author("Noura").text("This code is impossible to understand").created(new Date()).build());
+        Comment comment = new Comment.Builder().author("Noura").text("This code is impossible to understand").created(new Date()).build();
         IssueEditSession session = new IssueEditSession.Builder()
                 .issue(issue)
                 .updater("Noura")
                 .updated(new Date())
-                .comments(comments)
+                .comment(comment)
                 .build();
 
         log.info("comment issue edit session: {}", slackInstance.buildSessionMessage(session));
