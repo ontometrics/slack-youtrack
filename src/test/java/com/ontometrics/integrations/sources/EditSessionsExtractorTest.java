@@ -191,6 +191,20 @@ public class EditSessionsExtractorTest {
     }
 
     @Test
+    public void testThatWeCanGetEditSessionsFromRealFeed() throws Exception {
+        YouTrackInstance youTrackInstance = new YouTrackInstance.Builder().baseUrl(YOUTRACK_URL).port(8085).build();
+        StreamProvider streamProvider = AuthenticatedHttpStreamProvider.basicAuthenticatedHttpStreamProvider(
+                YOUTRACK_USER, YOUTRACK_PASSWORD
+        );
+        EditSessionsExtractor sourceEventMapper = new EditSessionsExtractor(youTrackInstance, streamProvider);
+        List<IssueEditSession> edits = sourceEventMapper.getLatestEdits();
+
+        log.info("found {} edits: {}", edits.size(), edits);
+        //assertThat(edits, not(empty()));
+    }
+
+
+    @Test
     public void testCanExtractNewComment() throws Exception {
         mockYouTrackInstance = new SimpleMockIssueTracker.Builder()
                 .feed("/feeds/issue-feed-with-comments.xml")
