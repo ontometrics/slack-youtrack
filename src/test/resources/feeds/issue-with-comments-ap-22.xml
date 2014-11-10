@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<changes>
+    <issue id="AP-22" entityId="72-2263">
+        <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="SingleField" name="projectShortName">
+            <value>AP</value>
+        </field>
+        <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="SingleField" name="numberInProject">
+            <value>22</value>
+        </field>
+        <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="SingleField" name="summary">
+            <value>Agents must be able to generate Proposals</value>
+        </field>
+        <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="SingleField" name="description">
+            <value>This is the beginning of the road to a Contract.
+
+                The template will be merged with the basic information that has been gathered.
+
+                We need to think about how we could potentially keep a few options in orbit, gracefully. It's very
+                possible someone might ask for a few proposals and then decide to go with one of them.
+
+                The basic information needed at the time of proposal is laid out in the requirements; there are few
+                surprises:
+
+                * Customer (Company)
+                * Talent
+                * Fees
+                * Event information
+
+                Merging the results of these input variables and the template produces the Proposal.
+            </value>
+        </field>
+        <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="SingleField" name="created">
+            <value>1407425265769</value>
+        </field>
+        <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="SingleField" name="updated">
+            <value>1415631357818</value>
+        </field>
+        <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="SingleField" name="updaterName">
+            <value>nikolay.chorniy@gmail.com</value>
+        </field>
+        <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="SingleField" name="updaterFullName">
+            <value>Nikolay Chorniy</value>
+        </field>
+        <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="SingleField" name="reporterName">
+            <value>rob</value>
+        </field>
+        <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="SingleField" name="reporterFullName">
+            <value>Rob Williams</value>
+        </field>
+        <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="SingleField" name="commentsCount">
+            <value>2</value>
+        </field>
+        <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="SingleField" name="votes">
+            <value>0</value>
+        </field>
+        <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="LinkField" name="links">
+            <value type="Subtask" role="parent for">AP-23</value>
+        </field>
+        <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="CustomFieldValue" name="Priority">
+            <value>Normal</value>
+            <valueId>Normal</valueId>
+            <color>
+                <bg>#ebf4dd</bg>
+                <fg>#64992C</fg>
+            </color>
+        </field>
+        <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="CustomFieldValue" name="Type">
+            <value>Story</value>
+            <valueId>Story</valueId>
+        </field>
+        <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="CustomFieldValue" name="State">
+            <value>In Progress</value>
+            <valueId>In Progress</valueId>
+        </field>
+        <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="CustomFieldValue" name="Subsystem">
+            <value>No subsystem</value>
+        </field>
+        <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="CustomFieldValue" name="Fix versions">
+            <value>0.0.6</value>
+        </field>
+        <comment id="76-2113" author="andrey.chorniy" authorFullName="Andrey Chorniy" issueId="AP-22" deleted="false"
+            text="Proposal is generated from template (docx)" shownForIssueAuthor="false" created="1415630872347"
+            updated="1415631904562">
+            <replies />
+        </comment>
+        <comment id="76-2115" author="nikolay.chorniy@gmail.com" authorFullName="Nikolay Chorniy" issueId="AP-22"
+            deleted="false" text="tst" shownForIssueAuthor="false" created="1415631357819" updated="1415631182415">
+            <replies />
+        </comment>
+        <tag cssClass="tag0">Star</tag>
+    </issue>
+    <change>
+        <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="SingleField" name="updaterName">
+            <value>rob</value>
+        </field>
+        <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="SingleField" name="updated">
+            <value>1407425449468</value>
+        </field>
+        <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="LinkChangeField" name="links">
+            <newValue type="Subtask" role="parent for">AP-23</newValue>
+        </field>
+    </change>
+    <change>
+        <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="SingleField" name="updaterName">
+            <value>rob</value>
+        </field>
+        <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="SingleField" name="updated">
+            <value>1414179732983</value>
+        </field>
+        <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="ChangeField" name="Type">
+            <oldValue>Bug</oldValue>
+            <newValue>Story</newValue>
+        </field>
+        <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="ChangeField" name="Fix versions">
+            <newValue>0.0.4</newValue>
+        </field>
+    </change>
+    <change>
+        <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="SingleField" name="updaterName">
+            <value>andrey.chorniy</value>
+        </field>
+        <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="SingleField" name="updated">
+            <value>1414516357474</value>
+        </field>
+        <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="ChangeField" name="State">
+            <oldValue>Submitted</oldValue>
+            <newValue>In Progress</newValue>
+        </field>
+    </change>
+    <change>
+        <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="SingleField" name="updaterName">
+            <value>rob</value>
+        </field>
+        <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="SingleField" name="updated">
+            <value>1414789266374</value>
+        </field>
+        <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="ChangeField" name="Fix versions">
+            <oldValue>0.0.4</oldValue>
+            <newValue>0.0.5</newValue>
+        </field>
+    </change>
+    <change>
+        <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="SingleField" name="updaterName">
+            <value>rob</value>
+        </field>
+        <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="SingleField" name="updated">
+            <value>1415508872698</value>
+        </field>
+        <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="ChangeField" name="Fix versions">
+            <oldValue>0.0.5</oldValue>
+            <newValue>0.0.6</newValue>
+        </field>
+    </change>
+</changes>

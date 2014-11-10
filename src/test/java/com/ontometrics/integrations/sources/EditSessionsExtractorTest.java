@@ -1,6 +1,8 @@
 package com.ontometrics.integrations.sources;
 
+import com.google.common.collect.ImmutableList;
 import com.ontometrics.integrations.configuration.EventProcessorConfiguration;
+import com.ontometrics.integrations.configuration.IssueTracker;
 import com.ontometrics.integrations.configuration.SimpleMockIssueTracker;
 import com.ontometrics.integrations.configuration.YouTrackInstance;
 import com.ontometrics.integrations.events.*;
@@ -8,6 +10,7 @@ import com.ontometrics.util.DateBuilder;
 import ontometrics.test.util.UrlStreamProvider;
 import org.hamcrest.Matchers;
 import org.hamcrest.number.OrderingComparison;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -29,7 +32,11 @@ import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.startsWith;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.endsWith;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.fail;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -257,6 +264,56 @@ public class EditSessionsExtractorTest {
         // '&amp;' escaped XML entity should be read as '&'
         assertThat(firstSession.getComment().getText(),
                 startsWith("What are the software & requirements for <Job Spider>"));
+    }
+
+
+    @Test
+    /**
+     * Tests that issue comments are reported
+     */
+    public void testThatIssueCommentsAreReported() throws Exception {
+        //make sure that min-window is before first comment date
+        checkThatCommentsAreReported(new DateBuilder().start(new Date(1415630872347l)).addMinutes(-1).build(), 2);
+    }
+
+    @Test
+    /**
+     * Tests that only comments which are within history window are reported
+     */
+    public void testThatIssueCommentsAreWithRegardsToCutOffTime() throws Exception {
+        //make sure that min-window is after first comment date and before second comment
+        checkThatCommentsAreReported(new DateBuilder().start(new Date(1415631357819l)).addMinutes(-1).build(), 1);
+    }
+
+
+    private void checkThatCommentsAreReported(Date startingPoint, int expectedCommentsCount) throws Exception {
+        IssueTracker mockIssueTracker = new SimpleMockIssueTracker.Builder()
+                .changes("/feeds/issue-with-comments-ap-22.xml").build();
+
+        final Issue issue1 = new Issue.Builder().projectPrefix("ISSUE").id(1).build();
+        final ProcessEvent processEvent = new ProcessEvent.Builder().issue(issue1).published(new Date(1404927516756L)).build();
+
+        //create mocked editSessionsExtractor#getLatestEvents() with single issue
+        EditSessionsExtractor editSessionsExtractor = new EditSessionsExtractor(mockIssueTracker,
+                UrlStreamProvider.instance()) {
+            @Override
+            public List<ProcessEvent> getLatestEvents(Date date) throws Exception {
+                return ImmutableList.<ProcessEvent> builder().add(processEvent).build();
+            }
+        };
+
+        int changesWithComments = 0;
+        List<IssueEditSession> edits = editSessionsExtractor.getLatestEdits(startingPoint);
+        for (IssueEditSession edit : edits) {
+            if (edit.getComment() != null) {
+                changesWithComments++;
+            }
+        }
+
+        //check that only comments are reported
+        Assert.assertThat("Only changes with comments are reported", edits, hasSize(changesWithComments));
+        //check that all two comments are reported
+        Assert.assertThat("Amount of comments", changesWithComments, is(expectedCommentsCount));
     }
 
     /**
