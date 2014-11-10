@@ -104,4 +104,29 @@ public class SlackInstanceTest {
         assertThat(message, allOf(containsString("Johann Bach"), containsString("created"),
                 containsString("Prelude and Fugue in C major"), containsString("http://google.com")));
     }
+
+    @Test
+    public void testThatDeletedCommentsAreNotPosted() throws MalformedURLException {
+        Issue issue = new Issue.Builder()
+                .projectPrefix("ASOC")
+                .id(492)
+                .title("ASOC-492: Title autosuggest and normalization")
+                .created(new Date())
+                .creator("Noura")
+                .link(new URL("http://ontometrics.com:8085/issue/ASOC-408"))
+                .build();
+
+        Comment comment = new Comment.Builder().author("Noura").text("This code is impossible to understand")
+                .deleted(true).created(new Date()).build();
+        IssueEditSession session = new IssueEditSession.Builder()
+                .issue(issue)
+                .updater("Noura")
+                .updated(new Date())
+                .comment(comment)
+                .build();
+
+        assertThat(slackInstance.buildSessionMessage(session), not(containsString("*Noura* commented")));
+        assertThat(slackInstance.buildSessionMessage(session), containsString("*Noura* updated"));
+    }
+
 }

@@ -298,7 +298,7 @@ public class EditSessionsExtractor {
                                         log.debug("skipped change dated: {}", updated);
                                     }
                                     currentChanges.clear();
-                                    newComments.clear();
+                                    clearComments(newComments);
                                     break;
                             }
                             break;
@@ -338,10 +338,15 @@ public class EditSessionsExtractor {
         });
     }
 
+    protected void clearComments(List<Comment> comments) {
+        comments.clear();
+    }
+
     private Comment extractCommentFromStream(StartElement commentTag) {
         return new Comment.Builder()
                 .author(commentTag.getAttributeByName(new QName("", "authorFullName")).getValue())
-                .text(commentTag.getAttributeByName(new QName("","text")).getValue())
+                .text(commentTag.getAttributeByName(new QName("", "text")).getValue())
+                .deleted(Boolean.valueOf(commentTag.getAttributeByName(new QName("", "deleted")).getValue()))
                 .created(new Date(Long.parseLong(commentTag.getAttributeByName(new QName("", "created")).getValue())))
                 .build();
     }

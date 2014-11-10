@@ -497,6 +497,47 @@ public class EventListenerImplTest {
         assertThat(events, is(not(0)));
     }
 
+    @Test
+    /**
+     * Tests that deleted comments are parsed from the feed (as deleted)
+     */
+    public void testThatDeletedCommentsAreParsed() throws Exception {
+        clearData();
+        TestUtil.setIssueHistoryWindowSettingToCoverAllIssues();
+        //no changes for any events, that's why past time configured by property ISSUE_HISTORY_WINDOW is used
+        int events = new EventListenerImpl(new EditSessionsExtractor(new SimpleMockIssueTracker.Builder()
+                .feed("/feeds/issues-feed-rss.xml").changes("/feeds/issue-with-deleted-comments.xml")
+                .attachments("/feeds/empty-attachments.xml").build(), UrlStreamProvider.instance()) {
+            @Override
+            public List<IssueEditSession> getEdits(ProcessEvent e, Date upToDate) throws Exception {
+                List<IssueEditSession> edits = super.getEdits(e, upToDate);
+                assertThat(edits, not(empty()));
+                int totalComments = 0;
+                int deletedComments = 0;
+                //expecting that deleted comments are present in the list of events
+                for (IssueEditSession session : edits) {
+                    if (session.getComment() != null) {
+                        ++totalComments;
+                        if (session.getComment().isDeleted()) {
+                            ++deletedComments;
+                        }
+                    }
+                }
+                assertThat(totalComments, is(3));
+                assertThat(deletedComments, is(1));
+                return edits;
+            }
+        }, new EmptyChatServer() {
+            @Override
+            public void post(IssueEditSession issueEditSession) {
+                super.post(issueEditSession);
+            }
+        }).checkForNewEvents();
+
+        assertThat(events, is(not(0)));
+    }
+
+
 
     private void clearData() throws ConfigurationException {
         EventProcessorConfiguration.instance().clear();

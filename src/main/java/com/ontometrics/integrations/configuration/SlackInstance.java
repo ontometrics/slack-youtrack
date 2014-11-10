@@ -82,7 +82,7 @@ public class SlackInstance implements ChatServer {
 
     protected String buildSessionMessage(IssueEditSession session) {
         StringBuilder s = new StringBuilder(String.format("*%s*", session.getUpdater()));
-        String action = session.getComment() != null ? "commented on " : "updated";
+        String action = session.getComment() != null && !session.getComment().isDeleted() ? "commented on " : "updated";
         s.append(String.format(" %s %s: ", action, MessageFormatter.getIssueLink(session.getIssue())));
         if (session.getIssue().getTitle()!=null) {
             s.append(MessageFormatter.getTitleWithoutIssueID(session.getIssue()));
@@ -93,7 +93,7 @@ public class SlackInstance implements ChatServer {
         for (IssueEdit edit : session.getChanges()){
             s.append(edit.toString()).append(System.lineSeparator());
         }
-        if (session.getComment()!=null){
+        if (session.getComment() !=null && !session.getComment().isDeleted()) {
             s.append(session.getComment().getText()).append(System.lineSeparator());
         }
         for (AttachmentEvent attachment : session.getAttachments()){
