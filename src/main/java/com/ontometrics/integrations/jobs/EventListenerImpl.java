@@ -11,6 +11,8 @@ import org.apache.commons.configuration.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -25,6 +27,14 @@ public class EventListenerImpl implements EventListener {
 
     private static final String YT_FEED_URL = "http://ontometrics.com";
     private static final int YT_PORT = 8085;
+
+    private static final Comparator<IssueEditSession> CREATED_TIME_COMPARATOR = new Comparator<IssueEditSession>() {
+        @Override
+        public int compare(IssueEditSession s1, IssueEditSession s2) {
+            return s1.getUpdated().compareTo(s2.getUpdated());
+        }
+    };
+
     private ChatServer chatServer;
 
     private EditSessionsExtractor editSessionsExtractor;
@@ -84,6 +94,7 @@ public class EventListenerImpl implements EventListener {
         log.info("Found {} edit sessions to post.", editSessions.size());
         final AtomicInteger processedSessionsCount = new AtomicInteger(0);
         if (editSessions.size() > 0) {
+            Collections.sort(editSessions, CREATED_TIME_COMPARATOR);
             log.debug("sessions: {}", editSessions);
             Date lastProcessedSessionDate = null;
             for (IssueEditSession session : editSessions) {

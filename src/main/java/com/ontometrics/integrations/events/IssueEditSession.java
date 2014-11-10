@@ -128,7 +128,7 @@ public class IssueEditSession {
     }
 
     public boolean hasChanges(){
-        return getChanges().size() > 0 || getComment()!=null;
+        return getChanges().size() > 0 || (getComment() != null && !getComment().isDeleted());
     }
 
     @Override

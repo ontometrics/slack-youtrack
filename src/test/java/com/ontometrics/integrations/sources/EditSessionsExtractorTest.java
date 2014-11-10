@@ -225,7 +225,7 @@ public class EditSessionsExtractorTest {
 
         log.info("edits: {}", edits);
 
-        assertThat(edits.get(0).getComment(), Matchers.notNullValue());
+        assertThat(edits.get(3).getComment(), Matchers.notNullValue());
 
     }
 
@@ -257,7 +257,7 @@ public class EditSessionsExtractorTest {
         EditSessionsExtractor sourceEventMapper = new EditSessionsExtractor(mockYouTrackInstance, URL_STREAM_PROVIDER);
         List<IssueEditSession> edits = sourceEventMapper.getLatestEdits();
         assertThat(edits, not(empty()));
-        IssueEditSession firstSession = edits.get(0);
+        IssueEditSession firstSession = edits.get(3);
         log.debug("first session: {}", firstSession);
         assertThat(firstSession.getComment(), Matchers.notNullValue());
 
@@ -288,7 +288,7 @@ public class EditSessionsExtractorTest {
 
     private void checkThatCommentsAreReported(Date startingPoint, int expectedCommentsCount) throws Exception {
         IssueTracker mockIssueTracker = new SimpleMockIssueTracker.Builder()
-                .changes("/feeds/issue-with-comments-ap-22.xml").build();
+                .changes("/feeds/issue-with-comments-ap-22.xml").attachments("/feeds/empty-attachments.xml").build();
 
         final Issue issue1 = new Issue.Builder().projectPrefix("ISSUE").id(1).build();
         final ProcessEvent processEvent = new ProcessEvent.Builder().issue(issue1).published(new Date(1404927516756L)).build();

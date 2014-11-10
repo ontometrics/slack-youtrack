@@ -84,7 +84,7 @@ public class EditSessionsExtractor {
                 List<IssueEditSession> editSessions = getEdits(event, minDate);
                 for (IssueEditSession session : editSessions) {
                     List<AttachmentEvent> attachmentEvents = getAttachmentEvents(event, minDate);
-                    if (!attachmentEvents.isEmpty()){
+                    if (!attachmentEvents.isEmpty()) {
                         sessions.add(new IssueEditSession.Builder()
                                 .updater(attachmentEvents.get(0).getAuthor())
                                 .updated(attachmentEvents.get(0).getCreated())
@@ -152,7 +152,7 @@ public class EditSessionsExtractor {
                 String description = "";
                 List<IssueEditSession> extractedEdits = new ArrayList<>();
                 List<ProcessEventChange> currentChanges = new ArrayList<>();
-                List<Comment> newComments = new ArrayList<>();
+                LinkedHashSet<Comment> newComments = new LinkedHashSet<>();
                 List<IssueLink> links = new ArrayList<>();
 
                 while (eventReader.hasNext()) {
@@ -268,16 +268,15 @@ public class EditSessionsExtractor {
                                     if (upToDate == null || updated.after(upToDate)) {
                                         log.debug("upToDate: {} updated: {}", upToDate, updated);
                                         List<IssueEdit> edits = buildIssueEdits(currentChanges);
-                                        IssueEditSession session;
-                                        for (Comment comment : newComments){
-                                            session = new IssueEditSession.Builder()
-                                                    .updater(comment.getAuthor())
-                                                    .updated(comment.getCreated())
-                                                    .issue(e.getIssue())
-                                                    .comment(comment)
-                                                    .build();
-                                            extractedEdits.add(session);
-                                        }
+//                                        for (Comment comment : newComments){
+//                                            session = new IssueEditSession.Builder()
+//                                                    .updater(comment.getAuthor())
+//                                                    .updated(comment.getCreated())
+//                                                    .issue(e.getIssue())
+//                                                    .comment(comment)
+//                                                    .build();
+//                                            extractedEdits.add(session);
+//                                        }
                                         Issue issue = new Issue.Builder()
                                                 .projectPrefix(e.getIssue().getPrefix())
                                                 .id(e.getIssue().getId())
@@ -287,7 +286,7 @@ public class EditSessionsExtractor {
                                                 .link(e.getIssue().getLink())
                                                 .description(description)
                                                 .build();
-                                        session = new IssueEditSession.Builder()
+                                        IssueEditSession session = new IssueEditSession.Builder()
                                                 .updater(updaterName)
                                                 .updated(updated)
                                                 .issue(issue)
@@ -298,7 +297,6 @@ public class EditSessionsExtractor {
                                         log.debug("skipped change dated: {}", updated);
                                     }
                                     currentChanges.clear();
-                                    clearComments(newComments);
                                     break;
                             }
                             break;
@@ -324,26 +322,25 @@ public class EditSessionsExtractor {
                     log.info("found new issue created on: {}: {}", created, newIssue);
                     extractedEdits.add(session);
                 }
-                for (Comment comment : newComments){
-                    IssueEditSession session = new IssueEditSession.Builder()
-                            .updater(comment.getAuthor())
-                            .updated(comment.getCreated())
-                            .issue(e.getIssue())
-                            .comment(comment)
-                            .build();
-                    extractedEdits.add(session);
+                for (Comment comment : newComments) {
+                    if (upToDate==null || comment.getCreated().after(upToDate)) {
+                        IssueEditSession session = new IssueEditSession.Builder()
+                                .updater(comment.getAuthor())
+                                .updated(comment.getCreated())
+                                .issue(e.getIssue())
+                                .comment(comment)
+                                .build();
+                        extractedEdits.add(session);
+                    }
                 }
                 return extractedEdits;
             }
         });
     }
 
-    protected void clearComments(List<Comment> comments) {
-        comments.clear();
-    }
-
     private Comment extractCommentFromStream(StartElement commentTag) {
         return new Comment.Builder()
+                .id(commentTag.getAttributeByName(new QName("", "id")).getValue())
                 .author(commentTag.getAttributeByName(new QName("", "authorFullName")).getValue())
                 .text(commentTag.getAttributeByName(new QName("", "text")).getValue())
                 .deleted(Boolean.valueOf(commentTag.getAttributeByName(new QName("", "deleted")).getValue()))
