@@ -30,3 +30,13 @@ Installation and configuration
 3. Drop war file into servlet container "webapps" directory
 
 That's it.
+
+Troubleshooting
+------------
+
+If you experience any problems, e.g. YouTrack updates are not posted to Slack channel, rebuild the project setting http client log level to DEBUG (so that all requests and responses are logged), redeploy and feel free to file an issue with information from the log. To set the log level to DEBUG, edit [src/main/resources/logback.xml](https://github.com/ontometrics/slack-youtrack/blob/master/src/main/resources/logback.xml) and uncomment lines
+
+```xml
+<logger name="org.apache.http.wire" level="DEBUG" />
+<logger name="org.apache.http.headers" level="DEBUG" />
+```
