@@ -155,7 +155,7 @@ public class EditSessionsExtractorTest {
         EditSessionsExtractor editSessionsExtractor = new EditSessionsExtractor(mockYouTrackInstance,
                 URL_STREAM_PROVIDER);
         //14 Jul 2014 16:09:07
-        Date minDate = new DateBuilder().day(14).month(Calendar.JULY).hour(16)
+        Date minDate = new DateBuilder().year(2014).day(14).month(Calendar.JULY).hour(16)
                 .minutes(0).build();
 
         List<ProcessEvent> latestEvents = editSessionsExtractor.getLatestEvents(minDate);
