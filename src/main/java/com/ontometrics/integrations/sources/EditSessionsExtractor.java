@@ -45,6 +45,9 @@ import static org.slf4j.LoggerFactory.getLogger;
 public class EditSessionsExtractor {
 
     private Logger log = getLogger(EditSessionsExtractor.class);
+
+    private static final Logger responseContentLogger = getLogger("com.ontometrics.integration.youtrack.response");
+
     private final IssueTracker issueTracker;
     private XMLEventReader eventReader;
     private StreamProvider streamProvider;
@@ -137,7 +140,8 @@ public class EditSessionsExtractor {
     }
 
     public List<IssueEditSession> getEdits(final ProcessEvent e, final Date upToDate) throws Exception {
-        return streamProvider.openResourceStream(issueTracker.getChangesUrl(e.getIssue()), new InputStreamHandler<List<IssueEditSession>>() {
+        URL issueTrackerChangesUrl = issueTracker.getChangesUrl(e.getIssue());
+        return streamProvider.openResourceStream(issueTrackerChangesUrl, new InputStreamHandler<List<IssueEditSession>>() {
             @Override
             public List<IssueEditSession> handleStream(InputStream is) throws Exception {
                 XMLInputFactory inputFactory = XMLInputFactory.newInstance();
@@ -240,12 +244,12 @@ public class EditSessionsExtractor {
                         case XMLStreamConstants.END_ELEMENT:
                             EndElement endElement = nextEvent.asEndElement();
                             String tagName = endElement.getName().getLocalPart();
-                            switch (tagName){
+                            switch (tagName) {
                                 case "field":
                                     if (newValue.length() > 0) {
                                         //include only non-processed changes
                                         if (upToDate == null || updated.after(upToDate)) {
-                                            if (currentFieldName.equals("resolved")){
+                                            if (currentFieldName.equals("resolved")) {
                                                 newValue = new Date(Long.parseLong(newValue)).toString();
                                             }
                                             ProcessEventChange processEventChange = new ProcessEventChange.Builder()
@@ -303,7 +307,7 @@ public class EditSessionsExtractor {
 
                     }
                 }
-                if (upToDate==null || created.after(upToDate)) {
+                if (upToDate == null || created.after(upToDate)) {
                     Issue newIssue = new Issue.Builder()
                             .projectPrefix(e.getIssue().getPrefix())
                             .id(e.getIssue().getId())
@@ -323,7 +327,7 @@ public class EditSessionsExtractor {
                     extractedEdits.add(session);
                 }
                 for (Comment comment : newComments) {
-                    if (upToDate==null || comment.getCreated().after(upToDate)) {
+                    if (upToDate == null || comment.getCreated().after(upToDate)) {
                         IssueEditSession session = new IssueEditSession.Builder()
                                 .updater(comment.getAuthor())
                                 .updated(comment.getCreated())
@@ -376,11 +380,16 @@ public class EditSessionsExtractor {
      * @return the last event that was returned to the user of this class
      */
     public List<ProcessEvent> getLatestEvents(final Date minDate) throws Exception {
-        return streamProvider.openResourceStream(issueTracker.getFeedUrl(), new InputStreamHandler<List<ProcessEvent>>() {
+        final URL feedUrl = issueTracker.getFeedUrl();
+        return streamProvider.openResourceStream(feedUrl, new InputStreamHandler<List<ProcessEvent>>() {
             @Override
             public List<ProcessEvent> handleStream(InputStream is) throws Exception {
                 byte[] buf = IOUtils.toByteArray(is);
                 ByteArrayInputStream bas = new ByteArrayInputStream(buf);
+                if (responseContentLogger.isDebugEnabled()){
+                    responseContentLogger.debug("Got response from url {} \n{}", feedUrl, new String(buf));
+                }
+                log.info("Check for events after date {}", minDate);
                 LinkedList<ProcessEvent> events = new LinkedList<>();
                 try {
                     XMLInputFactory inputFactory = XMLInputFactory.newInstance();

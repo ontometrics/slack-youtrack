@@ -25,8 +25,11 @@
     </appender>
 
     <!-- Uncomment line below to enable http requests headers logging-->
-    <logger name="org.apache.http" level="DEBUG" />
+    <!--<logger name="org.apache.http" level="DEBUG" />-->
     <!-- Apache client logging. END-->
+
+    <!-- Uncomment to log response from youtrack-->
+    <!--<logger name="com.ontometrics.integration.youtrack.response" level="DEBUG" />-->
 
 
     <root level="DEBUG">
