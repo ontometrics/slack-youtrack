@@ -25,8 +25,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class EventListenerImpl implements EventListener {
     private static final Logger log = LoggerFactory.getLogger(EventListenerImpl.class);
 
-    private static final String YT_FEED_URL = "http://ontometrics.com";
-    private static final int YT_PORT = 8085;
+    private static final String YT_FEED_URL = "http://ontometrics.com:8085";
 
     private static final Comparator<IssueEditSession> CREATED_TIME_COMPARATOR = new Comparator<IssueEditSession>() {
         @Override
@@ -53,8 +52,7 @@ public class EventListenerImpl implements EventListener {
         }
         Configuration configuration = ConfigurationFactory.get();
         return new EditSessionsExtractor(new YouTrackInstance.Builder().baseUrl(
-                configuration.getString("PROP.YOUTRACK_HOST", YT_FEED_URL))
-                .port(configuration.getInt("PROP.YOUTRACK_PORT", YT_PORT)).build(), feedStreamProvider);
+                configuration.getString("PROP.YOUTRACK_URL", YT_FEED_URL)).build(), feedStreamProvider);
     }
 
     /**

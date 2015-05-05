@@ -23,8 +23,7 @@ Installation and configuration
     * YOUTRACK_PASSWORD - YouTrack password
     * SLACK_AUTH_TOKEN - token for authentication to Slack REST services
     * APP_DATA_DIR - directory where app will store it's data-files (configuration)
-    * YOUTRACK_HOST - YouTrack server host
-    * YOUTRACK_PORT - YouTrack server port
+    * YOUTRACK_URL - YouTrack server url
     * ISSUE_HISTORY_WINDOW - Time In minutes - how deep should we look for issues in the past. If set to 10, it means that issues and changes that happened not longer than 10 minutes will be posted to chat server
 2. Run "mvn -DYOUTRACK_USERNAME=user -DYOUTRACK_PASSWORD=pwd ... package" to build war file
 3. Drop war file into servlet container "webapps" directory
@@ -38,4 +37,5 @@ If you experience any problems, e.g. YouTrack updates are not posted to Slack ch
 
 ```xml
 <logger name="org.apache.http" level="DEBUG" />
+<logger name="com.ontometrics.integration.youtrack.response" level="DEBUG" />
 ```

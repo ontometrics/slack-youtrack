@@ -15,13 +15,11 @@ import static org.slf4j.LoggerFactory.getLogger;
 public class YouTrackInstance implements IssueTracker {
 
     private Logger log = getLogger(YouTrackInstance.class);
-    private final int port;
     private final String baseUrl;
     private final String issueBase;
 
     public YouTrackInstance(Builder builder) {
         baseUrl = builder.baseUrl;
-        port = builder.port;
         issueBase = getBaseUrl() + "/rest/issue/%s";
     }
 
@@ -32,15 +30,9 @@ public class YouTrackInstance implements IssueTracker {
     public static class Builder {
 
         private String baseUrl;
-        private int port;
 
         public Builder baseUrl(String baseUrl) {
             this.baseUrl = baseUrl;
-            return this;
-        }
-
-        public Builder port(int port) {
-            this.port = port;
             return this;
         }
 
@@ -53,7 +45,7 @@ public class YouTrackInstance implements IssueTracker {
     public URL getBaseUrl() {
         URL url;
         try {
-            url = new URL(String.format("%s%s", baseUrl, (port > 0) ? ":" + port : ""));
+            url = new URL(baseUrl);
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);
         }

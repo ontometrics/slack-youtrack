@@ -13,8 +13,7 @@
     -   YOUTRACK_PASSWORD - YouTrack password
     -   SLACK_AUTH_TOKEN - token for authentication to Slack REST services
     -   APP_DATA_DIR - directory where app will store it's data-files (configuration)
-    -   YOUTRACK_HOST - YouTrack server host
-    -   YOUTRACK_PORT - YouTrack server port
+    -   YOUTRACK_URL - YouTrack server URL
     -   ISSUE_HISTORY_WINDOW - Time In minutes - how deep should we look for issues in the past.
     If set to 10, it means that issues and changes that happened not longer than 10 minutes will be posted to chat server
     -->

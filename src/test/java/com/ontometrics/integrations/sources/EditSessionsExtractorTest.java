@@ -188,7 +188,7 @@ public class EditSessionsExtractorTest {
 
     @Test
     public void testThatWeCanGetEventsFromRealFeed() throws Exception {
-        YouTrackInstance youTrackInstance = new YouTrackInstance.Builder().baseUrl(YOUTRACK_URL).port(8085).build();
+        YouTrackInstance youTrackInstance = new YouTrackInstance.Builder().baseUrl(YOUTRACK_URL).build();
         StreamProvider streamProvider = AuthenticatedHttpStreamProvider.basicAuthenticatedHttpStreamProvider(
                 YOUTRACK_USER, YOUTRACK_PASSWORD
         );
@@ -199,7 +199,7 @@ public class EditSessionsExtractorTest {
 
     @Test
     public void testThatWeCanGetEditSessionsFromRealFeed() throws Exception {
-        YouTrackInstance youTrackInstance = new YouTrackInstance.Builder().baseUrl(YOUTRACK_URL).port(8085).build();
+        YouTrackInstance youTrackInstance = new YouTrackInstance.Builder().baseUrl(YOUTRACK_URL).build();
         StreamProvider streamProvider = AuthenticatedHttpStreamProvider.basicAuthenticatedHttpStreamProvider(
                 YOUTRACK_USER, YOUTRACK_PASSWORD
         );
