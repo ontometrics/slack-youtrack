@@ -12,7 +12,7 @@ import java.net.URL;
 public interface StreamProvider {
     /**
      * Opens a resource and provides its {@link java.io.InputStream} in the call to
-     * {@link com.ontometrics.integrations.sources.InputStreamHandler#handleStream(java.io.InputStream)}
+     * {@link com.ontometrics.integrations.sources.InputStreamHandler#handleStream(java.io.InputStream, int)}
      * @param resourceUrl url of the resource to be accessed/processed by inputStreamHandler)
      * @param inputStreamHandler resource stream handler
      * @param <RES> class of resource stream handling result

@@ -76,13 +76,13 @@ public class JobStarter {
             logger.info("Event processing started");
             try {
                 this.eventListener.checkForNewEvents();
+                logger.info("Event processing finished");
             } catch (ConfigurationAccessError error) {
                 //this is critical error
                 throw error;
             } catch (Throwable ex) {
                 logger.error("Failed to process", ex);
             }
-            logger.info("Event processing finished");
         }
     }
 

@@ -2,8 +2,10 @@ package com.ontometrics.integrations.sources;
 
 import com.ontometrics.integrations.configuration.IssueTracker;
 import com.ontometrics.integrations.events.*;
+import com.ontometrics.util.BadResponseException;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.http.HttpStatus;
 import org.slf4j.Logger;
 
 import javax.xml.namespace.QName;
@@ -110,9 +112,14 @@ public class EditSessionsExtractor {
     }
 
     private List<AttachmentEvent> getAttachmentEvents(ProcessEvent event, final Date minDate) throws Exception {
-        return streamProvider.openResourceStream(issueTracker.getAttachmentsUrl(event.getIssue()), new InputStreamHandler<List<AttachmentEvent>>() {
+        final URL attachmentsUrl = issueTracker.getAttachmentsUrl(event.getIssue());
+        return streamProvider.openResourceStream(attachmentsUrl,
+                new InputStreamHandler<List<AttachmentEvent>>() {
             @Override
-            public List<AttachmentEvent> handleStream(InputStream is) throws Exception {
+            public List<AttachmentEvent> handleStream(InputStream is, int responseCode) throws Exception {
+
+                checkResponseCode(responseCode, attachmentsUrl);
+
                 XMLInputFactory inputFactory = XMLInputFactory.newInstance();
                 XMLEventReader eventReader = inputFactory.createXMLEventReader(is);
                 List<AttachmentEvent> attachmentEvents = new ArrayList<>();
@@ -140,10 +147,14 @@ public class EditSessionsExtractor {
     }
 
     public List<IssueEditSession> getEdits(final ProcessEvent e, final Date upToDate) throws Exception {
-        URL issueTrackerChangesUrl = issueTracker.getChangesUrl(e.getIssue());
-        return streamProvider.openResourceStream(issueTrackerChangesUrl, new InputStreamHandler<List<IssueEditSession>>() {
+        final URL issueTrackerChangesUrl = issueTracker.getChangesUrl(e.getIssue());
+        return streamProvider.openResourceStream(issueTrackerChangesUrl,
+                new InputStreamHandler<List<IssueEditSession>>() {
             @Override
-            public List<IssueEditSession> handleStream(InputStream is) throws Exception {
+            public List<IssueEditSession> handleStream(InputStream is, int responseCode) throws Exception {
+
+                checkResponseCode(responseCode, issueTrackerChangesUrl);
+
                 XMLInputFactory inputFactory = XMLInputFactory.newInstance();
                 XMLEventReader eventReader = inputFactory.createXMLEventReader(is);
                 //String currentChangeType;
@@ -342,6 +353,13 @@ public class EditSessionsExtractor {
         });
     }
 
+    private void checkResponseCode(int responseCode, URL requestUrl) {
+        if (responseCode != HttpStatus.SC_OK){
+            //we got not normal response from server
+            throw new BadResponseException(requestUrl, responseCode);
+        }
+    }
+
     private Comment extractCommentFromStream(StartElement commentTag) {
         return new Comment.Builder()
                 .id(commentTag.getAttributeByName(new QName("", "id")).getValue())
@@ -381,13 +399,17 @@ public class EditSessionsExtractor {
      */
     public List<ProcessEvent> getLatestEvents(final Date minDate) throws Exception {
         final URL feedUrl = issueTracker.getFeedUrl();
+        log.debug("Going to process url: {}", feedUrl);
         return streamProvider.openResourceStream(feedUrl, new InputStreamHandler<List<ProcessEvent>>() {
             @Override
-            public List<ProcessEvent> handleStream(InputStream is) throws Exception {
+            public List<ProcessEvent> handleStream(InputStream is, int responseCode) throws Exception {
+
+                checkResponseCode(responseCode, feedUrl);
+
                 byte[] buf = IOUtils.toByteArray(is);
                 ByteArrayInputStream bas = new ByteArrayInputStream(buf);
                 if (responseContentLogger.isDebugEnabled()){
-                    responseContentLogger.debug("Got response from url {} \n{}", feedUrl, new String(buf));
+                    responseContentLogger.debug("Got response from url: {} \n{}", feedUrl, new String(buf));
                 }
                 log.info("Check for events after date {}", minDate);
                 LinkedList<ProcessEvent> events = new LinkedList<>();

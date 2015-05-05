@@ -13,7 +13,8 @@ import java.net.URL;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-/** Test for {@link com.ontometrics.integrations.sources.AuthenticatedHttpStreamProvider}
+/**
+ * Test for {@link com.ontometrics.integrations.sources.AuthenticatedHttpStreamProvider}
  * ExternalResourceInputStreamProviderTest.java
  */
 public class ExternalStreamProviderTest {
@@ -27,7 +28,7 @@ public class ExternalStreamProviderTest {
             }
         }).openResourceStream(new URL("http://ya.ru"), new InputStreamHandler<String>() {
             @Override
-            public String handleStream(InputStream is) throws Exception {
+            public String handleStream(InputStream is, int responseCode) throws Exception {
                 return IOUtils.toString(is);
             }
         });

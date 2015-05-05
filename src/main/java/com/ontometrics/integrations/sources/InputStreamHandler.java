@@ -7,5 +7,5 @@ import java.io.InputStream;
  *
  */
 public interface InputStreamHandler<RES> {
-    RES handleStream(InputStream is) throws Exception;
+    RES handleStream(InputStream is, int responseCode) throws Exception;
 }

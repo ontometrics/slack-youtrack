@@ -3,8 +3,8 @@ package ontometrics.test.util;
 import com.ontometrics.integrations.sources.InputStreamHandler;
 import com.ontometrics.integrations.sources.StreamProvider;
 import org.apache.commons.io.IOUtils;
+import org.apache.http.HttpStatus;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 
@@ -25,7 +25,7 @@ public class UrlStreamProvider implements StreamProvider {
     public <RES> RES openResourceStream(URL resourceUrl, InputStreamHandler<RES> inputStreamHandler) throws Exception {
         InputStream is = null;
         try {
-            return inputStreamHandler.handleStream(is = resourceUrl.openStream());
+            return inputStreamHandler.handleStream(is = resourceUrl.openStream(), HttpStatus.SC_OK);
         } finally {
             IOUtils.closeQuietly(is);
         }
