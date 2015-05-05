@@ -20,9 +20,13 @@
 
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-            <pattern>%logger{15} - %message%n%xException{5}</pattern>
+            <pattern>%date - [%level] - %logger{15} - %message%n%xException{5}</pattern>
         </encoder>
     </appender>
+
+    <logger name="org.apache.http" level="INFO" />
+    <logger name="com.ontometrics.integration.youtrack.response" level="INFO" />
+
 
     <root level="DEBUG">
         <appender-ref ref="FILE" />

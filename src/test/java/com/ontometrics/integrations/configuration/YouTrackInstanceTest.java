@@ -16,7 +16,7 @@ public class YouTrackInstanceTest {
 
     @Before
     public void setup(){
-        youTrackInstance = new YouTrackInstance.Builder().baseUrl("http://ontometrics.com").port(8085).build();
+        youTrackInstance = new YouTrackInstance.Builder().baseUrl("http://ontometrics.com:8085").build();
     }
 
     @Test
