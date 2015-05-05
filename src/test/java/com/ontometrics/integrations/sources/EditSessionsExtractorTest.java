@@ -4,7 +4,6 @@ import com.google.common.collect.ImmutableList;
 import com.ontometrics.integrations.configuration.EventProcessorConfiguration;
 import com.ontometrics.integrations.configuration.IssueTracker;
 import com.ontometrics.integrations.configuration.SimpleMockIssueTracker;
-import com.ontometrics.integrations.configuration.YouTrackInstance;
 import com.ontometrics.integrations.events.*;
 import com.ontometrics.util.DateBuilder;
 import ontometrics.test.util.UrlStreamProvider;
@@ -43,9 +42,6 @@ import static org.slf4j.LoggerFactory.getLogger;
 public class EditSessionsExtractorTest {
     private static final Logger log = getLogger(EditSessionsExtractorTest.class);
 
-    private static final String YOUTRACK_USER = "slackbot";
-    private static final String YOUTRACK_PASSWORD = "X9y-86A-bZN-93h";
-    private static final String YOUTRACK_URL = "http://ontometrics.com";
     public static final UrlStreamProvider URL_STREAM_PROVIDER = UrlStreamProvider.instance();
 
     private SimpleMockIssueTracker mockYouTrackInstance;
@@ -185,31 +181,6 @@ public class EditSessionsExtractorTest {
         assertThat(changes, not(empty()));
 
     }
-
-    @Test
-    public void testThatWeCanGetEventsFromRealFeed() throws Exception {
-        YouTrackInstance youTrackInstance = new YouTrackInstance.Builder().baseUrl(YOUTRACK_URL).build();
-        StreamProvider streamProvider = AuthenticatedHttpStreamProvider.basicAuthenticatedHttpStreamProvider(
-                YOUTRACK_USER, YOUTRACK_PASSWORD
-        );
-        EditSessionsExtractor sourceEventMapper = new EditSessionsExtractor(youTrackInstance, streamProvider);
-        List<ProcessEvent> changes = sourceEventMapper.getLatestEvents();
-        assertThat(changes, not(empty()));
-    }
-
-    @Test
-    public void testThatWeCanGetEditSessionsFromRealFeed() throws Exception {
-        YouTrackInstance youTrackInstance = new YouTrackInstance.Builder().baseUrl(YOUTRACK_URL).build();
-        StreamProvider streamProvider = AuthenticatedHttpStreamProvider.basicAuthenticatedHttpStreamProvider(
-                YOUTRACK_USER, YOUTRACK_PASSWORD
-        );
-        EditSessionsExtractor sourceEventMapper = new EditSessionsExtractor(youTrackInstance, streamProvider);
-        List<IssueEditSession> edits = sourceEventMapper.getLatestEdits();
-
-        log.info("found {} edits: {}", edits.size(), edits);
-        //assertThat(edits, not(empty()));
-    }
-
 
     @Test
     public void testCanExtractNewComment() throws Exception {
