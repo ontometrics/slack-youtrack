@@ -1,9 +1,6 @@
 package com.ontometrics.integrations.jobs;
 
-import com.ontometrics.integrations.configuration.ChatServer;
-import com.ontometrics.integrations.configuration.ConfigurationFactory;
-import com.ontometrics.integrations.configuration.EventProcessorConfiguration;
-import com.ontometrics.integrations.configuration.YouTrackInstance;
+import com.ontometrics.integrations.configuration.*;
 import com.ontometrics.integrations.events.IssueEditSession;
 import com.ontometrics.integrations.sources.EditSessionsExtractor;
 import com.ontometrics.integrations.sources.StreamProvider;
@@ -24,8 +21,6 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class EventListenerImpl implements EventListener {
     private static final Logger log = LoggerFactory.getLogger(EventListenerImpl.class);
-
-    private static final String YT_FEED_URL = "http://ontometrics.com:8085";
 
     private static final Comparator<IssueEditSession> CREATED_TIME_COMPARATOR = new Comparator<IssueEditSession>() {
         @Override
@@ -51,8 +46,7 @@ public class EventListenerImpl implements EventListener {
             throw new IllegalArgumentException("You must provide feedStreamProvider.");
         }
         Configuration configuration = ConfigurationFactory.get();
-        return new EditSessionsExtractor(new YouTrackInstance.Builder().baseUrl(
-                configuration.getString("PROP.YOUTRACK_URL", YT_FEED_URL)).build(), feedStreamProvider);
+        return new EditSessionsExtractor(YouTrackInstanceFactory.createYouTrackInstance(configuration), feedStreamProvider);
     }
 
     /**
