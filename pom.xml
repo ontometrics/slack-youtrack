@@ -11,10 +11,11 @@
     Properties to be configured:
     -   YOUTRACK_USERNAME - YouTrack username
     -   YOUTRACK_PASSWORD - YouTrack password
-    -   SLACK_AUTH_TOKEN - token for authentication to Slack REST services
-    -   APP_DATA_DIR - directory where app will store it's data-files (configuration)
-    -   YOUTRACK_URL - YouTrack server URL
+    -   SLACK_WEBHOOK_PATH - path for Slack webhook excluding first slash. e.g. "services/T00000000/B00000000/XXXXXXXXXXXXXXXXXXXXXXXX"
+    -   APP_DATA_DIR - directory where app will store it's data-files (configuration). e.g. "/opt/slack-youtrack"
+    -   YOUTRACK_URL - YouTrack server URL. e.g. "https://company.myjetbrains.com/youtrack"
     -   ISSUE_HISTORY_WINDOW - Time In minutes - how deep should we look for issues in the past.
+    -   DEFAULT_SLACK_CHANNEL - Default slack channel to post in. e.g. "general"
     If set to 10, it means that issues and changes that happened not longer than 10 minutes will be posted to chat server
     -->
     <dependencies>
@@ -96,6 +97,11 @@
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
             <version>17.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.googlecode.json-simple</groupId>
+            <artifactId>json-simple</artifactId>
+            <version>1.1.1</version>
         </dependency>
     </dependencies>
     <build>
