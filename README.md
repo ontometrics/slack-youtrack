@@ -21,11 +21,13 @@ Installation and configuration
 1. List of required properties
     * YOUTRACK_USERNAME - YouTrack username
     * YOUTRACK_PASSWORD - YouTrack password
-    * SLACK_AUTH_TOKEN - token for authentication to Slack REST services
-    * APP_DATA_DIR - directory where app will store it's data-files (configuration)
-    * YOUTRACK_URL - YouTrack server url
-    * ISSUE_HISTORY_WINDOW - Time In minutes - how deep should we look for issues in the past. If set to 10, it means that issues and changes that happened not longer than 10 minutes will be posted to chat server
-2. Run "mvn -DYOUTRACK_USERNAME=user -DYOUTRACK_PASSWORD=pwd ... package" to build war file
+    * SLACK_WEBHOOK_PATH - path for Slack webhook excluding first slash. e.g. "services/T00000000/B00000000/XXXXXXXXXXXXXXXXXXXXXXXX"
+    * APP_DATA_DIR - directory where app will store it's data-files (configuration). e.g. "/opt/slack-youtrack"
+    * YOUTRACK_URL - YouTrack server url. e.g. "https://company.myjetbrains.com/youtrack"
+    * ISSUE_HISTORY_WINDOW - Time in minutes - how deep should we look for issues in the past. If set to 10, it means that issues and changes that happened not longer than 10 minutes will be posted to chat server
+    * DEFAULT_SLACK_CHANNEL - Default slack channel to post in. e.g. "general"
+
+2. Run "mvn -DYOUTRACK_USERNAME=usr -DYOUTRACK_PASSWORD=pwd -DSLACK_WEBHOOK_PATH=services/T00000000/B00000000/XXXXXXXXXXXXXXXXXXXXXXXX -DAPP_DATA_DIR=/opt/slack-youtrack -DYOUTRACK_URL=http://company.myjetbrains.com/youtrack -DISSUE_HISTORY_WINDOW=10 -DDEFAULT_SLACK_CHANNEL=general package" to build war file
 3. Drop war file into servlet container "webapps" directory
 
 That's it.

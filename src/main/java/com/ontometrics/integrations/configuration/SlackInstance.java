@@ -3,12 +3,10 @@ package com.ontometrics.integrations.configuration;
 import com.ontometrics.integrations.events.*;
 import com.ontometrics.integrations.sources.ChannelMapper;
 import org.apache.commons.lang.StringUtils;
+import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.Invocation;
-import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.client.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -21,10 +19,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 public class SlackInstance implements ChatServer {
 
     private Logger log = getLogger(SlackInstance.class);
-    public static final String BASE_URL = "https://slack.com";
-    public static final String API_PATH = "api";
-    public static final String CHANNEL_POST_PATH = "chat.postMessage";
-    public static final String TOKEN_KEY = "token";
+    public static final String BASE_URL = "https://hooks.slack.com";
     public static final String TEXT_KEY = "text";
     public static final String CHANNEL_KEY = "channel";
 
@@ -64,13 +59,13 @@ public class SlackInstance implements ChatServer {
         log.info("posting message {} to channel: {}.", message, channel);
         Client client = ClientBuilder.newClient();
 
-        WebTarget slackApi = client.target(BASE_URL).path(String.format("%s/%s", API_PATH, CHANNEL_POST_PATH))
-                .queryParam(TOKEN_KEY, ConfigurationFactory.get().getString("PROP.SLACK_AUTH_TOKEN"))
-                .queryParam(TEXT_KEY, processMessage(message))
-                .queryParam(CHANNEL_KEY, "#" + channel);
+        JSONObject payload = new JSONObject();
+        payload.put(CHANNEL_KEY, "#" + channel);
+        payload.put(TEXT_KEY, processMessage(message));
 
-        Invocation.Builder invocationBuilder = slackApi.request(MediaType.APPLICATION_JSON);
-        Response response = invocationBuilder.get();
+        WebTarget slackApi = client.target(BASE_URL).path(ConfigurationFactory.get().getString("PROP.SLACK_WEBHOOK_PATH"));
+        Invocation.Builder invocationBuilder = slackApi.request(MediaType.APPLICATION_JSON_TYPE);
+        Response response = invocationBuilder.post(Entity.json(payload.toString()));
 
         log.info("response code: {} response: {}", response.getStatus(), response.readEntity(String.class));
 
