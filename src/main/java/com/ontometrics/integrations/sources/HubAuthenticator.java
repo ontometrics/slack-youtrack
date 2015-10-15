@@ -5,6 +5,8 @@ import jetbrains.jetpass.client.hub.HubClient;
 import jetbrains.jetpass.client.oauth2.OAuth2Client;
 import jetbrains.jetpass.client.oauth2.token.OAuth2ClientFlow;
 import org.apache.http.client.fluent.Executor;
+import org.apache.http.client.fluent.Request;
+import org.joda.time.DateTime;
 
 
 /**
@@ -30,7 +32,19 @@ public class HubAuthenticator implements Authenticator {
     }
 
     @Override
-    public void authenticate(Executor httpExecutor) {
+    public Request authenticate(Executor httpExecutor, Request request) {
+        if (accessToken == null || isExpired(accessToken)) {
+            accessToken = resolveAccessToken();
+        }
+
+        return request.addHeader("Authorization", AccessToken.encodeHeader(accessToken));
+    }
+
+    private boolean isExpired(AccessToken accessToken) {
+        return new DateTime().plusSeconds(30).isAfter(accessToken.getExpirationDate().getTime());
+    }
+
+    private AccessToken resolveAccessToken() {
         HubClient hubClient = HubClient.builder().baseUrl(hubUrl).build();
         OAuth2Client oauthClient = hubClient.getOAuthClient();
 
@@ -46,5 +60,6 @@ public class HubAuthenticator implements Authenticator {
         OAuth2ClientFlow clientFlow = clientFlowBuilder.build();
 
         this.accessToken = clientFlow.getToken();
+        return this.accessToken;
     }
 }

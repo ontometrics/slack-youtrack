@@ -5,6 +5,7 @@ import com.ontometrics.integrations.sources.Authenticator;
 import com.ontometrics.integrations.sources.InputStreamHandler;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.client.fluent.Executor;
+import org.apache.http.client.fluent.Request;
 import org.junit.Test;
 
 import java.io.InputStream;
@@ -24,7 +25,8 @@ public class ExternalStreamProviderTest {
         String res;
         res = new AuthenticatedHttpStreamProvider(new Authenticator() {
             @Override
-            public void authenticate(Executor httpExecutor) {
+            public Request authenticate(Executor httpExecutor, Request request) {
+                return request;
             }
         }).openResourceStream(new URL("http://ya.ru"), new InputStreamHandler<String>() {
             @Override

@@ -29,7 +29,7 @@
     <!-- Apache client logging. END-->
 
     <!-- Uncomment to log response from youtrack-->
-    <!--<logger name="com.ontometrics.integration.youtrack.response" level="DEBUG" />-->
+    <logger name="com.ontometrics.integration.youtrack.response" level="DEBUG" />
 
 
     <root level="INFO">

@@ -30,15 +30,15 @@ public class AuthenticatedHttpStreamProvider implements StreamProvider {
     public AuthenticatedHttpStreamProvider(Authenticator authenticator) {
         this.httpExecutor = Executor.newInstance();
         this.authenticator = authenticator;
-        this.authenticator.authenticate(httpExecutor);
     }
 
     public static AuthenticatedHttpStreamProvider basicAuthenticatedHttpStreamProvider
             (final String login, final String password) {
         return new AuthenticatedHttpStreamProvider( new Authenticator() {
                 @Override
-                public void authenticate(Executor httpExecutor) {
+                public Request authenticate(Executor httpExecutor, Request request) {
                     httpExecutor.auth(login,password);
+                    return request;
                 }
             }
         );
@@ -55,7 +55,9 @@ public class AuthenticatedHttpStreamProvider implements StreamProvider {
      */
     @Override
     public <RES> RES openResourceStream(URL resourceUrl, final InputStreamHandler<RES> inputStreamHandler) throws Exception {
-        return httpExecutor.execute(Request.Get(resourceUrl.toExternalForm()))
+        Request request = Request.Get(resourceUrl.toExternalForm());
+        request = this.authenticator.authenticate(httpExecutor, request);
+        return httpExecutor.execute(request)
                 .handleResponse(
                     new ResponseHandler<RES>() {
                         @Override
