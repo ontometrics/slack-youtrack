@@ -21,6 +21,7 @@ import java.util.TimerTask;
  * JobStarter.java
  */
 public class JobStarter {
+    private static final String CREDENTIALS_AUTH_TYPE = "credentials";
     private static Logger logger = LoggerFactory.getLogger(JobStarter.class);
 
     //TODO move to configuration params
@@ -39,12 +40,25 @@ public class JobStarter {
      */
     public void scheduleTasks() {
         final Configuration configuration = ConfigurationFactory.get();
-        StreamProvider streamProvider = AuthenticatedHttpStreamProvider.basicAuthenticatedHttpStreamProvider(
-                configuration.getString("PROP.YOUTRACK_USERNAME"), configuration.getString("PROP.YOUTRACK_PASSWORD")
-        );
+        StreamProvider streamProvider = createStreamProvider(configuration);
 
         scheduleTask(timer, new EventListenerImpl(streamProvider, new SlackInstance.Builder()
                 .channelMapper(ChannelMapperFactory.fromConfiguration(configuration, "youtrack-slack.")).build()));
+    }
+
+    private StreamProvider createStreamProvider(Configuration configuration) {
+        if (configuration.getString("PROP.AUTH_TYPE", CREDENTIALS_AUTH_TYPE).equalsIgnoreCase(CREDENTIALS_AUTH_TYPE)) {
+            return AuthenticatedHttpStreamProvider.basicAuthenticatedHttpStreamProvider(
+                    configuration.getString("PROP.YOUTRACK_USERNAME"), configuration.getString("PROP.YOUTRACK_PASSWORD")
+            );
+        }
+
+        return AuthenticatedHttpStreamProvider.hubAuthenticatedHttpStreamProvider(
+                configuration.getString("PROP.HUB_OAUTH_CLIENT_SERVICE_ID"),
+                configuration.getString("PROP.HUB_OAUTH_CLIENT_SERVICE_SECRET"),
+                configuration.getString("PROP.HUB_OAUTH_RESOURCE_SERVER_SERVICE_ID"),
+                configuration.getString("PROP.HUB_URL")
+        );
     }
 
     private void initialize() {

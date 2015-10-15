@@ -3,7 +3,6 @@ package com.ontometrics.integrations.sources;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.fluent.Executor;
 import org.apache.http.client.fluent.Request;
@@ -24,13 +23,14 @@ public class AuthenticatedHttpStreamProvider implements StreamProvider {
     private static final Logger logger = LoggerFactory.getLogger(AuthenticatedHttpStreamProvider.class);
 
     private Executor httpExecutor;
-
+    private Authenticator authenticator;
     /**
      * @param authenticator instance which will configure this instance to make authenticated requests
      */
     public AuthenticatedHttpStreamProvider(Authenticator authenticator) {
         this.httpExecutor = Executor.newInstance();
-        authenticator.authenticate(httpExecutor);
+        this.authenticator = authenticator;
+        this.authenticator.authenticate(httpExecutor);
     }
 
     public static AuthenticatedHttpStreamProvider basicAuthenticatedHttpStreamProvider
@@ -44,6 +44,11 @@ public class AuthenticatedHttpStreamProvider implements StreamProvider {
         );
     }
 
+    public static AuthenticatedHttpStreamProvider hubAuthenticatedHttpStreamProvider
+            (String clientServiceId, String clientServiceSecret, String resourceServerServiceId, String hubUrl) {
+        return new AuthenticatedHttpStreamProvider(
+                new HubAuthenticator(clientServiceId, clientServiceSecret, resourceServerServiceId, hubUrl));
+    }
 
     /**
      * @throws IOException
