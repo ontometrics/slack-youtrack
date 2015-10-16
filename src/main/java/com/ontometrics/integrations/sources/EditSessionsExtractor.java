@@ -1,5 +1,6 @@
 package com.ontometrics.integrations.sources;
 
+import com.ontometrics.integrations.configuration.EventProcessorConfiguration;
 import com.ontometrics.integrations.configuration.IssueTracker;
 import com.ontometrics.integrations.events.*;
 import com.ontometrics.util.BadResponseException;
@@ -66,9 +67,7 @@ public class EditSessionsExtractor {
         this.streamProvider = streamProvider;
     }
 
-    public List<IssueEditSession> getLatestEdits() throws Exception {
-        return getLatestEdits(null);
-    }
+
 
     /**
      * Provides a means of seeing what things were changed on an {@link com.ontometrics.integrations.events.Issue} and by whom.
@@ -78,10 +77,27 @@ public class EditSessionsExtractor {
      * @return all sessions found that occurred after the last edit
      * @throws Exception
      */
-    public List<IssueEditSession> getLatestEdits(Date minDate) throws Exception {
-        log.debug("edits since: {}", minDate);
+    public List<IssueEditSession> getLatestEdits() throws Exception {
+        //TODO get real list of projects (from mappings or request)
+        List<String> projects = Arrays.asList("HA","ONTO");
+
+        List<IssueEditSession> result = new ArrayList<>();
+        for (String project : projects) {
+            result.addAll(getLatestEdits(project));
+        }
+        return result;
+    }
+
+    private List<IssueEditSession> getLatestEdits(String project) throws Exception {
+        //get events
+        EventProcessorConfiguration eventProcessorConfiguration = EventProcessorConfiguration.instance();
+        Date minDate = eventProcessorConfiguration
+                .resolveMinimumAllowedDate(eventProcessorConfiguration.loadLastProcessedDate(project));
+
+        log.debug("edits since: {} for project {}", minDate, project);
+
         List<IssueEditSession> sessions = new ArrayList<>();
-        List<ProcessEvent> events = getLatestEvents(minDate);
+        List<ProcessEvent> events = getLatestEvents(project, minDate);
         Set<Integer> issuesWeHaveGottenChangesFor = new HashSet<>();
         for (ProcessEvent event : events){
             if (!issuesWeHaveGottenChangesFor.contains(event.getIssue().getId())) {
@@ -384,21 +400,12 @@ public class EditSessionsExtractor {
     }
 
     /**
-     *
-     * @return all ProcessEvents available in the feed (not limited by date)
-     * @throws Exception
-     */
-    public List<ProcessEvent> getLatestEvents() throws Exception {
-        return getLatestEvents(null);
-    }
-
-    /**
      * Once we have this open, we should make sure that we are not resending events we have already seen.
      *
      * @return the last event that was returned to the user of this class
      */
-    public List<ProcessEvent> getLatestEvents(final Date minDate) throws Exception {
-        final URL feedUrl = issueTracker.getFeedUrl();
+    public List<ProcessEvent> getLatestEvents(String project, final Date minDate) throws Exception {
+        final URL feedUrl = issueTracker.getFeedUrl(project, minDate);
         log.debug("Going to process url: {}", feedUrl);
         return streamProvider.openResourceStream(feedUrl, new InputStreamHandler<List<ProcessEvent>>() {
             @Override

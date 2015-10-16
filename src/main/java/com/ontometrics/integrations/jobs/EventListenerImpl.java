@@ -76,12 +76,8 @@ public class EventListenerImpl implements EventListener {
      */
     @Override
     public int checkForNewEvents() throws Exception {
-        //get events
-        EventProcessorConfiguration eventProcessorConfiguration = EventProcessorConfiguration.instance();
-        Date minDateOfEvents = eventProcessorConfiguration
-                .resolveMinimumAllowedDate(eventProcessorConfiguration.loadLastProcessedDate());
 
-        List<IssueEditSession> editSessions = editSessionsExtractor.getLatestEdits(minDateOfEvents);
+        List<IssueEditSession> editSessions = editSessionsExtractor.getLatestEdits();
 
         log.info("Found {} edit sessions to post.", editSessions.size());
         final AtomicInteger processedSessionsCount = new AtomicInteger(0);

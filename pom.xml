@@ -169,6 +169,7 @@
                 </configuration>
             </plugin>
         </plugins>
+        <testSourceDirectory>${project.basedir}/src/test/java.none</testSourceDirectory>
         <resources>
             <resource>
                 <directory>src/main/resources</directory>

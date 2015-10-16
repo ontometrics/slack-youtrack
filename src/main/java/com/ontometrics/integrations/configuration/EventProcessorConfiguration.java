@@ -79,6 +79,18 @@ public class EventProcessorConfiguration {
     }
 
     /**
+     * @return last event processed (issue) or null if not available for specified project
+     */
+    public Date loadLastProcessedDate(String project) {
+        Long lastEventDate = lastEventConfiguration.getLong(getProjectLasteventDateKey(project), null);
+        if (lastEventDate != null && lastEventDate > 0) {
+            return new Date(lastEventDate);
+        }
+        return null;
+    }
+
+
+    /**
      * Saves last processed event change date to database
      * @param event event
      * @param date processed event change date
@@ -104,6 +116,18 @@ public class EventProcessorConfiguration {
             lastEventConfiguration.setProperty(LAST_EVENT_DATE, lastProcessedEventDate.getTime());
             lastEventConfiguration.save();
         }
+    }
+
+    public void saveLastProcessedEventDate(Date lastProcessedEventDate, String project) throws ConfigurationException {
+        Date currentLastProcessedDate = loadLastProcessedDate(project);
+        if (currentLastProcessedDate  == null || currentLastProcessedDate.before(lastProcessedEventDate)) {
+            lastEventConfiguration.setProperty(getProjectLasteventDateKey(project), lastProcessedEventDate.getTime());
+            lastEventConfiguration.save();
+        }
+    }
+
+    private String getProjectLasteventDateKey(String project) {
+        return LAST_EVENT_DATE+"."+project;
     }
 
     /**

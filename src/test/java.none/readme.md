@@ -1,0 +1,1 @@
+This is a temp empty director for java tests (during updates which break all tests)
