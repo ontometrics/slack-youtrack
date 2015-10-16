@@ -5,6 +5,7 @@ import com.ontometrics.integrations.configuration.ConfigurationFactory;
 import com.ontometrics.integrations.configuration.EventProcessorConfiguration;
 import com.ontometrics.integrations.configuration.SlackInstance;
 import com.ontometrics.integrations.sources.AuthenticatedHttpStreamProvider;
+import com.ontometrics.integrations.sources.ChannelMapper;
 import com.ontometrics.integrations.sources.ChannelMapperFactory;
 import com.ontometrics.integrations.sources.StreamProvider;
 import org.apache.commons.configuration.Configuration;

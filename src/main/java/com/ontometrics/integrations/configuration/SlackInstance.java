@@ -55,12 +55,17 @@ public class SlackInstance implements ChatServer {
         
     }
 
+    @Override
+    public ChannelMapper getChannelMapper() {
+        return channelMapper;
+    }
+
     private void postToChannel(String channel, String message) {
         log.info("posting message {} to channel: {}.", message, channel);
         Client client = ClientBuilder.newClient();
 
         JSONObject payload = new JSONObject();
-        payload.put(CHANNEL_KEY, channel);
+//        payload.put(CHANNEL_KEY, channel);
         payload.put(TEXT_KEY, processMessage(message));
 
         WebTarget slackApi = client.target(BASE_URL).path(ConfigurationFactory.get().getString("PROP.SLACK_WEBHOOK_PATH"));
@@ -80,7 +85,7 @@ public class SlackInstance implements ChatServer {
         String action = session.getComment() != null && !session.getComment().isDeleted() ? "commented on " : "updated";
         s.append(String.format(" %s %s: ", action, MessageFormatter.getIssueLink(session.getIssue())));
         if (session.getIssue().getTitle()!=null) {
-            s.append(MessageFormatter.getTitleWithoutIssueID(session.getIssue()));
+            s.append(session.getIssue().getTitle());
         } else {
             log.debug("title null on issue: {}", session.getIssue());
         }
@@ -100,7 +105,7 @@ public class SlackInstance implements ChatServer {
     }
 
     public String buildNewIssueMessage(Issue newIssue){
-        return String.format("*%s* created %s: %s%s%s", newIssue.getCreator(), MessageFormatter.getIssueLink(newIssue), MessageFormatter.getTitleWithoutIssueID(newIssue), System.lineSeparator(), newIssue.getDescription());
+        return String.format("*%s* created %s: %s%s%s", newIssue.getCreator(), MessageFormatter.getIssueLink(newIssue), newIssue.getTitle(), System.lineSeparator(), newIssue.getDescription());
     }
 
     private static class MessageFormatter {
@@ -110,10 +115,6 @@ public class SlackInstance implements ChatServer {
 
         static String getNamedLink(String url, String text){
             return String.format("<%s|%s>", url, text);
-        }
-
-        static String getTitleWithoutIssueID(Issue issue){
-            return issue.getTitle().substring(issue.getTitle().indexOf(":") + 2);
         }
     }
 

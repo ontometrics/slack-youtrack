@@ -77,22 +77,11 @@ public class EditSessionsExtractor {
      * Provides a means of seeing what things were changed on an {@link com.ontometrics.integrations.events.Issue} and by whom.
      * Gets a list of IssueEditSessions, being sure to only include edits that were made since we last
      * extracted changes.
-     *
+     * @param project project key
      * @return all sessions found that occurred after the last edit
      * @throws Exception
      */
-    public List<IssueEditSession> getLatestEdits() throws Exception {
-        //TODO get real list of projects (from mappings or request)
-        List<String> projects = Arrays.asList("ONTO");
-
-        List<IssueEditSession> result = new ArrayList<>();
-        for (String project : projects) {
-            result.addAll(getLatestEdits(project));
-        }
-        return result;
-    }
-
-    private List<IssueEditSession> getLatestEdits(String project) throws Exception {
+    public List<IssueEditSession> getLatestEdits(String project) throws Exception {
         //get events
         EventProcessorConfiguration eventProcessorConfiguration = EventProcessorConfiguration.instance();
         Date minDate = eventProcessorConfiguration

@@ -1,6 +1,9 @@
 package com.ontometrics.integrations.jobs;
 
-import com.ontometrics.integrations.configuration.*;
+import com.ontometrics.integrations.configuration.ChatServer;
+import com.ontometrics.integrations.configuration.ConfigurationFactory;
+import com.ontometrics.integrations.configuration.EventProcessorConfiguration;
+import com.ontometrics.integrations.configuration.YouTrackInstanceFactory;
 import com.ontometrics.integrations.events.IssueEditSession;
 import com.ontometrics.integrations.sources.EditSessionsExtractor;
 import com.ontometrics.integrations.sources.StreamProvider;
@@ -8,10 +11,7 @@ import org.apache.commons.configuration.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 
@@ -76,27 +76,31 @@ public class EventListenerImpl implements EventListener {
      */
     @Override
     public int checkForNewEvents() throws Exception {
-
-        List<IssueEditSession> editSessions = editSessionsExtractor.getLatestEdits();
-
-        log.info("Found {} edit sessions to post.", editSessions.size());
+        Set<String> projects = ProjectProvider.instance().channelMapper(chatServer.getChannelMapper()).all();
         final AtomicInteger processedSessionsCount = new AtomicInteger(0);
-        if (editSessions.size() > 0) {
-            Collections.sort(editSessions, CREATED_TIME_COMPARATOR);
-            log.debug("sessions: {}", editSessions);
-            Date lastProcessedSessionDate = null;
-            for (IssueEditSession session : editSessions) {
-                if (session.isCreationEdit()) {
-                    chatServer.postIssueCreation(session.getIssue());
-                } else {
-                    chatServer.post(session);
+
+        for (String project: projects) {
+            List<IssueEditSession> editSessions = editSessionsExtractor.getLatestEdits(project);
+            log.info("Found {} edit sessions to post.", editSessions.size());
+            if (editSessions.size() > 0) {
+                Collections.sort(editSessions, CREATED_TIME_COMPARATOR);
+                log.debug("sessions: {}", editSessions);
+                Date lastProcessedSessionDate = null;
+                for (IssueEditSession session : editSessions) {
+                    if (session.isCreationEdit()) {
+                        chatServer.postIssueCreation(session.getIssue());
+                    } else {
+                        chatServer.post(session);
+                    }
+                    lastProcessedSessionDate = session.getUpdated();
+                    processedSessionsCount.incrementAndGet();
                 }
-                lastProcessedSessionDate = session.getUpdated();
-                processedSessionsCount.incrementAndGet();
+
+                log.debug("setting last processed date for project {} to: {}", project, lastProcessedSessionDate);
+                EventProcessorConfiguration.instance().saveLastProcessedEventDate(lastProcessedSessionDate, project);
             }
 
-            log.debug("setting last processed date to: {}", lastProcessedSessionDate);
-            EventProcessorConfiguration.instance().saveLastProcessedEventDate(lastProcessedSessionDate);
+
         }
         return processedSessionsCount.get();
     }
