@@ -31,14 +31,15 @@ public class EventListenerImpl implements EventListener {
 
     private ChatServer chatServer;
 
+    private ProjectProvider projectProvider;
+
     private EditSessionsExtractor editSessionsExtractor;
 
     /**
      * @param feedStreamProvider feed resource provider
-     * @param chatServer chat server
      */
-    public EventListenerImpl(StreamProvider feedStreamProvider, ChatServer chatServer) {
-        this(createEditSessionExtractor(feedStreamProvider), chatServer);
+    public EventListenerImpl(StreamProvider feedStreamProvider) {
+        this(createEditSessionExtractor(feedStreamProvider));
     }
 
     private static EditSessionsExtractor createEditSessionExtractor(StreamProvider feedStreamProvider) {
@@ -51,14 +52,13 @@ public class EventListenerImpl implements EventListener {
 
     /**
      * @param editSessionsExtractor editSessionsExtractor
-     * @param chatServer chat server
      */
-    public EventListenerImpl(EditSessionsExtractor editSessionsExtractor, ChatServer chatServer) {
-        if(editSessionsExtractor == null || chatServer == null) {
+    public EventListenerImpl(EditSessionsExtractor editSessionsExtractor) {
+        if(editSessionsExtractor == null ) {
             throw new IllegalArgumentException("You must provide sourceURL and chatServer.");
         }
-        this.chatServer = chatServer;
         this.editSessionsExtractor = editSessionsExtractor;
+        this.projectProvider = new ProjectProvider(editSessionsExtractor.getIssueTracker(), editSessionsExtractor.getStreamProvider());
     }
 
     /**
@@ -76,7 +76,7 @@ public class EventListenerImpl implements EventListener {
      */
     @Override
     public int checkForNewEvents() throws Exception {
-        Set<String> projects = ProjectProvider.instance().channelMapper(chatServer.getChannelMapper()).all();
+        Set<String> projects = projectProvider.all();
         final AtomicInteger processedSessionsCount = new AtomicInteger(0);
 
         for (String project: projects) {

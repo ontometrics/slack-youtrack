@@ -1,8 +1,5 @@
 package com.ontometrics.integrations.sources;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 import com.ontometrics.integrations.configuration.EventProcessorConfiguration;
@@ -10,6 +7,7 @@ import com.ontometrics.integrations.configuration.IssueTracker;
 import com.ontometrics.integrations.events.*;
 import com.ontometrics.integrations.model.IssueList;
 import com.ontometrics.util.BadResponseException;
+import com.ontometrics.util.Mapper;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpStatus;
@@ -56,7 +54,7 @@ public class EditSessionsExtractor {
     private static final Logger responseContentLogger = getLogger("com.ontometrics.integration.youtrack.response");
 
     private final IssueTracker issueTracker;
-    private XMLEventReader eventReader;
+
     private StreamProvider streamProvider;
 
     /**
@@ -411,7 +409,7 @@ public class EditSessionsExtractor {
                 if (responseContentLogger.isDebugEnabled()){
                     responseContentLogger.debug("Got response from url: {} \n{}", feedUrl, new String(buf));
                 }
-                IssueList issueList = createXmlMapper().readValue(bas, IssueList.class);
+                IssueList issueList = Mapper.createXmlMapper().readValue(bas, IssueList.class);
                 return Lists.transform(issueList.getIssues(), new Function<com.ontometrics.integrations.model.Issue, ProcessEvent>() {
                     @Override
                     public ProcessEvent apply(com.ontometrics.integrations.model.Issue issue) {
@@ -422,9 +420,7 @@ public class EditSessionsExtractor {
         });
     }
 
-    private ObjectMapper createXmlMapper() {
-        return new XmlMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-    }
+
 
     private ProcessEvent extractEventFromStream(com.ontometrics.integrations.model.Issue xmlIssue, String project) {
 
@@ -458,4 +454,12 @@ public class EditSessionsExtractor {
         return date;
     }
 
+
+    public IssueTracker getIssueTracker() {
+        return issueTracker;
+    }
+
+    public StreamProvider getStreamProvider() {
+        return streamProvider;
+    }
 }
