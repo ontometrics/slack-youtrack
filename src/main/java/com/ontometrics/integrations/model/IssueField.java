@@ -30,4 +30,15 @@ public class IssueField {
     public void setValues(List<IssueFieldValue> values) {
         this.values = values;
     }
+
+
+    /**
+     * @return first value of the values in this IssueField
+     */
+    public String getValue() {
+        if (!values.isEmpty()){
+            return values.get(0).getText();
+        }
+        return null;
+    }
 }

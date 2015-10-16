@@ -19,4 +19,7 @@ public interface IssueTracker {
 
     URL getAttachmentsUrl(Issue issue);
 
+    String getIssueRestUrl(Issue issue);
+
+    URL getIssueUrl(String issueIdentifier);
 }

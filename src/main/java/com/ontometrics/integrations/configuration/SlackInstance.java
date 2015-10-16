@@ -60,7 +60,7 @@ public class SlackInstance implements ChatServer {
         Client client = ClientBuilder.newClient();
 
         JSONObject payload = new JSONObject();
-        payload.put(CHANNEL_KEY, "#" + channel);
+        payload.put(CHANNEL_KEY, channel);
         payload.put(TEXT_KEY, processMessage(message));
 
         WebTarget slackApi = client.target(BASE_URL).path(ConfigurationFactory.get().getString("PROP.SLACK_WEBHOOK_PATH"));

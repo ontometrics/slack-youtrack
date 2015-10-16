@@ -1,10 +1,9 @@
 package com.ontometrics.integrations.sources;
 
-import com.fasterxml.jackson.databind.DeserializationConfig;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.dataformat.xml.JacksonXmlModule;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 import com.ontometrics.integrations.configuration.EventProcessorConfiguration;
 import com.ontometrics.integrations.configuration.IssueTracker;
@@ -409,12 +408,12 @@ public class EditSessionsExtractor {
      *
      * @return the last event that was returned to the user of this class
      */
-    public List<ProcessEvent> getLatestEvents(String project, final Date minDate) throws Exception {
+    public List<ProcessEvent> getLatestEvents(final String project, final Date minDate) throws Exception {
         final URL feedUrl = issueTracker.getFeedUrl(project, minDate);
         log.debug("Going to process url: {}", feedUrl);
         return streamProvider.openResourceStream(feedUrl, new InputStreamHandler<List<ProcessEvent>>() {
             @Override
-            public List<ProcessEvent> handleStream(InputStream is, int responseCode) throws Exception {
+            public List<ProcessEvent> handleStream(final InputStream is, int responseCode) throws Exception {
 
                 checkResponseCode(responseCode, feedUrl);
 
@@ -424,7 +423,12 @@ public class EditSessionsExtractor {
                     responseContentLogger.debug("Got response from url: {} \n{}", feedUrl, new String(buf));
                 }
                 IssueList issueList = createXmlMapper().readValue(bas, IssueList.class);
-                return Lists.newArrayList();
+                return Lists.transform(issueList.getIssues(), new Function<com.ontometrics.integrations.model.Issue, ProcessEvent>() {
+                    @Override
+                    public ProcessEvent apply(com.ontometrics.integrations.model.Issue issue) {
+                        return extractEventFromStream(issue, project);
+                    }
+                });
             }
         });
     }
@@ -433,20 +437,22 @@ public class EditSessionsExtractor {
         return new XmlMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
 
-    private ProcessEvent extractEventFromStream(XMLEvent issueEvent, String project) throws Exception {
+    private ProcessEvent extractEventFromStream(com.ontometrics.integrations.model.Issue xmlIssue, String project) {
 
-//        Issue issue = new Issue.Builder().id(issueNumber).projectPrefix(project)
-//                .title(StringUtils.trim(currentTitle))
-//                .description(StringUtils.trim(currentDescription))
-//                .link(new URL(StringUtils.trim(currentLink)))
-//                .build();
-//        ProcessEvent event = new ProcessEvent.Builder()
-//                .issue(issue)
-//                .published(currentPublishDate)
-//                .build();
-//        log.debug("event extracted from stream: {}", event);
-//        return event;
-        return null;
+        Issue issue = new Issue.Builder().id(Integer.parseInt(xmlIssue.getFieldValue("numberInProject")))
+                .projectPrefix(project)
+                .title(StringUtils.trim(xmlIssue.getFieldValue("summary")))
+                .description(StringUtils.trim(xmlIssue.getFieldValue("description")))
+                .link(issueTracker.getIssueUrl(xmlIssue.getId()))
+                .build();
+
+
+        ProcessEvent event = new ProcessEvent.Builder()
+                .issue(issue)
+                .published(new Date(Long.parseLong(xmlIssue.getFieldValue("updated"))))
+                .build();
+        log.debug("event extracted from stream: {}", event);
+        return event;
     }
 
     private DateFormat createEventDateFormat() {

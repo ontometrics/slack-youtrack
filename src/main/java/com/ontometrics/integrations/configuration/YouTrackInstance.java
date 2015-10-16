@@ -24,7 +24,19 @@ public class YouTrackInstance implements IssueTracker {
         issueBase = getBaseUrl() + "/rest/issue/%s";
     }
 
-    public String getIssueBaseURL(Issue issue) {
+
+    @Override
+    public URL getIssueUrl(String issueIdentifier) {
+        URL url;
+        try {
+            url = new URL(String.format("%s/issue/%s", getBaseUrl(), issueIdentifier));
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(e);
+        }
+        return url;
+    }
+
+    public String getIssueRestUrl(Issue issue) {
         return String.format(issueBase, issue.getPrefix() + "-" + issue.getId());
     }
 
@@ -81,10 +93,12 @@ public class YouTrackInstance implements IssueTracker {
         return buildIssueURL(issue, "%s/attachment");
     }
 
+
+
     private URL buildIssueURL(Issue issue, String urlTemplate) {
         URL url = null;
         try {
-            String base = getIssueBaseURL(issue);
+            String base = getIssueRestUrl(issue);
             url = new URL(urlTemplate.replace("%s", base));
         } catch (MalformedURLException e) {
             log.error("Error building issue URL", e);
