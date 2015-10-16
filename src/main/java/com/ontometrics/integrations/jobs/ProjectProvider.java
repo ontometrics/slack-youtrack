@@ -4,16 +4,11 @@ import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.ontometrics.integrations.configuration.IssueTracker;
-import com.ontometrics.integrations.model.IssueList;
 import com.ontometrics.integrations.model.ProjectList;
-import com.ontometrics.integrations.sources.ChannelMapper;
 import com.ontometrics.integrations.sources.InputStreamHandler;
 import com.ontometrics.integrations.sources.StreamProvider;
-import com.ontometrics.util.BadResponseException;
 import com.ontometrics.util.HttpUtil;
 import com.ontometrics.util.Mapper;
-import org.apache.commons.configuration.SystemConfiguration;
-import org.apache.http.HttpStatus;
 
 import java.io.InputStream;
 import java.net.URL;

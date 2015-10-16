@@ -18,6 +18,10 @@ import static org.slf4j.LoggerFactory.getLogger;
  */
 public class SlackInstance implements ChatServer {
 
+    private static final String USERNAME_KEY = "username";
+    private static final String ICON_URL_KEY = "icon_url";
+    private static final String USERNAME = "YouTrack";
+    private static final String ICON_URL = "http://blog.jetbrains.com/objc/files/2012/05/YouTrack.png";
     private Logger log = getLogger(SlackInstance.class);
     public static final String BASE_URL = "https://hooks.slack.com";
     public static final String TEXT_KEY = "text";
@@ -65,7 +69,9 @@ public class SlackInstance implements ChatServer {
         Client client = ClientBuilder.newClient();
 
         JSONObject payload = new JSONObject();
-//        payload.put(CHANNEL_KEY, channel);
+        payload.put(USERNAME_KEY, USERNAME);
+        payload.put(ICON_URL_KEY, ICON_URL);
+        payload.put(CHANNEL_KEY, channel);
         payload.put(TEXT_KEY, processMessage(message));
 
         WebTarget slackApi = client.target(BASE_URL).path(ConfigurationFactory.get().getString("PROP.SLACK_WEBHOOK_PATH"));

@@ -38,8 +38,9 @@ public class EventListenerImpl implements EventListener {
     /**
      * @param feedStreamProvider feed resource provider
      */
-    public EventListenerImpl(StreamProvider feedStreamProvider) {
+    public EventListenerImpl(StreamProvider feedStreamProvider, ChatServer chatServer) {
         this(createEditSessionExtractor(feedStreamProvider));
+        this.chatServer = chatServer;
     }
 
     private static EditSessionsExtractor createEditSessionExtractor(StreamProvider feedStreamProvider) {
@@ -58,7 +59,8 @@ public class EventListenerImpl implements EventListener {
             throw new IllegalArgumentException("You must provide sourceURL and chatServer.");
         }
         this.editSessionsExtractor = editSessionsExtractor;
-        this.projectProvider = new ProjectProvider(editSessionsExtractor.getIssueTracker(), editSessionsExtractor.getStreamProvider());
+        this.projectProvider = new ProjectProvider(editSessionsExtractor.getIssueTracker(),
+                editSessionsExtractor.getStreamProvider());
     }
 
     /**

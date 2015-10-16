@@ -6,7 +6,6 @@ import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Created by rob on 7/17/14.
@@ -43,10 +42,6 @@ public class ChannelMapper {
             }
     }
 
-
-    public Set<String> getMappedProjectKeys() {
-        return mappings.keySet();
-    }
 
     public String getChannel(final Issue issue){
         String targetChannel = mappings.get(issue.getPrefix());
