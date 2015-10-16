@@ -15,15 +15,17 @@
     -   APP_DATA_DIR - directory where app will store it's data-files (configuration). e.g. "/opt/slack-youtrack"
     -   YOUTRACK_URL - YouTrack server URL. e.g. "https://company.myjetbrains.com/youtrack"
     -   ISSUE_HISTORY_WINDOW - Time In minutes - how deep should we look for issues in the past.
-    -   DEFAULT_SLACK_CHANNEL - Default slack channel to post in. e.g. "general"
+    -   DEFAULT_SLACK_CHANNEL - Default slack channel to post in. e.g. "#general"
     -   AUTH_TYPE - authentication / authorization method. Available values: {"credentials", "hub-oauth2"}
 
-    Optional for Hub authentication OAuth 2.0 See https://www.jetbrains.com/hub/help/1.0/OAuth-2.0-Authorization.html
+    Hub authentication OAuth 2.0 required following properties. See https://www.jetbrains.com/hub/help/1.0/OAuth-2.0-Authorization.html
     -  HUB_URL - Hub server url
     -  HUB_OAUTH_RESOURCE_SERVER_SERVICE_ID - Hub OAuth resource server service id
     -  HUB_OAUTH_CLIENT_SERVICE_ID - Hub OAuth clientServiceId
     -  HUB_OAUTH_CLIENT_SERVICE_SECRET - Hub OAuth clientServiceSecret
-    If set to 10, it means that issues and changes that happened not longer than 10 minutes will be posted to chat server
+
+    - ISSUE_HISTORY_WINDOW - Time in minutes - how deep should we look for issues in the past. If set to 10, it means that issues and changes that happened not longer than 10 minutes will be posted to chat server
+    - SLACKBOT_ICON - URL of icon used for the posts in the YouTrack channel
     -->
     <dependencies>
         <dependency>
@@ -95,20 +97,11 @@
                 </exclusion>
             </exclusions>
         </dependency>
-        <dependency>
-            <groupId>org.mapdb</groupId>
-            <artifactId>mapdb</artifactId>
-            <version>1.0.6</version>
-        </dependency>
+
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
             <version>17.0</version>
-        </dependency>
-        <dependency>
-            <groupId>com.googlecode.json-simple</groupId>
-            <artifactId>json-simple</artifactId>
-            <version>1.1.1</version>
         </dependency>
         <dependency>
             <groupId>joda-time</groupId>

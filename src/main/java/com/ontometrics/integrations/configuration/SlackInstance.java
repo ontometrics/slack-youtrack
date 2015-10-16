@@ -1,9 +1,10 @@
 package com.ontometrics.integrations.configuration;
 
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.ontometrics.integrations.events.*;
 import com.ontometrics.integrations.sources.ChannelMapper;
 import org.apache.commons.lang.StringUtils;
-import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 
 import javax.ws.rs.client.*;
@@ -18,25 +19,28 @@ import static org.slf4j.LoggerFactory.getLogger;
  */
 public class SlackInstance implements ChatServer {
 
+    private Logger log = getLogger(SlackInstance.class);
+
     private static final String USERNAME_KEY = "username";
     private static final String ICON_URL_KEY = "icon_url";
     private static final String USERNAME = "YouTrack";
-    private static final String ICON_URL = "http://blog.jetbrains.com/objc/files/2012/05/YouTrack.png";
-    private Logger log = getLogger(SlackInstance.class);
+    public static final String DEFAULT_ICON_URL = "https://www.jetbrains.com/youtrack/tools/img/youtrack.png";
     public static final String BASE_URL = "https://hooks.slack.com";
     public static final String TEXT_KEY = "text";
     public static final String CHANNEL_KEY = "channel";
 
     private final ChannelMapper channelMapper;
+    private final String iconUrl;
 
     public SlackInstance(Builder builder) {
         channelMapper = builder.channelMapper;
+        iconUrl = builder.icon;
     }
 
     public static class Builder {
 
         private ChannelMapper channelMapper;
-
+        private String icon;
         public Builder channelMapper(ChannelMapper channelMapper){
             this.channelMapper = channelMapper;
             return this;
@@ -44,6 +48,11 @@ public class SlackInstance implements ChatServer {
 
         public SlackInstance build(){
             return new SlackInstance(this);
+        }
+
+        public Builder icon(String url) {
+            this.icon = url;
+            return this;
         }
     }
 
@@ -68,18 +77,15 @@ public class SlackInstance implements ChatServer {
         log.info("posting message {} to channel: {}.", message, channel);
         Client client = ClientBuilder.newClient();
 
-        JSONObject payload = new JSONObject();
-        payload.put(USERNAME_KEY, USERNAME);
-        payload.put(ICON_URL_KEY, ICON_URL);
-        payload.put(CHANNEL_KEY, channel);
-        payload.put(TEXT_KEY, processMessage(message));
+        ObjectNode objectNode = JsonNodeFactory.instance.objectNode().put(USERNAME_KEY, USERNAME)
+                .put(ICON_URL_KEY, iconUrl).put(CHANNEL_KEY, channel)
+                .put(TEXT_KEY, processMessage(message));
 
         WebTarget slackApi = client.target(BASE_URL).path(ConfigurationFactory.get().getString("PROP.SLACK_WEBHOOK_PATH"));
         Invocation.Builder invocationBuilder = slackApi.request(MediaType.APPLICATION_JSON_TYPE);
-        Response response = invocationBuilder.post(Entity.json(payload.toString()));
+        Response response = invocationBuilder.post(Entity.json(objectNode.toString()));
 
         log.info("response code: {} response: {}", response.getStatus(), response.readEntity(String.class));
-
     }
 
     private String processMessage(String message) {

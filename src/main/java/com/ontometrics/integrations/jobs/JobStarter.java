@@ -2,15 +2,17 @@ package com.ontometrics.integrations.jobs;
 
 import com.ontometrics.integrations.configuration.ConfigurationAccessError;
 import com.ontometrics.integrations.configuration.ConfigurationFactory;
-import com.ontometrics.integrations.configuration.EventProcessorConfiguration;
 import com.ontometrics.integrations.configuration.SlackInstance;
 import com.ontometrics.integrations.sources.AuthenticatedHttpStreamProvider;
+import com.ontometrics.integrations.sources.ChannelMapper;
 import com.ontometrics.integrations.sources.ChannelMapperFactory;
 import com.ontometrics.integrations.sources.StreamProvider;
 import org.apache.commons.configuration.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -41,8 +43,21 @@ public class JobStarter {
         final Configuration configuration = ConfigurationFactory.get();
         StreamProvider streamProvider = createStreamProvider(configuration);
 
-        scheduleTask(new EventListenerImpl(streamProvider, new SlackInstance.Builder()
-                .channelMapper(ChannelMapperFactory.fromConfiguration(configuration, "youtrack-slack.")).build()));
+        ChannelMapper channelMapper = ChannelMapperFactory.fromConfiguration(configuration, "youtrack-slack.");
+
+        SlackInstance chatServer = new SlackInstance.Builder().channelMapper(channelMapper)
+                .icon(resolveSlackBotIcon(configuration)).build();
+        scheduleTask(new EventListenerImpl(streamProvider, chatServer));
+    }
+
+    private String resolveSlackBotIcon(Configuration configuration) {
+        String slackBotIcon = configuration.getString("youtrack-slack.icon");
+        try {
+            new URL(slackBotIcon);
+        } catch (MalformedURLException e) {
+            slackBotIcon = SlackInstance.DEFAULT_ICON_URL;
+        }
+        return slackBotIcon;
     }
 
     private StreamProvider createStreamProvider(Configuration configuration) {
@@ -108,6 +123,5 @@ public class JobStarter {
         if (scheduledExecutorService != null) {
             scheduledExecutorService.shutdown();
         }
-        EventProcessorConfiguration.instance().dispose();
     }
 }
