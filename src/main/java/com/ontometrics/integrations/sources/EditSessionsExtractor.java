@@ -1,8 +1,15 @@
 package com.ontometrics.integrations.sources;
 
+import com.fasterxml.jackson.databind.DeserializationConfig;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.xml.JacksonXmlModule;
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import com.google.common.collect.Lists;
 import com.ontometrics.integrations.configuration.EventProcessorConfiguration;
 import com.ontometrics.integrations.configuration.IssueTracker;
 import com.ontometrics.integrations.events.*;
+import com.ontometrics.integrations.model.IssueList;
 import com.ontometrics.util.BadResponseException;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -13,12 +20,10 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamConstants;
-import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.events.EndElement;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.text.DateFormat;
@@ -79,7 +84,7 @@ public class EditSessionsExtractor {
      */
     public List<IssueEditSession> getLatestEdits() throws Exception {
         //TODO get real list of projects (from mappings or request)
-        List<String> projects = Arrays.asList("HA","ONTO");
+        List<String> projects = Arrays.asList("ONTO");
 
         List<IssueEditSession> result = new ArrayList<>();
         for (String project : projects) {
@@ -418,68 +423,30 @@ public class EditSessionsExtractor {
                 if (responseContentLogger.isDebugEnabled()){
                     responseContentLogger.debug("Got response from url: {} \n{}", feedUrl, new String(buf));
                 }
-                log.info("Check for events after date {}", minDate);
-                LinkedList<ProcessEvent> events = new LinkedList<>();
-                try {
-                    XMLInputFactory inputFactory = XMLInputFactory.newInstance();
-                    eventReader = inputFactory.createXMLEventReader(bas);
-                    DateFormat dateFormat = createEventDateFormat();
-                    while (eventReader.hasNext()) {
-                        XMLEvent nextEvent = eventReader.nextEvent();
-                        switch (nextEvent.getEventType()) {
-                            case XMLStreamConstants.START_ELEMENT:
-                                StartElement startElement = nextEvent.asStartElement();
-                                String elementName = startElement.getName().getLocalPart();
-                                if (elementName.equals("item")) {
-                                    //todo: decide if we have to swallow exception thrown by attempt of single event extraction.
-                                    //If we swallow it, we have at least report the problem
-                                    ProcessEvent event = extractEventFromStream(dateFormat);
-                                    if (minDate ==null || event.getPublishDate().after(minDate)) {
-                                        //we are adding only events with date after deployment date
-                                        events.addFirst(event);
-                                    }
-                                }
-                        }
-                    }
-                } catch (XMLStreamException e) {
-                    throw new IOException("Failed to process XML: content is\n"+new String(buf), e);
-                }
-                return events;
+                IssueList issueList = createXmlMapper().readValue(bas, IssueList.class);
+                return Lists.newArrayList();
             }
         });
     }
 
-    private ProcessEvent extractEventFromStream(DateFormat dateFormat) throws Exception {
-        String prefix;
-        int issueNumber;
-        String currentTitle = "", currentLink = "", currentDescription = "";
-        Date currentPublishDate = null;
-        eventReader.nextEvent();
-        StartElement titleTag = eventReader.nextEvent().asStartElement(); // start title tag
-        if ("title".equals(titleTag.getName().getLocalPart())){
-            currentTitle = eventReader.getElementText();
-            eventReader.nextEvent(); // eat end tag
-            eventReader.nextEvent();
-            currentLink = eventReader.getElementText();
-            eventReader.nextEvent(); eventReader.nextEvent();
-            currentDescription = eventReader.getElementText().replace("\n", "").trim();
-            eventReader.nextEvent(); eventReader.nextEvent();
-            currentPublishDate = dateFormat.parse(getEventDate(eventReader.getElementText()));
-        }
-        String t = currentTitle;
-        prefix = t.substring(0, t.indexOf("-"));
-        issueNumber = Integer.parseInt(t.substring(t.indexOf("-")+1, t.indexOf(":")));
-        Issue issue = new Issue.Builder().id(issueNumber).projectPrefix(StringUtils.trim(prefix))
-                .title(StringUtils.trim(currentTitle))
-                .description(StringUtils.trim(currentDescription))
-                .link(new URL(StringUtils.trim(currentLink)))
-                .build();
-        ProcessEvent event = new ProcessEvent.Builder()
-                .issue(issue)
-                .published(currentPublishDate)
-                .build();
-        log.debug("event extracted from stream: {}", event);
-        return event;
+    private ObjectMapper createXmlMapper() {
+        return new XmlMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+    }
+
+    private ProcessEvent extractEventFromStream(XMLEvent issueEvent, String project) throws Exception {
+
+//        Issue issue = new Issue.Builder().id(issueNumber).projectPrefix(project)
+//                .title(StringUtils.trim(currentTitle))
+//                .description(StringUtils.trim(currentDescription))
+//                .link(new URL(StringUtils.trim(currentLink)))
+//                .build();
+//        ProcessEvent event = new ProcessEvent.Builder()
+//                .issue(issue)
+//                .published(currentPublishDate)
+//                .build();
+//        log.debug("event extracted from stream: {}", event);
+//        return event;
+        return null;
     }
 
     private DateFormat createEventDateFormat() {
