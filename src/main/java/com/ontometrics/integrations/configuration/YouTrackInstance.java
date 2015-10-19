@@ -17,10 +17,12 @@ public class YouTrackInstance implements IssueTracker {
 
     private Logger log = getLogger(YouTrackInstance.class);
     private final String baseUrl;
+    private final String externalBaseUrl;
     private final String issueBase;
 
     public YouTrackInstance(Builder builder) {
         baseUrl = builder.baseUrl;
+        externalBaseUrl = builder.externalBaseUrl;
         issueBase = getBaseUrl() + "/rest/issue/%s";
     }
 
@@ -36,6 +38,17 @@ public class YouTrackInstance implements IssueTracker {
         return url;
     }
 
+    @Override
+    public URL getExternalIssueUrl(String issueIdentifier) {
+        URL url;
+        try {
+            url = new URL(String.format("%s/issue/%s", getExternalBaseUrl(), issueIdentifier));
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(e);
+        }
+        return url;
+    }
+
     public String getIssueRestUrl(Issue issue) {
         return String.format(issueBase, issue.getPrefix() + "-" + issue.getId());
     }
@@ -43,9 +56,15 @@ public class YouTrackInstance implements IssueTracker {
     public static class Builder {
 
         private String baseUrl;
+        private String externalBaseUrl;
 
         public Builder baseUrl(String baseUrl) {
             this.baseUrl = baseUrl;
+            return this;
+        }
+
+        public Builder externalBaseUrl(String externalBaseUrl) {
+            this.externalBaseUrl = externalBaseUrl;
             return this;
         }
 
@@ -59,6 +78,17 @@ public class YouTrackInstance implements IssueTracker {
         URL url;
         try {
             url = new URL(baseUrl);
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(e);
+        }
+        return url;
+    }
+
+    @Override
+    public URL getExternalBaseUrl() {
+        URL url;
+        try {
+            url = new URL(externalBaseUrl);
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);
         }

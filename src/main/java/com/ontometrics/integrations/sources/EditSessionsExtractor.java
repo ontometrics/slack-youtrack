@@ -306,8 +306,9 @@ public class EditSessionsExtractor {
                                                 .created(created)
                                                 .creator(creator)
                                                 .link(e.getIssue().getLink())
-                                                .description(description)
-                                                .build();
+                                                .externalLink(e.getIssue().getExternalLink())
+                                                        .description(description)
+                                                        .build();
                                         IssueEditSession session = new IssueEditSession.Builder()
                                                 .updater(updaterName)
                                                 .updated(updated)
@@ -334,6 +335,7 @@ public class EditSessionsExtractor {
                             .description(description)
                             .title(e.getIssue().getTitle())
                             .link(e.getIssue().getLink())
+                            .externalLink(e.getIssue().getExternalLink())
                             .build();
                     IssueEditSession session = new IssueEditSession.Builder()
                             .updater(updaterName)
@@ -429,6 +431,7 @@ public class EditSessionsExtractor {
                 .title(StringUtils.trim(xmlIssue.getFieldValue("summary")))
                 .description(StringUtils.trim(xmlIssue.getFieldValue("description")))
                 .link(issueTracker.getIssueUrl(xmlIssue.getId()))
+                .externalLink(issueTracker.getExternalIssueUrl(xmlIssue.getId()))
                 .build();
 
 

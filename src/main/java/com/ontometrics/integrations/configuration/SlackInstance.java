@@ -122,7 +122,7 @@ public class SlackInstance implements ChatServer {
 
     private static class MessageFormatter {
         static String getIssueLink(Issue issue){
-            return String.format("<%s|%s-%d>", issue.getLink(), issue.getPrefix(), issue.getId());
+            return String.format("<%s|%s-%d>", issue.getExternalLink(), issue.getPrefix(), issue.getId());
         }
 
         static String getNamedLink(String url, String text){

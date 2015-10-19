@@ -16,6 +16,7 @@ public class Issue {
     private final URL link;
     private final String creator;
     private final Date created;
+    private final URL externalLink;
 
     public Issue(Builder builder) {
         id = builder.id;
@@ -25,6 +26,7 @@ public class Issue {
         title = builder.title;
         description = builder.description;
         link = builder.link;
+        this.externalLink = builder.externalLink;
     }
 
     public static class Builder {
@@ -34,6 +36,7 @@ public class Issue {
         private String title;
         private String description;
         private URL link;
+        private URL externalLink;
         private String creator;
         private Date created;
 
@@ -70,7 +73,12 @@ public class Issue {
         public Builder link(URL link){
             this.link = link;
             return this;
-            }
+        }
+
+        public Builder externalLink(URL link){
+            this.externalLink = link;
+            return this;
+        }
 
         public Issue build(){
             return new Issue(this);
@@ -103,6 +111,10 @@ public class Issue {
 
     public URL getLink() {
         return link;
+    }
+
+    public URL getExternalLink() {
+        return externalLink;
     }
 
     @Override

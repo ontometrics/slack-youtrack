@@ -22,7 +22,8 @@ Installation and configuration
 ------------
 1. List of required properties
     * SLACK_WEBHOOK_PATH - path for Slack webhook excluding first slash. e.g. "services/T00000000/B00000000/XXXXXXXXXXXXXXXXXXXXXXXX" (see https://api.slack.com/incoming-webhooks)
-    * YOUTRACK_URL - YouTrack server url. e.g. "https://mycompany.com/youtrack"
+    * YOUTRACK_URL - YouTrack server url. e.g. "https://mycompany.com/youtrack". This can be inner URL (for example local IP-based)
+    * YOUTRACK_EXTERNAL_URL - YouTrack server external URL. It should be accessible for Slack Users, so consider it to be public DNS-based URL. This can be the same as YOUTRACK_URL however.
     * YOUTRACK_TO_SLACK_CHANNELS - mappings between YouTrack projects and Slack channels. For example "APL->#apple;SUP->#support" (please note that "#" or "@" should be included in the slack-channel name
     * DEFAULT_SLACK_CHANNEL - Default slack channel to post in. e.g. "#general". Projects without mappings will be posted here
     * AUTH_TYPE - authentication / authorization method. Available values: {"credentials", "hub-oauth2"}

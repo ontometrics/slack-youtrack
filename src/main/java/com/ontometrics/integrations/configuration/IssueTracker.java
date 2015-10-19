@@ -13,6 +13,8 @@ public interface IssueTracker {
 
     URL getBaseUrl();
 
+    URL getExternalBaseUrl();
+
     URL getFeedUrl(String project, Date sinceDate);
 
     URL getChangesUrl(Issue issue);
@@ -22,4 +24,6 @@ public interface IssueTracker {
     String getIssueRestUrl(Issue issue);
 
     URL getIssueUrl(String issueIdentifier);
+
+    URL getExternalIssueUrl(String issueIdentifier);
 }

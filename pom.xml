@@ -14,6 +14,7 @@
     -   SLACK_WEBHOOK_PATH - path for Slack webhook excluding first slash. e.g. "services/T00000000/B00000000/XXXXXXXXXXXXXXXXXXXXXXXX"
     -   APP_DATA_DIR - directory where app will store it's data-files (configuration). e.g. "/opt/slack-youtrack"
     -   YOUTRACK_URL - YouTrack server URL. e.g. "https://company.myjetbrains.com/youtrack"
+    -   YOUTRACK_EXTERNAL_URL - YouTrack server external URL. It should be accessible for Slack Users, so consider it to be public DNS-based URL. This can be the same as YOUTRACK_URL however.
     -   ISSUE_HISTORY_WINDOW - Time In minutes - how deep should we look for issues in the past.
     -   DEFAULT_SLACK_CHANNEL - Default slack channel to post in. e.g. "#general"
     -   AUTH_TYPE - authentication / authorization method. Available values: {"credentials", "hub-oauth2"}
