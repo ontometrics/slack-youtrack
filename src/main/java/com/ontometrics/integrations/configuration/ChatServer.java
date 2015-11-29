@@ -2,6 +2,7 @@ package com.ontometrics.integrations.configuration;
 
 import com.ontometrics.integrations.events.Issue;
 import com.ontometrics.integrations.events.IssueEditSession;
+import com.ontometrics.integrations.sources.ChannelMapper;
 
 /**
  * <p>
@@ -39,4 +40,10 @@ public interface ChatServer {
      * @return the usernames that are known members right now
      */
 //    List<String> getUsers();
+
+    /**
+     *
+     * @return channel mapper
+     */
+    ChannelMapper getChannelMapper();
 }

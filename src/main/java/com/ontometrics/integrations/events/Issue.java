@@ -70,7 +70,7 @@ public class Issue {
         public Builder link(URL link){
             this.link = link;
             return this;
-            }
+        }
 
         public Issue build(){
             return new Issue(this);

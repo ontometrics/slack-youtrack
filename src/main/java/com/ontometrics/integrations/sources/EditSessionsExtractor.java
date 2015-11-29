@@ -1,8 +1,13 @@
 package com.ontometrics.integrations.sources;
 
+import com.google.common.base.Function;
+import com.google.common.collect.Lists;
+import com.ontometrics.integrations.configuration.EventProcessorConfiguration;
 import com.ontometrics.integrations.configuration.IssueTracker;
 import com.ontometrics.integrations.events.*;
+import com.ontometrics.integrations.model.IssueList;
 import com.ontometrics.util.BadResponseException;
+import com.ontometrics.util.Mapper;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpStatus;
@@ -12,12 +17,10 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamConstants;
-import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.events.EndElement;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.text.DateFormat;
@@ -51,7 +54,7 @@ public class EditSessionsExtractor {
     private static final Logger responseContentLogger = getLogger("com.ontometrics.integration.youtrack.response");
 
     private final IssueTracker issueTracker;
-    private XMLEventReader eventReader;
+
     private StreamProvider streamProvider;
 
     /**
@@ -66,22 +69,26 @@ public class EditSessionsExtractor {
         this.streamProvider = streamProvider;
     }
 
-    public List<IssueEditSession> getLatestEdits() throws Exception {
-        return getLatestEdits(null);
-    }
+
 
     /**
      * Provides a means of seeing what things were changed on an {@link com.ontometrics.integrations.events.Issue} and by whom.
      * Gets a list of IssueEditSessions, being sure to only include edits that were made since we last
      * extracted changes.
-     *
+     * @param project project key
      * @return all sessions found that occurred after the last edit
      * @throws Exception
      */
-    public List<IssueEditSession> getLatestEdits(Date minDate) throws Exception {
-        log.debug("edits since: {}", minDate);
+    public List<IssueEditSession> getLatestEdits(String project) throws Exception {
+        //get events
+        EventProcessorConfiguration eventProcessorConfiguration = EventProcessorConfiguration.instance();
+        Date minDate = eventProcessorConfiguration
+                .resolveMinimumAllowedDate(eventProcessorConfiguration.loadLastProcessedDate(project));
+
+        log.debug("edits since: {} for project {}", minDate, project);
+
         List<IssueEditSession> sessions = new ArrayList<>();
-        List<ProcessEvent> events = getLatestEvents(minDate);
+        List<ProcessEvent> events = getLatestEvents(project, minDate);
         Set<Integer> issuesWeHaveGottenChangesFor = new HashSet<>();
         for (ProcessEvent event : events){
             if (!issuesWeHaveGottenChangesFor.contains(event.getIssue().getId())) {
@@ -299,8 +306,7 @@ public class EditSessionsExtractor {
                                                 .created(created)
                                                 .creator(creator)
                                                 .link(e.getIssue().getLink())
-                                                .description(description)
-                                                .build();
+                                                .description(description).build();
                                         IssueEditSession session = new IssueEditSession.Builder()
                                                 .updater(updaterName)
                                                 .updated(updated)
@@ -384,25 +390,16 @@ public class EditSessionsExtractor {
     }
 
     /**
-     *
-     * @return all ProcessEvents available in the feed (not limited by date)
-     * @throws Exception
-     */
-    public List<ProcessEvent> getLatestEvents() throws Exception {
-        return getLatestEvents(null);
-    }
-
-    /**
      * Once we have this open, we should make sure that we are not resending events we have already seen.
      *
      * @return the last event that was returned to the user of this class
      */
-    public List<ProcessEvent> getLatestEvents(final Date minDate) throws Exception {
-        final URL feedUrl = issueTracker.getFeedUrl();
+    public List<ProcessEvent> getLatestEvents(final String project, final Date minDate) throws Exception {
+        final URL feedUrl = issueTracker.getFeedUrl(project, minDate);
         log.debug("Going to process url: {}", feedUrl);
         return streamProvider.openResourceStream(feedUrl, new InputStreamHandler<List<ProcessEvent>>() {
             @Override
-            public List<ProcessEvent> handleStream(InputStream is, int responseCode) throws Exception {
+            public List<ProcessEvent> handleStream(final InputStream is, int responseCode) throws Exception {
 
                 checkResponseCode(responseCode, feedUrl);
 
@@ -411,65 +408,32 @@ public class EditSessionsExtractor {
                 if (responseContentLogger.isDebugEnabled()){
                     responseContentLogger.debug("Got response from url: {} \n{}", feedUrl, new String(buf));
                 }
-                log.info("Check for events after date {}", minDate);
-                LinkedList<ProcessEvent> events = new LinkedList<>();
-                try {
-                    XMLInputFactory inputFactory = XMLInputFactory.newInstance();
-                    eventReader = inputFactory.createXMLEventReader(bas);
-                    DateFormat dateFormat = createEventDateFormat();
-                    while (eventReader.hasNext()) {
-                        XMLEvent nextEvent = eventReader.nextEvent();
-                        switch (nextEvent.getEventType()) {
-                            case XMLStreamConstants.START_ELEMENT:
-                                StartElement startElement = nextEvent.asStartElement();
-                                String elementName = startElement.getName().getLocalPart();
-                                if (elementName.equals("item")) {
-                                    //todo: decide if we have to swallow exception thrown by attempt of single event extraction.
-                                    //If we swallow it, we have at least report the problem
-                                    ProcessEvent event = extractEventFromStream(dateFormat);
-                                    if (minDate ==null || event.getPublishDate().after(minDate)) {
-                                        //we are adding only events with date after deployment date
-                                        events.addFirst(event);
-                                    }
-                                }
-                        }
+                IssueList issueList = Mapper.createXmlMapper().readValue(bas, IssueList.class);
+                return Lists.transform(issueList.getIssues(), new Function<com.ontometrics.integrations.model.Issue, ProcessEvent>() {
+                    @Override
+                    public ProcessEvent apply(com.ontometrics.integrations.model.Issue issue) {
+                        return extractEventFromStream(issue, project);
                     }
-                } catch (XMLStreamException e) {
-                    throw new IOException("Failed to process XML: content is\n"+new String(buf), e);
-                }
-                return events;
+                });
             }
         });
     }
 
-    private ProcessEvent extractEventFromStream(DateFormat dateFormat) throws Exception {
-        String prefix;
-        int issueNumber;
-        String currentTitle = "", currentLink = "", currentDescription = "";
-        Date currentPublishDate = null;
-        eventReader.nextEvent();
-        StartElement titleTag = eventReader.nextEvent().asStartElement(); // start title tag
-        if ("title".equals(titleTag.getName().getLocalPart())){
-            currentTitle = eventReader.getElementText();
-            eventReader.nextEvent(); // eat end tag
-            eventReader.nextEvent();
-            currentLink = eventReader.getElementText();
-            eventReader.nextEvent(); eventReader.nextEvent();
-            currentDescription = eventReader.getElementText().replace("\n", "").trim();
-            eventReader.nextEvent(); eventReader.nextEvent();
-            currentPublishDate = dateFormat.parse(getEventDate(eventReader.getElementText()));
-        }
-        String t = currentTitle;
-        prefix = t.substring(0, t.indexOf("-"));
-        issueNumber = Integer.parseInt(t.substring(t.indexOf("-")+1, t.indexOf(":")));
-        Issue issue = new Issue.Builder().id(issueNumber).projectPrefix(StringUtils.trim(prefix))
-                .title(StringUtils.trim(currentTitle))
-                .description(StringUtils.trim(currentDescription))
-                .link(new URL(StringUtils.trim(currentLink)))
+
+
+    private ProcessEvent extractEventFromStream(com.ontometrics.integrations.model.Issue xmlIssue, String project) {
+
+        Issue issue = new Issue.Builder().id(Integer.parseInt(xmlIssue.getFieldValue("numberInProject")))
+                .projectPrefix(project)
+                .title(StringUtils.trim(xmlIssue.getFieldValue("summary")))
+                .description(StringUtils.trim(xmlIssue.getFieldValue("description")))
+                .link(issueTracker.getExternalIssueUrl(xmlIssue.getId()))
                 .build();
+
+
         ProcessEvent event = new ProcessEvent.Builder()
                 .issue(issue)
-                .published(currentPublishDate)
+                .published(new Date(Long.parseLong(xmlIssue.getFieldValue("updated"))))
                 .build();
         log.debug("event extracted from stream: {}", event);
         return event;
@@ -489,4 +453,12 @@ public class EditSessionsExtractor {
         return date;
     }
 
+
+    public IssueTracker getIssueTracker() {
+        return issueTracker;
+    }
+
+    public StreamProvider getStreamProvider() {
+        return streamProvider;
+    }
 }

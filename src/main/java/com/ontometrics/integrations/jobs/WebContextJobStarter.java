@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
+import java.util.Date;
 
 /**
  * Create and schedule tasks on web-application startup with call to {@link JobStarter#scheduleTasks()}
@@ -52,7 +53,7 @@ public class WebContextJobStarter implements ServletContextListener {
             throw new InvalidConfigurationException("Invalid YouTrack base url", ex);
         }
         try {
-            youTrackInstance.getFeedUrl();
+            youTrackInstance.getFeedUrl("TEST", new Date());
         } catch (Exception ex) {
             throw new InvalidConfigurationException("Invalid YouTrack feed url", ex);
         }

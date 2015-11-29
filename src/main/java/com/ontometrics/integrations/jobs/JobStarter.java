@@ -2,33 +2,35 @@ package com.ontometrics.integrations.jobs;
 
 import com.ontometrics.integrations.configuration.ConfigurationAccessError;
 import com.ontometrics.integrations.configuration.ConfigurationFactory;
-import com.ontometrics.integrations.configuration.EventProcessorConfiguration;
 import com.ontometrics.integrations.configuration.SlackInstance;
 import com.ontometrics.integrations.sources.AuthenticatedHttpStreamProvider;
+import com.ontometrics.integrations.sources.ChannelMapper;
 import com.ontometrics.integrations.sources.ChannelMapperFactory;
 import com.ontometrics.integrations.sources.StreamProvider;
 import org.apache.commons.configuration.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Create and schedule timer which will execute list of {@link EventListener}s
  * JobStarter.java
  */
 public class JobStarter {
+    private static final String CREDENTIALS_AUTH_TYPE = "credentials";
     private static Logger logger = LoggerFactory.getLogger(JobStarter.class);
 
     //TODO move to configuration params
     private static final long EXECUTION_DELAY = 2 * 1000;
-    private static final long REPEAT_INTERVAL = 60 * 1000;
-
-    private List<TimerTask> timerTasks;
-    private Timer timer;
+    private static final long REPEAT_INTERVAL = 90 * 1000;
+    private ScheduledExecutorService scheduledExecutorService;
+    private ScheduledFuture scheduledTask;
 
     public JobStarter() {
         initialize();
@@ -39,32 +41,58 @@ public class JobStarter {
      */
     public void scheduleTasks() {
         final Configuration configuration = ConfigurationFactory.get();
-        StreamProvider streamProvider = AuthenticatedHttpStreamProvider.basicAuthenticatedHttpStreamProvider(
-                configuration.getString("PROP.YOUTRACK_USERNAME"), configuration.getString("PROP.YOUTRACK_PASSWORD")
-        );
+        StreamProvider streamProvider = createStreamProvider(configuration);
 
-        scheduleTask(timer, new EventListenerImpl(streamProvider, new SlackInstance.Builder()
-                .channelMapper(ChannelMapperFactory.fromConfiguration(configuration, "youtrack-slack.")).build()));
+        ChannelMapper channelMapper = ChannelMapperFactory.fromConfiguration(configuration, "youtrack-slack.");
+
+        SlackInstance chatServer = new SlackInstance.Builder().channelMapper(channelMapper)
+                .icon(resolveSlackBotIcon(configuration)).build();
+        scheduleTask(new EventListenerImpl(streamProvider, chatServer));
+    }
+
+    private String resolveSlackBotIcon(Configuration configuration) {
+        String slackBotIcon = configuration.getString("youtrack-slack.icon");
+        try {
+            new URL(slackBotIcon);
+        } catch (MalformedURLException e) {
+            slackBotIcon = SlackInstance.DEFAULT_ICON_URL;
+        }
+        return slackBotIcon;
+    }
+
+    private StreamProvider createStreamProvider(Configuration configuration) {
+        if (configuration.getString("PROP.AUTH_TYPE", CREDENTIALS_AUTH_TYPE).equalsIgnoreCase(CREDENTIALS_AUTH_TYPE)) {
+            return AuthenticatedHttpStreamProvider.basicAuthenticatedHttpStreamProvider(
+                    configuration.getString("PROP.YOUTRACK_USERNAME"), configuration.getString("PROP.YOUTRACK_PASSWORD")
+            );
+        }
+
+        return AuthenticatedHttpStreamProvider.hubAuthenticatedHttpStreamProvider(
+                configuration.getString("PROP.HUB_OAUTH_CLIENT_SERVICE_ID"),
+                configuration.getString("PROP.HUB_OAUTH_CLIENT_SERVICE_SECRET"),
+                configuration.getString("PROP.HUB_OAUTH_RESOURCE_SERVER_SERVICE_ID"),
+                configuration.getString("PROP.HUB_URL")
+        );
     }
 
     private void initialize() {
-        timerTasks = new ArrayList<>(1);
-        timer = new Timer();
     }
 
     /**
      * Schedules a periodic task {@link com.ontometrics.integrations.jobs.EventListener#checkForNewEvents()}
-     * @param timer timer
      * @param eventListener event listener
      */
-    private void scheduleTask(Timer timer, EventListener eventListener) {
+    private void scheduleTask(EventListener eventListener) {
         logger.info("Scheduling EventListener task");
-        TimerTask timerTask = new EventTask(eventListener);
-        timerTasks.add(timerTask);
-        timer.schedule(timerTask, EXECUTION_DELAY, REPEAT_INTERVAL);
+        EventTask eventTask = new EventTask(eventListener);
+        scheduledExecutorService = Executors.newScheduledThreadPool(1);
+
+        scheduledTask = scheduledExecutorService
+                .scheduleWithFixedDelay(eventTask, EXECUTION_DELAY, REPEAT_INTERVAL,
+                        TimeUnit.MILLISECONDS);
     }
 
-    private static class EventTask extends TimerTask {
+    private static class EventTask implements Runnable {
         private EventListener eventListener;
 
         private EventTask(EventListener eventListener) {
@@ -88,10 +116,12 @@ public class JobStarter {
 
     public void dispose () {
         //cancelling all previously launched tasks and timer
-        for (TimerTask timerTask : timerTasks) {
-            timerTask.cancel();
+        if (scheduledTask != null) {
+            scheduledTask.cancel(false);
         }
-        timer.cancel();
-        EventProcessorConfiguration.instance().dispose();
+
+        if (scheduledExecutorService != null) {
+            scheduledExecutorService.shutdown();
+        }
     }
 }

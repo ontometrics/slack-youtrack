@@ -3,7 +3,6 @@ package com.ontometrics.integrations.sources;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.fluent.Executor;
 import org.apache.http.client.fluent.Request;
@@ -24,33 +23,41 @@ public class AuthenticatedHttpStreamProvider implements StreamProvider {
     private static final Logger logger = LoggerFactory.getLogger(AuthenticatedHttpStreamProvider.class);
 
     private Executor httpExecutor;
-
+    private Authenticator authenticator;
     /**
      * @param authenticator instance which will configure this instance to make authenticated requests
      */
     public AuthenticatedHttpStreamProvider(Authenticator authenticator) {
         this.httpExecutor = Executor.newInstance();
-        authenticator.authenticate(httpExecutor);
+        this.authenticator = authenticator;
     }
 
     public static AuthenticatedHttpStreamProvider basicAuthenticatedHttpStreamProvider
             (final String login, final String password) {
         return new AuthenticatedHttpStreamProvider( new Authenticator() {
                 @Override
-                public void authenticate(Executor httpExecutor) {
+                public Request authenticate(Executor httpExecutor, Request request) {
                     httpExecutor.auth(login,password);
+                    return request;
                 }
             }
         );
     }
 
+    public static AuthenticatedHttpStreamProvider hubAuthenticatedHttpStreamProvider
+            (String clientServiceId, String clientServiceSecret, String resourceServerServiceId, String hubUrl) {
+        return new AuthenticatedHttpStreamProvider(
+                new HubAuthenticator(clientServiceId, clientServiceSecret, resourceServerServiceId, hubUrl));
+    }
 
     /**
      * @throws IOException
      */
     @Override
     public <RES> RES openResourceStream(URL resourceUrl, final InputStreamHandler<RES> inputStreamHandler) throws Exception {
-        return httpExecutor.execute(Request.Get(resourceUrl.toExternalForm()))
+        Request request = Request.Get(resourceUrl.toExternalForm());
+        request = this.authenticator.authenticate(httpExecutor, request);
+        return httpExecutor.execute(request)
                 .handleResponse(
                     new ResponseHandler<RES>() {
                         @Override

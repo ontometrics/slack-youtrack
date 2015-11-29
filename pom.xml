@@ -6,7 +6,7 @@
     <packaging>war</packaging>
     <groupId>com.ontometrics.integrations</groupId>
     <artifactId>slack-youtrack</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.1-SNAPSHOT</version>
     <!--
     Properties to be configured:
     -   YOUTRACK_USERNAME - YouTrack username
@@ -14,9 +14,19 @@
     -   SLACK_WEBHOOK_PATH - path for Slack webhook excluding first slash. e.g. "services/T00000000/B00000000/XXXXXXXXXXXXXXXXXXXXXXXX"
     -   APP_DATA_DIR - directory where app will store it's data-files (configuration). e.g. "/opt/slack-youtrack"
     -   YOUTRACK_URL - YouTrack server URL. e.g. "https://company.myjetbrains.com/youtrack"
+    -   YOUTRACK_EXTERNAL_URL - YouTrack server external URL. It should be accessible for Slack Users, so consider it to be public DNS-based URL. This can be the same as YOUTRACK_URL however.
     -   ISSUE_HISTORY_WINDOW - Time In minutes - how deep should we look for issues in the past.
-    -   DEFAULT_SLACK_CHANNEL - Default slack channel to post in. e.g. "general"
-    If set to 10, it means that issues and changes that happened not longer than 10 minutes will be posted to chat server
+    -   DEFAULT_SLACK_CHANNEL - Default slack channel to post in. e.g. "#general"
+    -   AUTH_TYPE - authentication / authorization method. Available values: {"credentials", "hub-oauth2"}
+
+    Hub authentication OAuth 2.0 required following properties. See https://www.jetbrains.com/hub/help/1.0/OAuth-2.0-Authorization.html
+    -  HUB_URL - Hub server url
+    -  HUB_OAUTH_RESOURCE_SERVER_SERVICE_ID - Hub OAuth resource server service id
+    -  HUB_OAUTH_CLIENT_SERVICE_ID - Hub OAuth clientServiceId
+    -  HUB_OAUTH_CLIENT_SERVICE_SECRET - Hub OAuth clientServiceSecret
+
+    - ISSUE_HISTORY_WINDOW - Time in minutes - how deep should we look for issues in the past. If set to 10, it means that issues and changes that happened not longer than 10 minutes will be posted to chat server
+    - SLACKBOT_ICON - URL of icon used for the posts in the YouTrack channel
     -->
     <dependencies>
         <dependency>
@@ -88,21 +98,62 @@
                 </exclusion>
             </exclusions>
         </dependency>
-        <dependency>
-            <groupId>org.mapdb</groupId>
-            <artifactId>mapdb</artifactId>
-            <version>1.0.6</version>
-        </dependency>
+
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
             <version>17.0</version>
         </dependency>
         <dependency>
-            <groupId>com.googlecode.json-simple</groupId>
-            <artifactId>json-simple</artifactId>
-            <version>1.1.1</version>
+            <groupId>joda-time</groupId>
+            <artifactId>joda-time</artifactId>
+            <version>2.8.2</version>
         </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.jaxrs</groupId>
+            <artifactId>jackson-jaxrs-json-provider</artifactId>
+            <version>2.5.3</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.dataformat</groupId>
+            <artifactId>jackson-dataformat-xml</artifactId>
+            <version>2.5.3</version>
+        </dependency>
+        <dependency>
+            <groupId>org.codehaus.woodstox</groupId>
+            <artifactId>woodstox-core-asl</artifactId>
+            <version>4.4.1</version>
+        </dependency>
+        <dependency>
+            <groupId>jetbrains</groupId>
+            <artifactId>hub-client-util</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>jetbrains</groupId>
+            <artifactId>hub.api</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>jetbrains</groupId>
+            <artifactId>hub.api-impl</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>jetbrains</groupId>
+            <artifactId>hub.api.remote</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>jetbrains</groupId>
+            <artifactId>hub.client</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+
     </dependencies>
     <build>
         <plugins>
@@ -120,6 +171,7 @@
                 </configuration>
             </plugin>
         </plugins>
+        <testSourceDirectory>${project.basedir}/src/test/java.none</testSourceDirectory>
         <resources>
             <resource>
                 <directory>src/main/resources</directory>
@@ -127,4 +179,13 @@
             </resource>
         </resources>
     </build>
+
+    <repositories>
+        <repository>
+            <id>ontometrics</id>
+            <name>Ontometrics</name>
+            <url>http://ontoserver.ontometrics.com:8081/nexus/content/groups/ontorepogroup</url>
+        </repository>
+    </repositories>
+
 </project>

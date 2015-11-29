@@ -3,6 +3,7 @@ package com.ontometrics.integrations.configuration;
 import com.ontometrics.integrations.events.Issue;
 
 import java.net.URL;
+import java.util.Date;
 
 /**
  * Created by rob on 8/19/14.
@@ -12,10 +13,17 @@ public interface IssueTracker {
 
     URL getBaseUrl();
 
-    URL getFeedUrl();
+    URL getExternalBaseUrl();
+
+    URL getFeedUrl(String project, Date sinceDate);
 
     URL getChangesUrl(Issue issue);
 
     URL getAttachmentsUrl(Issue issue);
 
+    String getIssueRestUrl(Issue issue);
+
+    URL getIssueUrl(String issueIdentifier);
+
+    URL getExternalIssueUrl(String issueIdentifier);
 }
