@@ -8,6 +8,8 @@ import org.apache.http.client.fluent.Executor;
 import org.apache.http.client.fluent.Request;
 import org.joda.time.DateTime;
 
+import java.net.URL;
+
 
 /**
  * This use Hub Client Credentials OAuth
@@ -32,7 +34,7 @@ public class HubAuthenticator implements Authenticator {
     }
 
     @Override
-    public Request authenticate(Executor httpExecutor, Request request) {
+    public Request authenticate(URL resourceUrl, Executor httpExecutor, Request request) {
         if (accessToken == null || isExpired(accessToken)) {
             accessToken = resolveAccessToken();
         }

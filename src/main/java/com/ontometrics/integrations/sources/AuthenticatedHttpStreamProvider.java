@@ -1,6 +1,7 @@
 package com.ontometrics.integrations.sources;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
 import org.apache.http.client.ResponseHandler;
@@ -36,8 +37,9 @@ public class AuthenticatedHttpStreamProvider implements StreamProvider {
             (final String login, final String password) {
         return new AuthenticatedHttpStreamProvider( new Authenticator() {
                 @Override
-                public Request authenticate(Executor httpExecutor, Request request) {
+                public Request authenticate(URL resourceUrl, Executor httpExecutor, Request request) {
                     httpExecutor.auth(login,password);
+                    httpExecutor.authPreemptive(new HttpHost(resourceUrl.getHost(), resourceUrl.getPort(), resourceUrl.getProtocol()));
                     return request;
                 }
             }
@@ -56,7 +58,7 @@ public class AuthenticatedHttpStreamProvider implements StreamProvider {
     @Override
     public <RES> RES openResourceStream(URL resourceUrl, final InputStreamHandler<RES> inputStreamHandler) throws Exception {
         Request request = Request.Get(resourceUrl.toExternalForm());
-        request = this.authenticator.authenticate(httpExecutor, request);
+        request = this.authenticator.authenticate(resourceUrl, httpExecutor, request);
         return httpExecutor.execute(request)
                 .handleResponse(
                     new ResponseHandler<RES>() {
