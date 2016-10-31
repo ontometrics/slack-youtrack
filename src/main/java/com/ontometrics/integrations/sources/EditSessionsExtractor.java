@@ -1,11 +1,15 @@
 package com.ontometrics.integrations.sources;
 
 import com.google.common.base.Function;
+import com.google.common.base.Predicate;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.ontometrics.integrations.configuration.EventProcessorConfiguration;
 import com.ontometrics.integrations.configuration.IssueTracker;
 import com.ontometrics.integrations.events.*;
-import com.ontometrics.integrations.model.IssueList;
+import com.ontometrics.integrations.events.Issue;
+import com.ontometrics.integrations.model.*;
 import com.ontometrics.util.BadResponseException;
 import com.ontometrics.util.Mapper;
 import org.apache.commons.io.IOUtils;
@@ -409,12 +413,20 @@ public class EditSessionsExtractor {
                     responseContentLogger.debug("Got response from url: {} \n{}", feedUrl, new String(buf));
                 }
                 IssueList issueList = Mapper.createXmlMapper().readValue(bas, IssueList.class);
-                return Lists.transform(issueList.getIssues(), new Function<com.ontometrics.integrations.model.Issue, ProcessEvent>() {
+                Iterable<com.ontometrics.integrations.model.Issue> processedIssues = Iterables.filter(issueList.getIssues(), new Predicate<com.ontometrics.integrations.model.Issue>() {
                     @Override
-                    public ProcessEvent apply(com.ontometrics.integrations.model.Issue issue) {
-                        return extractEventFromStream(issue, project);
+                    public boolean apply(com.ontometrics.integrations.model.Issue issue) {
+                        return !issue.getId().toLowerCase().startsWith("draft");
                     }
                 });
+
+                return ImmutableList.copyOf(Iterables.transform(processedIssues,
+                        new Function<com.ontometrics.integrations.model.Issue, ProcessEvent>() {
+                            @Override
+                            public ProcessEvent apply(com.ontometrics.integrations.model.Issue issue) {
+                                return extractEventFromStream(issue, project);
+                            }
+                        }));
             }
         });
     }
