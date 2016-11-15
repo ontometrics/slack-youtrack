@@ -16,13 +16,9 @@ public class StreamProviderFactory {
         }
 
         return AuthenticatedHttpStreamProvider.hubAuthenticatedHttpStreamProvider(
-//                6b6adb20-e08b-41c1-bbc9-008720a2198a
                 configuration.getString("PROP.HUB_OAUTH_CLIENT_SERVICE_ID"),
-//oX8ryJNXwCK0
                 configuration.getString("PROP.HUB_OAUTH_CLIENT_SERVICE_SECRET"),
-//                6b6adb20-e08b-41c1-bbc9-008720a2198a
                 configuration.getString("PROP.HUB_OAUTH_RESOURCE_SERVER_SERVICE_ID"),
-//https://hub.ontometrics.com/hub
                 configuration.getString("PROP.HUB_URL")
         );
     }

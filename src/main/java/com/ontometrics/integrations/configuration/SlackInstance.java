@@ -2,6 +2,11 @@ package com.ontometrics.integrations.configuration;
 
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.google.common.base.Function;
+import com.google.common.base.Predicate;
+import com.google.common.base.Predicates;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterables;
 import com.ontometrics.integrations.events.*;
 import com.ontometrics.integrations.sources.ChannelMapper;
 import org.apache.commons.lang.StringUtils;
@@ -10,6 +15,8 @@ import org.slf4j.Logger;
 import javax.ws.rs.client.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+
+import java.util.List;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -31,6 +38,7 @@ public class SlackInstance implements ChatServer {
 
     private final ChannelMapper channelMapper;
     private final String iconUrl;
+    private static final String[] IMAGE_EXTENSIONS = new String[]{"jpg", "jpeg", "gif", "png", "bmp"};
 
     public SlackInstance(Builder builder) {
         channelMapper = builder.channelMapper;
@@ -58,14 +66,41 @@ public class SlackInstance implements ChatServer {
 
     @Override
     public void postIssueCreation(Issue issue) {
-        postToChannel(channelMapper.getChannel(issue), buildNewIssueMessage(issue));
+        String channel = channelMapper.getChannel(issue);
+        postMessageToSlack(createSlackMessage(buildNewIssueMessage(issue), channel));
     }
 
     @Override
     public void post(IssueEditSession issueEditSession){
         String channel = channelMapper.getChannel(issueEditSession.getIssue());
-        postToChannel(channel, buildSessionMessage(issueEditSession));
-        
+        String message = buildSessionMessage(issueEditSession);
+        ObjectNode slackMessage = createSlackMessage(message, channel);
+        addImageAttachments(slackMessage, issueEditSession);
+
+        postMessageToSlack(slackMessage);
+    }
+
+    private void addImageAttachments(ObjectNode slackMessage, IssueEditSession issueEditSession) {
+        List<AttachmentEvent> imageAttachments = ImmutableList.copyOf(Iterables.filter(issueEditSession.getAttachments(),
+                new ImageAttachmentPredicate()));
+        //TODO add attachment to slackMessage
+    }
+
+    private ObjectNode createSlackMessage(String message, String channel) {
+        return JsonNodeFactory.instance.objectNode().put(USERNAME_KEY, USERNAME)
+                .put(ICON_URL_KEY, iconUrl).put(CHANNEL_KEY, channel)
+                .put(TEXT_KEY, processMessage(message));
+    }
+
+    private void postMessageToSlack(ObjectNode messageObj) {
+        log.debug("Posting message: {}", messageObj);
+
+        Client client = ClientBuilder.newClient();
+        WebTarget slackApi = client.target(BASE_URL).path(ConfigurationFactory.get().getString("PROP.SLACK_WEBHOOK_PATH"));
+        Invocation.Builder invocationBuilder = slackApi.request(MediaType.APPLICATION_JSON_TYPE);
+        Response response = invocationBuilder.post(Entity.json(messageObj.toString()));
+
+        log.debug("response code: {} response: {}", response.getStatus(), response.readEntity(String.class));
     }
 
     @Override
@@ -73,20 +108,6 @@ public class SlackInstance implements ChatServer {
         return channelMapper;
     }
 
-    private void postToChannel(String channel, String message) {
-        log.info("posting message {} to channel: {}.", message, channel);
-        Client client = ClientBuilder.newClient();
-
-        ObjectNode objectNode = JsonNodeFactory.instance.objectNode().put(USERNAME_KEY, USERNAME)
-                .put(ICON_URL_KEY, iconUrl).put(CHANNEL_KEY, channel)
-                .put(TEXT_KEY, processMessage(message));
-
-        WebTarget slackApi = client.target(BASE_URL).path(ConfigurationFactory.get().getString("PROP.SLACK_WEBHOOK_PATH"));
-        Invocation.Builder invocationBuilder = slackApi.request(MediaType.APPLICATION_JSON_TYPE);
-        Response response = invocationBuilder.post(Entity.json(objectNode.toString()));
-
-        log.info("response code: {} response: {}", response.getStatus(), response.readEntity(String.class));
-    }
 
     private String processMessage(String message) {
         return StringUtils.replaceChars(message, "{}", "[]");
@@ -108,12 +129,39 @@ public class SlackInstance implements ChatServer {
         if (session.getComment() !=null && !session.getComment().isDeleted()) {
             s.append(session.getComment().getText()).append(System.lineSeparator());
         }
-        for (AttachmentEvent attachment : session.getAttachments()){
-            s.append("attached ").append(MessageFormatter.getNamedLink(attachment.getFileUrl(), attachment.getName()))
-                    .append(System.lineSeparator());
+
+        List<AttachmentEvent> nonImageAttachments = getNonImageAttachments(session);
+        if (!nonImageAttachments.isEmpty()) {
+            Iterable<String> attachmentLinks = Iterables.transform(nonImageAttachments, new Function<AttachmentEvent, String>() {
+                @Override
+                public String apply(AttachmentEvent attachment) {
+                    return MessageFormatter.getNamedLink(attachment.getFileUrl(), attachment.getName());
+                }
+            });
+            s.append("attached ").append(StringUtils.join(attachmentLinks.iterator(), ", "));
         }
 
         return s.toString();
+    }
+
+    private ImmutableList<AttachmentEvent> getNonImageAttachments(IssueEditSession session) {
+        return ImmutableList.copyOf(Iterables.filter(session.getAttachments(),
+                Predicates.not(new ImageAttachmentPredicate())));
+    }
+
+
+    private static class ImageAttachmentPredicate implements Predicate<AttachmentEvent> {
+        @Override
+        public boolean apply(AttachmentEvent attachmentEvent) {
+            //TODO this is quick prototype now, improve implementation (extract file-name from URL)
+            String url = attachmentEvent.getFileUrl();
+            for (String imageExtension : IMAGE_EXTENSIONS) {
+                if (StringUtils.containsIgnoreCase(url, imageExtension)){
+                    return true;
+                }
+            }
+            return false;
+        }
     }
 
     public String buildNewIssueMessage(Issue newIssue){
