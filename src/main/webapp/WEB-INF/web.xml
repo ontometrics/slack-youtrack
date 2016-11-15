@@ -8,4 +8,13 @@
               com.ontometrics.integrations.jobs.WebContextJobStarter
          </listener-class>
     </listener>
+    <servlet>
+        <servlet-name>youTrackImageServlet</servlet-name>
+        <servlet-class>com.ontometrics.integrations.youtrack.YouTrackImageServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>youTrackImageServlet</servlet-name>
+        <url-pattern>/youtrack-image/*</url-pattern>
+    </servlet-mapping>
+
 </web-app>
