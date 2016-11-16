@@ -142,7 +142,6 @@ public class SlackInstance implements ChatServer {
     }
 
     private ObjectNode createSlackMessage(String message, String channel) {
-        channel = "test-slack";
         return JsonNodeFactory.instance.objectNode().put(USERNAME_KEY, USERNAME)
                 .put(ICON_URL_KEY, iconUrl).put(CHANNEL_KEY, channel)
                 .put(TEXT_KEY, processMessage(message));
