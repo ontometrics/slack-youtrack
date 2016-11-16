@@ -27,6 +27,7 @@ Installation and configuration
     * YOUTRACK_TO_SLACK_CHANNELS - mappings between YouTrack projects and Slack channels. For example "APL->#apple;SUP->#support" (please note that "#" or "@" should be included in the slack-channel name
     * DEFAULT_SLACK_CHANNEL - Default slack channel to post in. e.g. "#general". Projects without mappings will be posted here
     * AUTH_TYPE - authentication / authorization method. Available values: {"credentials", "hub-oauth2"}
+    * APP_EXTERNAL_URL - external url of deployed slack-youtrack web application. This url is used to render attachment images 
     
     For "credentials"  authentication type such properties have to be created
     

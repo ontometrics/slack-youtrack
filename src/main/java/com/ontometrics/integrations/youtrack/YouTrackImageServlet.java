@@ -1,5 +1,6 @@
 package com.ontometrics.integrations.youtrack;
 
+import com.ontometrics.db.MapDb;
 import com.ontometrics.integrations.configuration.ConfigurationFactory;
 import com.ontometrics.integrations.configuration.StreamProviderFactory;
 import com.ontometrics.integrations.configuration.YouTrackInstance;
@@ -58,11 +59,11 @@ public class YouTrackImageServlet extends HttpServlet {
             return;
         }
 
-        URL  youtrackURL = resolveYouTrackAttachmentUri(imageId);
-        logger.debug("Generated URI {0}", youtrackURL);
+        URL youTrackUrl = resolveYouTrackAttachmentUri(imageId);
+        logger.debug("Generated URI {0}", youTrackUrl);
 
         try {
-            streamProvider.openResourceStream(youtrackURL, new InputStreamHandler<Void>() {
+            streamProvider.openResourceStream(youTrackUrl, new InputStreamHandler<Void>() {
                 @Override
                 public Void handleStream(InputStream is, int responseCode) throws Exception {
                     servletResponse.setStatus(responseCode);
@@ -89,13 +90,15 @@ public class YouTrackImageServlet extends HttpServlet {
 
     private URL resolveYouTrackAttachmentUri(String externalImageId) throws MalformedURLException {
         String youTrackImageId = resolveYouTrackImageId(externalImageId);
-        return new URL(String.format("%s/_persistent/%s?file=%s", youTrackInstance.getBaseUrl(), "image.png", youTrackImageId));
+        if (StringUtils.isBlank(externalImageId)) {
+            throw new RuntimeException("Image not found");
+        }
+        return new URL(String.format("%s/_persistent/%s?file=%s", youTrackInstance.getBaseUrl(), "image.png",
+                youTrackImageId));
     }
 
     @SuppressWarnings("unused")
     private String resolveYouTrackImageId(String externalImageId) {
-        //TODO use local DB to get real image id
-        return "78-4963";
+        return MapDb.instance().getAttachmentMap().get(externalImageId);
     }
-
 }

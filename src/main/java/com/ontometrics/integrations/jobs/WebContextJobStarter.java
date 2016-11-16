@@ -1,10 +1,13 @@
 package com.ontometrics.integrations.jobs;
 
+import com.ontometrics.db.MapDb;
 import com.ontometrics.integrations.configuration.ConfigurationFactory;
 import com.ontometrics.integrations.configuration.EventProcessorConfiguration;
 import com.ontometrics.integrations.configuration.YouTrackInstance;
 import com.ontometrics.integrations.configuration.YouTrackInstanceFactory;
 import org.apache.commons.configuration.Configuration;
+import org.mapdb.DB;
+import org.mapdb.DBMaker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,5 +67,6 @@ public class WebContextJobStarter implements ServletContextListener {
     public void contextDestroyed(ServletContextEvent servletContextEvent) {
         logger.info("Shutting down");
         jobStarter.dispose();
+        MapDb.instance().close();
     }
 }

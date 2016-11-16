@@ -1,5 +1,6 @@
 package com.ontometrics.integrations.configuration;
 
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.base.Function;
@@ -7,16 +8,25 @@ import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
-import com.ontometrics.integrations.events.*;
+import com.ontometrics.db.MapDb;
+import com.ontometrics.integrations.events.AttachmentEvent;
+import com.ontometrics.integrations.events.Issue;
+import com.ontometrics.integrations.events.IssueEdit;
+import com.ontometrics.integrations.events.IssueEditSession;
 import com.ontometrics.integrations.sources.ChannelMapper;
+import com.ontometrics.util.TextUtil;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 
 import javax.ws.rs.client.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-
+import java.io.UnsupportedEncodingException;
+import java.net.URL;
+import java.net.URLEncoder;
 import java.util.List;
+import java.util.UUID;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -32,9 +42,9 @@ public class SlackInstance implements ChatServer {
     private static final String ICON_URL_KEY = "icon_url";
     private static final String USERNAME = "YouTrack";
     public static final String DEFAULT_ICON_URL = "https://www.jetbrains.com/youtrack/tools/img/youtrack.png";
-    public static final String BASE_URL = "https://hooks.slack.com";
-    public static final String TEXT_KEY = "text";
-    public static final String CHANNEL_KEY = "channel";
+    private static final String BASE_URL = "https://hooks.slack.com";
+    private static final String TEXT_KEY = "text";
+    private static final String CHANNEL_KEY = "channel";
 
     private final ChannelMapper channelMapper;
     private final String iconUrl;
@@ -80,13 +90,59 @@ public class SlackInstance implements ChatServer {
         postMessageToSlack(slackMessage);
     }
 
-    private void addImageAttachments(ObjectNode slackMessage, IssueEditSession issueEditSession) {
+    private void addImageAttachments(ObjectNode slackMessage, IssueEditSession issueEditSession)  {
         List<AttachmentEvent> imageAttachments = ImmutableList.copyOf(Iterables.filter(issueEditSession.getAttachments(),
                 new ImageAttachmentPredicate()));
-        //TODO add attachment to slackMessage
+
+        if (!imageAttachments.isEmpty()) {
+            ArrayNode attachmentsArray = slackMessage.arrayNode();
+            for (AttachmentEvent attachmentEvent : imageAttachments) {
+                String attachmentId = resolveAttachmentId(attachmentEvent);
+                if (attachmentId != null) {
+                    String imageUrl = buildImageUrl(attachmentId);
+                    attachmentsArray.add(JsonNodeFactory.instance.objectNode()
+                            .put("image_url", imageUrl)
+                            .put("text", MessageFormatter.getNamedLink(attachmentEvent.getFileUrl(), attachmentEvent.getName())));
+                }
+            }
+            if (attachmentsArray.size() != 0) {
+                slackMessage.set("attachments", attachmentsArray);
+                MapDb.instance().getDb().commit();
+            }
+        }
+    }
+
+    private String buildImageUrl(String attachmentId) {
+        try {
+            return String.format("%s/youtrack-image?rid=%s", ConfigurationFactory.get().getString("PROP.APP_EXTERNAL_URL"),
+                    URLEncoder.encode(attachmentId, "UTF-8"));
+        } catch (UnsupportedEncodingException e) {
+            log.error("Failed to encode attachment id " + attachmentId);
+            return null;
+        }
+    }
+
+    private String resolveAttachmentId(AttachmentEvent attachmentEvent) {
+        String uid;
+        String fileId;
+        try {
+            fileId = TextUtil.resolveUrlParameter(new URL(attachmentEvent.getFileUrl()), "file");
+            if (StringUtils.isBlank(fileId)) {
+                throw new RuntimeException("There is no attachment id extracted from url " + attachmentEvent
+                        .getFileUrl());
+            }
+            uid = UUID.randomUUID().toString();
+        } catch (Exception e) {
+            log.error("Failed to add image attachment to the message for attachment " + attachmentEvent
+                    .getFileUrl(), e);
+            return null;
+        }
+        MapDb.instance().getAttachmentMap().put(uid, fileId);
+        return uid;
     }
 
     private ObjectNode createSlackMessage(String message, String channel) {
+        channel = "test-slack";
         return JsonNodeFactory.instance.objectNode().put(USERNAME_KEY, USERNAME)
                 .put(ICON_URL_KEY, iconUrl).put(CHANNEL_KEY, channel)
                 .put(TEXT_KEY, processMessage(message));
@@ -153,10 +209,12 @@ public class SlackInstance implements ChatServer {
     private static class ImageAttachmentPredicate implements Predicate<AttachmentEvent> {
         @Override
         public boolean apply(AttachmentEvent attachmentEvent) {
-            //TODO this is quick prototype now, improve implementation (extract file-name from URL)
-            String url = attachmentEvent.getFileUrl();
+            String extension = FilenameUtils.getExtension(attachmentEvent.getName());
+            if (extension == null) {
+                return false;
+            }
             for (String imageExtension : IMAGE_EXTENSIONS) {
-                if (StringUtils.containsIgnoreCase(url, imageExtension)){
+                if (StringUtils.equalsIgnoreCase(extension, imageExtension)){
                     return true;
                 }
             }
