@@ -44,6 +44,7 @@ public class SlackInstance implements ChatServer {
     public static final String DEFAULT_ICON_URL = "https://www.jetbrains.com/youtrack/tools/img/youtrack.png";
     private static final String BASE_URL = "https://hooks.slack.com";
     private static final String TEXT_KEY = "text";
+    private static final String LINK_NAMES_KEY = "link_names";
     private static final String CHANNEL_KEY = "channel";
 
     private final ChannelMapper channelMapper;
@@ -144,6 +145,7 @@ public class SlackInstance implements ChatServer {
     private ObjectNode createSlackMessage(String message, String channel) {
         return JsonNodeFactory.instance.objectNode().put(USERNAME_KEY, USERNAME)
                 .put(ICON_URL_KEY, iconUrl).put(CHANNEL_KEY, channel)
+		.put(LINK_NAMES_KEY, 1)
                 .put(TEXT_KEY, processMessage(message));
     }
 
