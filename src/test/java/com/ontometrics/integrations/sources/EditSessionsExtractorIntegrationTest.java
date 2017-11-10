@@ -48,6 +48,7 @@ public class EditSessionsExtractorIntegrationTest {
                 configuration.getString("PROP.YOUTRACK_URL")).build();
     }
 
+    /*
     @Test
     public void testThatWeCanGetEventsFromRealFeed() throws Exception {
         EditSessionsExtractor sourceEventMapper = new EditSessionsExtractor(youTrackInstance, streamProvider);
@@ -68,5 +69,5 @@ public class EditSessionsExtractorIntegrationTest {
         log.info("found {} edits: {}", edits.size(), edits);
     }
 
-
+*/
 }

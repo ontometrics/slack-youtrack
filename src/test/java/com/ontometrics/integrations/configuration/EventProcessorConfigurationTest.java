@@ -33,6 +33,7 @@ public class EventProcessorConfigurationTest {
     /**
      * Verifies that last event change date is stored (even after database is restarted)
      */
+    /*
     @Test
     public void testThatLastEventChangeDateIsStored() throws ConfigurationException, MalformedURLException {
 //        configuration.clearLastProcessEvent();
@@ -74,11 +75,12 @@ public class EventProcessorConfigurationTest {
         assertThat(configuration.getEventChangeDate(event2), nullValue());
 
     }
-
+*/
 
     /**
      * Verifies that last processed date is stored if it is after current one or current one is not defined
      */
+    /*
     @Test
     public void testThatOnlyDatesAfterTheCurrentLastProcessedDateAreStored() throws ConfigurationException, MalformedURLException {
 
@@ -102,6 +104,7 @@ public class EventProcessorConfigurationTest {
         configuration.reload();
         assertThat(configuration.loadLastProcessedDate(), is(date_3));
     }
+    */
 
 
     @Test

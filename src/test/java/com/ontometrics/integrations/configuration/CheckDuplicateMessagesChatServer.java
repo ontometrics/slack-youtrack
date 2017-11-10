@@ -2,6 +2,7 @@ package com.ontometrics.integrations.configuration;
 
 import com.ontometrics.integrations.events.Issue;
 import com.ontometrics.integrations.events.IssueEditSession;
+import com.ontometrics.integrations.sources.ChannelMapper;
 import org.junit.Assert;
 
 import java.util.ArrayList;
@@ -33,6 +34,11 @@ public class CheckDuplicateMessagesChatServer implements ChatServer {
             Assert.fail("IssueEditSession "+issueEditSession+" has been reported before");
         }
 
+    }
+
+    @Override
+    public ChannelMapper getChannelMapper() {
+        return null;
     }
 
     public List<Issue> getCreatedIssues() {

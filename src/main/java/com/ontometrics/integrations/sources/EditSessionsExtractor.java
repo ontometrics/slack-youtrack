@@ -4,12 +4,11 @@ import com.google.common.base.Function;
 import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
-
+import com.ontometrics.integrations.configuration.ConfigurationFactory;
 import com.ontometrics.integrations.configuration.EventProcessorConfiguration;
 import com.ontometrics.integrations.configuration.IssueTracker;
 import com.ontometrics.integrations.events.*;
-import com.ontometrics.integrations.events.Issue;
-import com.ontometrics.integrations.model.*;
+import com.ontometrics.integrations.model.IssueList;
 import com.ontometrics.util.BadResponseException;
 import com.ontometrics.util.Mapper;
 import org.apache.commons.io.IOUtils;
@@ -61,6 +60,8 @@ public class EditSessionsExtractor {
 
     private StreamProvider streamProvider;
 
+    private List<String> excludedFields;
+
     /**
      * Need to talk to the IssueTracker that has the ticket information, and we will probably
      * have to authenticate, hence the streamProvider.
@@ -71,6 +72,9 @@ public class EditSessionsExtractor {
     public EditSessionsExtractor(IssueTracker issueTracker, StreamProvider streamProvider) {
         this.issueTracker = issueTracker;
         this.streamProvider = streamProvider;
+        String[] excludedFields = ConfigurationFactory.get().getStringArray("excluded-youtrack-fields");
+        this.excludedFields = excludedFields == null ? Collections.<String>emptyList() :
+                ImmutableList.copyOf(excludedFields);
     }
 
 
@@ -400,16 +404,23 @@ public class EditSessionsExtractor {
     }
 
     private List<IssueEdit> buildIssueEdits(List<ProcessEventChange> changes) {
+
         List<IssueEdit> edits = new ArrayList<>(changes.size());
         for (ProcessEventChange change : changes){
-            edits.add(new IssueEdit.Builder()
-                            .issue(change.getIssue())
-                            .field(change.getField())
-                            .priorValue(change.getPriorValue())
-                            .currentValue(change.getCurrentValue())
-                            .build());
+            if (!isFieldExcluded(change)) {
+                edits.add(new IssueEdit.Builder()
+                        .issue(change.getIssue())
+                        .field(change.getField())
+                        .priorValue(change.getPriorValue())
+                        .currentValue(change.getCurrentValue())
+                        .build());
+            }
         }
         return edits;
+    }
+
+    private boolean isFieldExcluded(ProcessEventChange change) {
+        return change.getField() == null || excludedFields.contains(change.getField());
     }
 
     /**

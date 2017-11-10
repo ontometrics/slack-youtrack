@@ -18,6 +18,8 @@
     -   ISSUE_HISTORY_WINDOW - Time In minutes - how deep should we look for issues in the past.
     -   DEFAULT_SLACK_CHANNEL - Default slack channel to post in. e.g. "#general"
     -   AUTH_TYPE - authentication / authorization method. Available values: {"credentials", "hub-oauth2"}
+    -   APP_EXTERNAL_URL - external url of deployed slack-youtrack web application. This url is used to render attachment images
+    -   EXCLUDED_YOUTRACK_FIELDS - semicolon separated fields, changing of which should not be reported, e.g. "Spent Time, Estimate Time"
 
     Hub authentication OAuth 2.0 required following properties. See https://www.jetbrains.com/hub/help/1.0/OAuth-2.0-Authorization.html
     -  HUB_URL - Hub server url

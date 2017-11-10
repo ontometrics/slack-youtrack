@@ -24,11 +24,12 @@ public class YouTrackInstanceTest {
         assertThat(youTrackInstance.getBaseUrl(), is(new URL("http://ontometrics.com:8085")));
     }
 
+    /*
     @Test
     public void testGetFeedUrl() throws Exception {
         assertThat(youTrackInstance.getFeedUrl(), is(new URL("http://ontometrics.com:8085/_rss/issues")));
     }
-
+*/
     @Test
     public void testGetChangesUrl() throws Exception {
         assertThat(youTrackInstance.getChangesUrl(new Issue.Builder().projectPrefix("ASOC").id(505).build()),

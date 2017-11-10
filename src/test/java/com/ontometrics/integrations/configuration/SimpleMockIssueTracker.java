@@ -4,6 +4,7 @@ import com.ontometrics.integrations.events.Issue;
 import ontometrics.test.util.TestUtil;
 
 import java.net.URL;
+import java.util.Date;
 
 /**
  *  Mock issue tracker
@@ -53,8 +54,13 @@ public class SimpleMockIssueTracker implements IssueTracker {
     }
 
     @Override
-    public URL getFeedUrl() {
-        return TestUtil.getFileAsURL(filePathToFeed);
+    public URL getExternalBaseUrl() {
+        return null;
+    }
+
+    @Override
+    public URL getFeedUrl(String project, Date sinceDate) {
+        return null;
     }
 
     @Override
@@ -65,6 +71,21 @@ public class SimpleMockIssueTracker implements IssueTracker {
     @Override
     public URL getAttachmentsUrl(Issue issue) {
         return TestUtil.getFileAsURL(filePathToAttachment);
+    }
+
+    @Override
+    public String getIssueRestUrl(Issue issue) {
+        return null;
+    }
+
+    @Override
+    public URL getIssueUrl(String issueIdentifier) {
+        return null;
+    }
+
+    @Override
+    public URL getExternalIssueUrl(String issueIdentifier) {
+        return null;
     }
 
 }

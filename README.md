@@ -28,6 +28,7 @@ Installation and configuration
     * DEFAULT_SLACK_CHANNEL - Default slack channel to post in. e.g. "#general". Projects without mappings will be posted here
     * AUTH_TYPE - authentication / authorization method. Available values: {"credentials", "hub-oauth2"}
     * APP_EXTERNAL_URL - external url of deployed slack-youtrack web application. This url is used to render attachment images 
+    * EXCLUDED_YOUTRACK_FIELDS - semicolon separated fields, changing of which should not be reported, e.g. "Spent Time, Estimate Time"
     
     For "credentials"  authentication type such properties have to be created
     
