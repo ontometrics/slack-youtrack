@@ -1,29 +1,26 @@
 package com.ontometrics.util;
 
+import org.apache.http.client.HttpResponseException;
+
 import java.net.URL;
 
 /**
  * Signal about bad response from server
  */
-public class BadResponseException extends RuntimeException {
+public class BadResponseException extends HttpResponseException{
     private URL url;
-    private int responseCode;
 
     public BadResponseException(URL url, int responseCode) {
         this("Got response code "+responseCode+ " in response to "+url.toExternalForm(), url, responseCode);
     }
 
     public BadResponseException(String message, URL url, int responseCode) {
-        super(message);
+        super(responseCode, message);
         this.url = url;
-        this.responseCode = responseCode;
     }
 
     public URL getUrl() {
         return url;
     }
 
-    public int getResponseCode() {
-        return responseCode;
-    }
 }

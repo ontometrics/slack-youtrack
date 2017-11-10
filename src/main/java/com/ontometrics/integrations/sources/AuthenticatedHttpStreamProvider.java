@@ -4,6 +4,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
+import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.fluent.Executor;
 import org.apache.http.client.fluent.Request;
@@ -66,12 +67,14 @@ public class AuthenticatedHttpStreamProvider implements StreamProvider {
                         public RES handleResponse(HttpResponse httpResponse) throws IOException {
                             try {
                                 StatusLine statusLine = httpResponse.getStatusLine();
-                                if (StringUtils.isNotBlank(statusLine.getReasonPhrase())){
+                                if (StringUtils.isNotBlank(statusLine.getReasonPhrase())) {
                                     logger.debug("Got response with code {} reason: {}", statusLine.getStatusCode(), statusLine.getReasonPhrase());
                                 } else {
                                     logger.debug("Got response with code {}", statusLine.getStatusCode());
                                 }
                                 return inputStreamHandler.handleStream(httpResponse.getEntity().getContent(), statusLine.getStatusCode());
+                            } catch (IOException e) {
+                                throw e;
                             } catch (Exception e) {
                                 throw new RuntimeException(e);
                             }

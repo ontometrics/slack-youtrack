@@ -97,29 +97,48 @@ public class EditSessionsExtractor {
         for (ProcessEvent event : events){
             if (!issuesWeHaveGottenChangesFor.contains(event.getIssue().getId())) {
                 issuesWeHaveGottenChangesFor.add(event.getIssue().getId());
-                List<IssueEditSession> editSessions = getEdits(event, minDate);
-                for (IssueEditSession session : editSessions) {
-                    List<AttachmentEvent> attachmentEvents = getAttachmentEvents(event, minDate);
-                    if (!attachmentEvents.isEmpty()) {
-                        sessions.add(new IssueEditSession.Builder()
-                                .updater(attachmentEvents.get(0).getAuthor())
-                                .updated(attachmentEvents.get(0).getCreated())
-                                .issue(event.getIssue())
-                                .attachments(attachmentEvents)
-                                .build());
+                try {
+                    List<IssueEditSession> newEdits = getIssueUpdates(event, minDate);
+                    sessions.addAll(newEdits);
+                } catch (BadResponseException ex) {
+                    if (ex.getStatusCode() == HttpStatus.SC_NOT_FOUND) {
+                        //issue we try to get edits for were deleted so just ignore it
+                        log.info("Got 404 response for the issue {}-{}", event.getKey(), event.getIssue());
                     } else {
-                        if (session.hasChanges()) {
-                            sessions.add(session);
-                        } else {
-                            if (session.isCreationEdit()){
-                                sessions.add(session);
-                            }
-                        }
+                        //other cases are not addressed and will be thrown outside
+                        throw ex;
                     }
                 }
             }
         }
         return sessions;
+    }
+
+    private List<IssueEditSession> getIssueUpdates(ProcessEvent event, Date minDate) throws Exception {
+        List<IssueEditSession> newEdits = new ArrayList<>();
+
+        List<IssueEditSession> editSessions = getEdits(event, minDate);
+        for (IssueEditSession session : editSessions) {
+            List<AttachmentEvent> attachmentEvents = getAttachmentEvents(event, minDate);
+            if (!attachmentEvents.isEmpty()) {
+                newEdits.add(new IssueEditSession.Builder()
+                        .updater(attachmentEvents.get(0).getAuthor())
+                        .updated(attachmentEvents.get(0).getCreated())
+                        .issue(event.getIssue())
+                        .attachments(attachmentEvents)
+                        .build());
+            } else {
+                if (session.hasChanges()) {
+                    newEdits.add(session);
+                } else {
+                    if (session.isCreationEdit()) {
+                        newEdits.add(session);
+                    }
+                }
+            }
+        }
+
+        return newEdits;
     }
 
     private List<AttachmentEvent> getAttachmentEvents(ProcessEvent event, final Date minDate) throws Exception {
@@ -363,7 +382,7 @@ public class EditSessionsExtractor {
         });
     }
 
-    private void checkResponseCode(int responseCode, URL requestUrl) {
+    private void checkResponseCode(int responseCode, URL requestUrl) throws BadResponseException {
         if (responseCode != HttpStatus.SC_OK){
             //we got not normal response from server
             throw new BadResponseException(requestUrl, responseCode);
