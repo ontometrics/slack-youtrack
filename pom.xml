@@ -186,12 +186,12 @@
         </resources>
     </build>
 
-    <repositories>
-        <repository>
-            <id>ontometrics</id>
-            <name>Ontometrics</name>
-            <url>http://ontoserver.ontometrics.com:8082/nexus/content/groups/ontorepogroup</url>
-        </repository>
-    </repositories>
+    <!--<repositories>-->
+        <!--<repository>-->
+            <!--<id>ontometrics</id>-->
+            <!--<name>Ontometrics</name>-->
+            <!--<url>http://ontoserver.ontometrics.com:8082/nexus/content/groups/ontorepogroup</url>-->
+        <!--</repository>-->
+    <!--</repositories>-->
 
 </project>

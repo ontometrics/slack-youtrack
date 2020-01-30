@@ -14,7 +14,6 @@ import com.ontometrics.integrations.events.Issue;
 import com.ontometrics.integrations.events.IssueEdit;
 import com.ontometrics.integrations.events.IssueEditSession;
 import com.ontometrics.integrations.sources.ChannelMapper;
-import com.ontometrics.util.TextUtil;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -23,7 +22,6 @@ import javax.ws.rs.client.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.UnsupportedEncodingException;
-import java.net.URL;
 import java.net.URLEncoder;
 import java.util.List;
 import java.util.UUID;
@@ -99,12 +97,10 @@ public class SlackInstance implements ChatServer {
             ArrayNode attachmentsArray = slackMessage.arrayNode();
             for (AttachmentEvent attachmentEvent : imageAttachments) {
                 String attachmentId = resolveAttachmentId(attachmentEvent);
-                if (attachmentId != null) {
-                    String imageUrl = buildImageUrl(attachmentId);
-                    attachmentsArray.add(JsonNodeFactory.instance.objectNode()
-                            .put("image_url", imageUrl)
-                            .put("text", MessageFormatter.getNamedLink(attachmentEvent.getFileUrl(), attachmentEvent.getName())));
-                }
+                String imageUrl = buildImageUrl(attachmentId);
+                attachmentsArray.add(JsonNodeFactory.instance.objectNode()
+                        .put("image_url", imageUrl)
+                        .put("text", MessageFormatter.getNamedLink(attachmentEvent.getFileUrl(), attachmentEvent.getName())));
             }
             if (attachmentsArray.size() != 0) {
                 slackMessage.set("attachments", attachmentsArray);
@@ -124,21 +120,8 @@ public class SlackInstance implements ChatServer {
     }
 
     private String resolveAttachmentId(AttachmentEvent attachmentEvent) {
-        String uid;
-        String fileId;
-        try {
-            fileId = TextUtil.resolveUrlParameter(new URL(attachmentEvent.getFileUrl()), "file");
-            if (StringUtils.isBlank(fileId)) {
-                throw new RuntimeException("There is no attachment id extracted from url " + attachmentEvent
-                        .getFileUrl());
-            }
-            uid = UUID.randomUUID().toString();
-        } catch (Exception e) {
-            log.error("Failed to add image attachment to the message for attachment " + attachmentEvent
-                    .getFileUrl(), e);
-            return null;
-        }
-        MapDb.instance().getAttachmentMap().put(uid, fileId);
+        String uid  = UUID.randomUUID().toString();
+        MapDb.instance().getAttachmentMap().put(uid, attachmentEvent.getFileUrl());
         return uid;
     }
 

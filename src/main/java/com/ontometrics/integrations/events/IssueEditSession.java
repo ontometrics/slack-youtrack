@@ -38,6 +38,11 @@ public class IssueEditSession {
         links = new ArrayList<>(builder.links);
     }
 
+    public IssueEditSession removeAttachments() {
+        attachments.clear();
+        return this;
+    }
+
     public static class Builder {
 
         private Issue issue;

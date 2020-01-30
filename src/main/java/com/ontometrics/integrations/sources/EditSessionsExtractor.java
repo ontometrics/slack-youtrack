@@ -124,22 +124,24 @@ public class EditSessionsExtractor {
         List<IssueEditSession> editSessions = getEdits(event, minDate);
         for (IssueEditSession session : editSessions) {
             List<AttachmentEvent> attachmentEvents = getAttachmentEvents(event, minDate);
+            boolean hasAttachmentEvents = false;
             if (!attachmentEvents.isEmpty()) {
+                hasAttachmentEvents = true;
                 newEdits.add(new IssueEditSession.Builder()
                         .updater(attachmentEvents.get(0).getAuthor())
                         .updated(attachmentEvents.get(0).getCreated())
                         .issue(event.getIssue())
                         .attachments(attachmentEvents)
                         .build());
+            }
+            if (session.hasChanges()) {
+                newEdits.add(hasAttachmentEvents ? session.removeAttachments() : session);
             } else {
-                if (session.hasChanges()) {
-                    newEdits.add(session);
-                } else {
-                    if (session.isCreationEdit()) {
-                        newEdits.add(session);
-                    }
+                if (session.isCreationEdit()) {
+                    newEdits.add(hasAttachmentEvents ? session.removeAttachments() : session);
                 }
             }
+
         }
 
         return newEdits;
