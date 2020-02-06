@@ -1,9 +1,13 @@
 package com.ontometrics.integrations.youtrack;
 
 import com.ontometrics.db.MapDb;
+import com.ontometrics.integrations.configuration.ConfigurationFactory;
+import com.ontometrics.integrations.configuration.StreamProviderFactory;
+import com.ontometrics.integrations.configuration.YouTrackInstance;
+import com.ontometrics.integrations.configuration.YouTrackInstanceFactory;
 import com.ontometrics.integrations.sources.InputStreamHandler;
-import com.ontometrics.integrations.sources.NonAuthenticatedHttpStreamProvider;
 import com.ontometrics.integrations.sources.StreamProvider;
+import org.apache.commons.configuration.Configuration;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.client.methods.HttpGet;
@@ -25,6 +29,7 @@ import java.net.URL;
 public class YouTrackImageServlet extends HttpServlet {
     private static final Logger logger = LoggerFactory.getLogger(YouTrackImageServlet.class);
 
+    private YouTrackInstance youTrackInstance;
     /**
      * Attachment URL example "http://issuetracker.com/_persistent/image.png?file=78-496"
      */
@@ -33,7 +38,10 @@ public class YouTrackImageServlet extends HttpServlet {
     @Override
     public void init() throws ServletException {
         super.init();
-        streamProvider = new NonAuthenticatedHttpStreamProvider();
+        final Configuration configuration = ConfigurationFactory.get();
+
+        youTrackInstance = YouTrackInstanceFactory.createYouTrackInstance(configuration);
+        streamProvider = StreamProviderFactory.createStreamProvider(configuration);
 
     }
 
@@ -81,10 +89,16 @@ public class YouTrackImageServlet extends HttpServlet {
 
 
     private URL resolveYouTrackAttachmentUri(String externalImageId) throws MalformedURLException {
-        String youTrackImageUrl = MapDb.instance().getAttachmentMap().get(externalImageId);
+        String youTrackImageId = resolveYouTrackImageId(externalImageId);
         if (StringUtils.isBlank(externalImageId)) {
             throw new RuntimeException("Image not found");
         }
-        return new URL(youTrackImageUrl);
+        return new URL(String.format("%s/_persistent/%s?file=%s", youTrackInstance.getBaseUrl(), "image.png",
+                youTrackImageId));
+    }
+
+    @SuppressWarnings("unused")
+    private String resolveYouTrackImageId(String externalImageId) {
+        return MapDb.instance().getAttachmentMap().get(externalImageId);
     }
 }

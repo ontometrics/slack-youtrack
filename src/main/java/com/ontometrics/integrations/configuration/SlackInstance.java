@@ -25,6 +25,8 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.List;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -97,10 +99,12 @@ public class SlackInstance implements ChatServer {
             ArrayNode attachmentsArray = slackMessage.arrayNode();
             for (AttachmentEvent attachmentEvent : imageAttachments) {
                 String attachmentId = resolveAttachmentId(attachmentEvent);
-                String imageUrl = buildImageUrl(attachmentId);
-                attachmentsArray.add(JsonNodeFactory.instance.objectNode()
-                        .put("image_url", imageUrl)
-                        .put("text", MessageFormatter.getNamedLink(attachmentEvent.getFileUrl(), attachmentEvent.getName())));
+                if (attachmentId != null) {
+                    String imageUrl = buildImageUrl(attachmentId);
+                    attachmentsArray.add(JsonNodeFactory.instance.objectNode()
+                            .put("image_url", imageUrl)
+                            .put("text", MessageFormatter.getNamedLink(attachmentEvent.getFileUrl(), attachmentEvent.getName())));
+                }
             }
             if (attachmentsArray.size() != 0) {
                 slackMessage.set("attachments", attachmentsArray);
@@ -119,9 +123,30 @@ public class SlackInstance implements ChatServer {
         }
     }
 
+    private static final Pattern FILE_ID_EXTRACTOR = Pattern.compile(".*/api/files/(.*)(\\?.*|^)");
+
     private String resolveAttachmentId(AttachmentEvent attachmentEvent) {
-        String uid  = UUID.randomUUID().toString();
-        MapDb.instance().getAttachmentMap().put(uid, attachmentEvent.getFileUrl());
+        String uid;
+        String fileId;
+        try {
+            Matcher matcher = FILE_ID_EXTRACTOR.matcher(attachmentEvent.getFileUrl());
+            if (matcher.find()) {
+                fileId = matcher.group(1);
+                if (StringUtils.isBlank(fileId)) {
+                    throw new RuntimeException("There is no attachment id extracted from url " + attachmentEvent
+                            .getFileUrl());
+                }
+                uid = UUID.randomUUID().toString();
+            } else {
+                log.info("Failed to extract file id from " + attachmentEvent.getFileUrl());
+                return null;
+            }
+        } catch (Exception e) {
+            log.error("Failed to add image attachment to the message for attachment " + attachmentEvent
+                    .getFileUrl(), e);
+            return null;
+        }
+        MapDb.instance().getAttachmentMap().put(uid, fileId);
         return uid;
     }
 
