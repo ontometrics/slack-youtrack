@@ -100,10 +100,10 @@ public class SlackInstance implements ChatServer {
             for (AttachmentEvent attachmentEvent : imageAttachments) {
                 String attachmentId = resolveAttachmentId(attachmentEvent);
                 if (attachmentId != null) {
-                    String imageUrl = buildImageUrl(attachmentId);
+                    String imageUrl = buildAttachmentUrl(attachmentEvent);
                     attachmentsArray.add(JsonNodeFactory.instance.objectNode()
                             .put("image_url", imageUrl)
-                            .put("text", MessageFormatter.getNamedLink(attachmentEvent.getFileUrl(), attachmentEvent.getName())));
+                            .put("text", MessageFormatter.getNamedLink(imageUrl, attachmentEvent.getName())));
                 }
             }
             if (attachmentsArray.size() != 0) {
@@ -113,10 +113,11 @@ public class SlackInstance implements ChatServer {
         }
     }
 
-    private String buildImageUrl(String attachmentId) {
+    private String buildAttachmentUrl(AttachmentEvent attachment) {
+        String attachmentId = resolveAttachmentId(attachment);
         try {
-            return String.format("%s/youtrack-image?rid=%s", ConfigurationFactory.get().getString("PROP.APP_EXTERNAL_URL"),
-                    URLEncoder.encode(attachmentId, "UTF-8"));
+            return String.format("%s/youtrack-image?rid=%s&name=%s", ConfigurationFactory.get().getString("PROP.APP_EXTERNAL_URL"),
+                    URLEncoder.encode(attachmentId, "UTF-8"), URLEncoder.encode(attachment.getName(), "UTF-8"));
         } catch (UnsupportedEncodingException e) {
             log.error("Failed to encode attachment id " + attachmentId);
             return null;
@@ -200,7 +201,7 @@ public class SlackInstance implements ChatServer {
             Iterable<String> attachmentLinks = Iterables.transform(nonImageAttachments, new Function<AttachmentEvent, String>() {
                 @Override
                 public String apply(AttachmentEvent attachment) {
-                    return MessageFormatter.getNamedLink(attachment.getFileUrl(), attachment.getName());
+                    return MessageFormatter.getNamedLink(buildAttachmentUrl(attachment), attachment.getName());
                 }
             });
             s.append("attached ").append(StringUtils.join(attachmentLinks.iterator(), ", "));
